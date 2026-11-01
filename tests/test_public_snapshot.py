@@ -128,7 +128,7 @@ def test_main_appends_each_pick_to_history(tmp_path, monkeypatch):
     manifest_path = tmp_path / "models" / "manifest.json"
     manifest_path.parent.mkdir(parents=True)
     manifest_path.write_text(
-        json.dumps({"model_version": "v1", "trained_at": "2026-10-18T00:00:00+00:00",
+        json.dumps({"model_version": "v1", "trained_at": _fresh_stamp(),
                     "models": [], "metrics": {"total": {"residual_sigma": 15.0},
                                               "margin": {"residual_sigma": 12.0}}})
     )
@@ -182,7 +182,7 @@ def test_the_pick_history_carries_the_margin_sigma_the_manifest_publishes(tmp_pa
     manifest_path = tmp_path / "models" / "manifest.json"
     manifest_path.parent.mkdir(parents=True)
     manifest_path.write_text(
-        json.dumps({"model_version": "v1", "trained_at": "2026-10-18T00:00:00+00:00",
+        json.dumps({"model_version": "v1", "trained_at": _fresh_stamp(),
                     "models": [], "metrics": {"total": {"residual_sigma": 15.0},
                                               "margin": {"residual_sigma": 12.5}}})
     )
@@ -221,7 +221,7 @@ def test_a_manifest_with_no_margin_sigma_leaves_it_absent(tmp_path, monkeypatch)
     manifest_path = tmp_path / "models" / "manifest.json"
     manifest_path.parent.mkdir(parents=True)
     manifest_path.write_text(
-        json.dumps({"model_version": "v1", "trained_at": "2026-10-18T00:00:00+00:00",
+        json.dumps({"model_version": "v1", "trained_at": _fresh_stamp(),
                     "models": [], "metrics": {"total": {"residual_sigma": 15.0}}})
     )
 
@@ -251,7 +251,7 @@ def test_pick_history_keeps_every_version_and_never_overwrites(tmp_path, monkeyp
     manifest_path = tmp_path / "models" / "manifest.json"
     manifest_path.parent.mkdir(parents=True)
     manifest_path.write_text(
-        json.dumps({"model_version": "v1", "trained_at": "2026-10-18T00:00:00+00:00",
+        json.dumps({"model_version": "v1", "trained_at": _fresh_stamp(),
                     "models": [], "metrics": {"total": {"residual_sigma": 15.0}}})
     )
 
