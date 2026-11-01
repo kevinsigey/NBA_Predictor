@@ -213,16 +213,26 @@ def test_the_manifest_does_not_claim_a_missing_value_metric():
     "model_name", ["player_points_model", "player_rebounds_model", "player_assists_model", "player_threes_model"]
 )
 def test_the_player_models_have_no_injury_feature_at_all(model_name):
-    # Five rolling-average features only. No injury, no availability, no
-    # missing_value -- so the props models could not have been fitted on the
-    # fabricated zero even in principle.
+    # The rolling averages plus the Oct 20 matchup/minutes block (6397f47:
+    # opponent defence vs his position, rest, usage/minutes trend, home,
+    # last-game and EWMA minutes) -- all of it his own box-score history or
+    # the opponent's defence. No injury, no availability, no missing_value,
+    # so the props models could not have been fitted on the fabricated zero
+    # even in principle. (This pin predated 6397f47 and went stale; the first
+    # retrain under the new code, 2026-11-01, exposed it.)
     # Skip if model doesn't exist (not all test runs train player models)
     import os
     if not os.path.exists(f"models/{model_name}.pkl"):
         pytest.skip(f"Model {model_name} not present in this test run")
-    assert _feature_names(model_name) == [
+    names = _feature_names(model_name)
+    assert names == [
         "points_roll", "rebounds_roll", "assists_roll", "fg3m_roll", "minutes_roll",
+        "opp_def_vs_pos", "rest_days", "usage_trend", "minutes_trend",
+        "is_home", "min_last", "min_ewm5",
     ]
+    assert not any(
+        bad in name for name in names for bad in ("injur", "missing", "availab")
+    )
 
 
 def test_h_features_are_live_and_non_constant():
