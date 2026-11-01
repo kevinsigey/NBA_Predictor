@@ -1,4 +1,4 @@
-// Synced from predictor-ui@0d612c5f11c2. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
+// Synced from predictor-ui@5b41a7e2d962. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
 import type { ReactNode } from "react";
 import { GlobalNav, type NavEntry } from "./GlobalNav";
 import { SportTabs } from "./SportTabs";
@@ -35,11 +35,16 @@ export function AppFrame({
   activeEntry,
 }: Props) {
   const resolvedHome = homeHref ?? sites.find((s) => s.sport === "hub")?.href ?? "/";
-  const activeNav = activeEntry === undefined ? (sport === "hub" ? null : sport) : activeEntry;
+  // The current location is the frame's own entry in the nav — for a hub
+  // frame that is the Home entry, which carries aria-current in place of the
+  // wordmark. activeNav is null only when a caller explicitly passes
+  // activeEntry={null}; the wordmark below keys its aria-current off that, so
+  // exactly one element claims the current page in every case.
+  const activeNav = activeEntry === undefined ? sport : activeEntry;
 
-  const entries: NavEntry[] = sites
-    .filter((s) => s.sport !== "hub")
-    .map((s) => ({ id: s.sport, label: s.label, href: s.href, sport: s.sport }));
+  // Every site in `sites` gets a nav entry, the hub included: Home leads the
+  // switcher (SPORT_SITES order), ahead of the five sports.
+  const entries: NavEntry[] = sites.map((s) => ({ id: s.sport, label: s.label, href: s.href, sport: s.sport }));
   if (paperTradingHref) {
     entries.push({ id: "paper", label: "Paper Trading", href: paperTradingHref, sport: "hub" });
   }
