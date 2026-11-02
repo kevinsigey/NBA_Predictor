@@ -206,7 +206,19 @@ def test_the_manifest_does_not_claim_a_missing_value_metric():
 
     manifest = json.load(open("models/player_props_manifest.json"))
     for stat, metrics in manifest["metrics"].items():
-        assert set(metrics) == {"mae"}, f"{stat} claims a non-MAE metric: {set(metrics)}"
+        # Every claimed metric must be an MAE, and the headline "mae" (the
+        # chronological-holdout figure) must be there. naive_mae and
+        # in_sample_mae are MAEs too -- the baseline the model has to beat and
+        # the flattering figure it is measured against; both are labelled as
+        # what they are. (This asserted exactly {"mae"} while the committed
+        # manifest was a stale one that happened to carry nothing else; once
+        # the refresh workflow actually committed the manifest the training
+        # code writes, the assertion contradicted the writer's documented
+        # honest-metrics design.)
+        assert "mae" in metrics, f"{stat} has no headline MAE: {set(metrics)}"
+        assert set(metrics) <= {"mae", "naive_mae", "in_sample_mae"}, (
+            f"{stat} claims a non-MAE metric: {set(metrics)}"
+        )
 
 
 @pytest.mark.parametrize(
