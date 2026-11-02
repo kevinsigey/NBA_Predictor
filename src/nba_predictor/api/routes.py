@@ -39,6 +39,7 @@ from nba_predictor.api.schemas import (
     OutPlayerOut,
     PlayerPropOut,
     PredictionOut,
+    PropGradingOut,
     SeasonBoundsOut,
     TeamOut,
     TrackRecordOut,
@@ -47,6 +48,7 @@ from nba_predictor.api.schemas import (
 )
 from nba_predictor.models.player_props import in_sample_mae_by_stat
 from nba_predictor.data.team_reference import TEAMS, get_team
+from nba_predictor.tracking.prop_grading import prop_bands as _shared_prop_bands
 from nba_predictor.odds.value_bets import std_from_mae
 from nba_predictor.pipeline.ingest import run_ingest
 from nba_predictor.odds import edge_gate
@@ -56,6 +58,7 @@ from nba_predictor.pipeline.refresh_odds import refresh_market_predictions
 from nba_predictor.pipeline.retrain import run_retrain_pipeline
 from nba_predictor.services.calibration_service import compute_model_calibration
 from nba_predictor.services.hub_service import (
+    cached_prop_grading,
     compute_track_record,
     compute_track_record_picks,
     compute_vs_market,
@@ -218,17 +221,7 @@ def _prop_bands(models_dir: Path) -> dict[str, float] | None:
     review would judge players against it -- so a missing manifest means no
     band, never a default.
     """
-    path = Path(models_dir) / "player_props_manifest.json"
-    try:
-        manifest = json.loads(path.read_text())
-    except (OSError, ValueError):
-        return None
-    bands: dict[str, float] = {}
-    for stat, figures in (manifest.get("metrics") or {}).items():
-        mae = (figures or {}).get("mae")
-        if isinstance(mae, (int, float)) and not isinstance(mae, bool):
-            bands[str(stat)] = float(mae)
-    return bands or None
+    return _shared_prop_bands(models_dir)
 
 
 def _game_out(g: dict, db_path: Path) -> GameOut:
@@ -859,6 +852,22 @@ def hub_track_record_picks(
         db_path, schedule, market=market, game_ids=game_id or None,
         limit=limit, offset=offset,
     )
+
+
+@router.get("/hub/prop-grading", response_model=PropGradingOut)
+def hub_prop_grading(
+    db_path: Path = Depends(get_db_path),
+    schedule: list[dict] = Depends(get_schedule),
+    models_dir: Path = Depends(get_models_dir),
+) -> PropGradingOut:
+    """Every counted player projection for the most recent completed game
+    day, graded against the actual box score in units of the props model's
+    own holdout error -- plus the day's most confident calls (the model's
+    biggest moves from a player's own rolling average) and its biggest
+    surprises. Computed from stored predictions and outcomes only, and
+    served behind the props cache's TTL: the payload changes when a game
+    resolves, not when a request arrives."""
+    return cached_prop_grading(db_path, schedule, _prop_bands(models_dir))
 
 
 @router.get("/hub/vs-market", response_model=VsMarketOut)

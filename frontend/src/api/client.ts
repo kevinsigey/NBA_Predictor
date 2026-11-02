@@ -269,6 +269,59 @@ export interface TrackRecordPick {
   point: number | null;
 }
 
+/** One counted player projection graded against the actual box score.
+ *  `delta` is actual minus projected: positive means the player beat the
+ *  projection. `grade` is the miss in units of the stat's holdout MAE, or
+ *  null when the manifest publishes no MAE for the stat. `baseline` is the
+ *  player's own rolling average (previous 10 recorded games) and
+ *  `departure` how far the projection moved from it; both null when the
+ *  stored record holds no prior game for him. */
+export interface PropGradingRow {
+  game_id: string;
+  game_date: string;
+  home_team: string | null;
+  away_team: string | null;
+  player_id: string;
+  player_name: string | null;
+  stat: string;
+  predicted: number;
+  actual: number;
+  delta: number;
+  grade: string | null;
+  made_before_tip: boolean;
+  baseline: number | null;
+  departure: number | null;
+}
+
+export interface PropGradingGame {
+  game_id: string;
+  game_date: string;
+  home_team: string | null;
+  away_team: string | null;
+  rows: PropGradingRow[];
+}
+
+export interface PropGradingDay {
+  date: string;
+  n_graded: number;
+  n_pre_tip: number;
+  games: PropGradingGame[];
+}
+
+/** The prop-grading payload for the most recent completed game day. The
+ *  three note strings are the backend's wording, printed verbatim. */
+export interface PropGrading {
+  bands: Record<string, number> | null;
+  counting: string;
+  confidence_basis: string;
+  grade_basis: string;
+  latest_day: PropGradingDay | null;
+  most_confident: PropGradingRow[];
+  biggest_surprises: PropGradingRow[];
+  n_with_baseline: number;
+  served_stale_seconds?: number | null;
+}
+
 export interface TrackRecord {
   market: string;
   total_predictions: number;
@@ -580,6 +633,7 @@ export const api = {
     const qs = query.toString();
     return fetchJson<TrackRecordPicksPage>(`/hub/track-record/picks${qs ? `?${qs}` : ""}`);
   },
+  getPropGrading: () => fetchJson<PropGrading>("/hub/prop-grading"),
   getVsMarket: () => fetchJson<VsMarket>("/hub/vs-market"),
   getSnapshotMeta: () => fetchJson<SnapshotMeta>("/snapshot-meta"),
   getManifest: () => fetchJson<Manifest>("/manifest"),

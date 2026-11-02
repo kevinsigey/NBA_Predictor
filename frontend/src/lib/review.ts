@@ -45,6 +45,19 @@ export interface ReviewRow {
   actual: number;
   /** Actual minus projection: positive means the player beat the projection. */
   gap: number;
+  /** The miss in units of the stat's own error: On the number (<= 1/2 the
+   *  band), Close (<= the band), Off (<= twice it), Way off (beyond). The
+   *  same bands the backend grades with, so the page and the payload agree. */
+  grade: string;
+}
+
+/** The grade for one miss, in units of the stat's own band (its holdout MAE). */
+export function gradeForGap(gap: number, band: number): string {
+  const ratio = Math.abs(gap) / band;
+  if (ratio <= 0.5 + BAND_EPSILON) return "On the number";
+  if (ratio <= 1 + BAND_EPSILON) return "Close";
+  if (ratio <= 2 + BAND_EPSILON) return "Off";
+  return "Way off";
 }
 
 export interface ReviewResult {
@@ -113,6 +126,7 @@ export function reviewPlayers(
       projected: projection.value,
       actual,
       gap,
+      grade: gradeForGap(gap, band),
     };
     if (gap > band + BAND_EPSILON) beat.push(row);
     else if (gap < -band - BAND_EPSILON) short.push(row);

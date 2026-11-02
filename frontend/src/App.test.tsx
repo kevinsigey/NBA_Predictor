@@ -74,7 +74,7 @@ describe("App family frame", () => {
     expect(within(pages).getByRole("tab", { name: "Games" })).not.toHaveAttribute("aria-selected", "true");
     expect(
       within(pages).getAllByRole("tab").map((b) => b.textContent),
-    ).toEqual(["Games", "Teams", "Players", "Track record", "Calibration", "Model"]);
+    ).toEqual(["Games", "Teams", "Players", "Track record", "Prop grading", "Calibration", "Model"]);
   });
 
   it("sends the old standings link to the Teams page", async () => {

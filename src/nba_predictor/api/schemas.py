@@ -291,6 +291,70 @@ class PropStatOut(BaseModel):
     mean_signed_error: float
 
 
+class PropGradingRowOut(BaseModel):
+    """One counted player projection graded against the actual box score.
+
+    `delta` is actual minus projected: positive means the player beat the
+    projection. `grade` is the miss in units of the stat's holdout MAE, or
+    None when the manifest publishes no MAE for the stat -- unjudged, never
+    judged against an invented band. `baseline`/`departure` are None when
+    the stored record holds no prior game for the player, so the row cannot
+    be ranked by how far the model moved from his usual line.
+    """
+
+    game_id: str
+    game_date: str
+    home_team: str | None = None
+    away_team: str | None = None
+    player_id: str
+    player_name: str | None = None
+    stat: str
+    predicted: float
+    actual: float
+    delta: float
+    grade: str | None = None
+    made_before_tip: bool = False
+    baseline: float | None = None
+    departure: float | None = None
+
+
+class PropGradingGameOut(BaseModel):
+    game_id: str
+    game_date: str
+    home_team: str | None = None
+    away_team: str | None = None
+    rows: list[PropGradingRowOut] = []
+
+
+class PropGradingDayOut(BaseModel):
+    date: str
+    # Every graded counted pick that day, and how many of them carry a
+    # timestamp that proves they were made before tip-off. The two numbers
+    # sit together so the headline can never quietly become the subset.
+    n_graded: int
+    n_pre_tip: int
+    games: list[PropGradingGameOut] = []
+
+
+class PropGradingOut(BaseModel):
+    # The holdout MAE per stat the grades were judged against; None when the
+    # manifest publishes none (every grade is then None too).
+    bands: dict[str, float] | None = None
+    # Sentences the page prints verbatim; the backend owns the wording.
+    counting: str
+    confidence_basis: str
+    grade_basis: str
+    latest_day: PropGradingDayOut | None = None
+    most_confident: list[PropGradingRowOut] = []
+    biggest_surprises: list[PropGradingRowOut] = []
+    # How many of the day's graded rows carried a provable rolling-average
+    # baseline and so could be ranked in most_confident at all.
+    n_with_baseline: int = 0
+    # Set only when a cached value is served because a refresh failed; see
+    # TrackRecordOut.served_stale_seconds for the rule.
+    served_stale_seconds: float | None = None
+
+
 class TrackRecordOut(BaseModel):
     market: str
     total_predictions: int

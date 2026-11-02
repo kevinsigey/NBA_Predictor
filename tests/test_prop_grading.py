@@ -1,0 +1,292 @@
+"""Player-prop grading: the delta, the grade bands, the section ranking.
+
+The grading judges the COUNTED pick (the earliest recorded projection per
+player and stat -- the pick the track record counts) against the recorded
+actual, in units of the props model's own holdout MAE for the stat. These
+tests pin the arithmetic and the honesty rules: no band means no grade, a
+baseline comes only from games recorded BEFORE the graded one, and a pick
+that cannot prove it was made before tip-off is graded and labelled, never
+dropped and never passed off as pre-tip.
+"""
+
+import json
+from datetime import datetime, timedelta, timezone
+
+BANDS = {"points": 4.0, "rebounds": 2.0, "assists": 1.0, "threes": 0.5}
+
+
+def _fresh_stamp() -> str:
+    return (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
+
+
+def _game(game_id, day, home="BOS", away="MIA", tip="19:00"):
+    return {
+        "game_id": game_id,
+        "game_date": day,
+        "home_team": home,
+        "away_team": away,
+        "tip_off": f"{day}T{tip}:00+00:00",
+        "completed": True,
+    }
+
+
+def _seed(db_path, schedule, picks, outcomes, names=()):
+    from nba_predictor.tracking import store
+
+    store.init_db(db_path)
+    for pick in picks:
+        store.insert_player_prediction(db_path, **pick)
+    for outcome in outcomes:
+        store.insert_player_outcome(db_path, **outcome)
+    if names:
+        store.record_player_names(db_path, [{"player_id": pid, "player_name": name} for pid, name in names])
+
+
+def _pick(game_id, player_id, stat, value, created_at, position=None):
+    return {
+        "game_id": game_id, "player_id": player_id, "stat": stat,
+        "predicted_value": value, "created_at": created_at, "position": position,
+    }
+
+
+def _outcome(game_id, player_id, stat, value, recorded_at="2026-11-02T03:00:00+00:00"):
+    return {
+        "game_id": game_id, "player_id": player_id, "stat": stat,
+        "actual_value": value, "recorded_at": recorded_at,
+    }
+
+
+# ---------------------------------------------------------------------------
+# The grade bands
+# ---------------------------------------------------------------------------
+
+
+def test_grade_bands_are_multiples_of_the_stats_own_mae():
+    from nba_predictor.tracking.prop_grading import grade_for
+
+    # MAE 4.0: half is 2.0, the error itself 4.0, twice it 8.0.
+    assert grade_for(0.0, 4.0) == "On the number"
+    assert grade_for(2.0, 4.0) == "On the number"      # exactly half: inside the band
+    assert grade_for(2.1, 4.0) == "Close"
+    assert grade_for(4.0, 4.0) == "Close"              # exactly the MAE: inside the band
+    assert grade_for(4.1, 4.0) == "Off"
+    assert grade_for(8.0, 4.0) == "Off"                # exactly twice: inside the band
+    assert grade_for(8.1, 4.0) == "Way off"
+
+
+def test_grade_is_none_without_a_measured_error():
+    from nba_predictor.tracking.prop_grading import grade_for
+
+    assert grade_for(3.0, None) is None
+    assert grade_for(3.0, 0.0) is None
+
+
+def test_prop_bands_reads_the_manifests_published_mae(tmp_path):
+    from nba_predictor.tracking.prop_grading import prop_bands
+
+    (tmp_path / "player_props_manifest.json").write_text(json.dumps({
+        "metrics": {"points": {"mae": 4.557}, "rebounds": {"mae": None}, "assists": {"mae": 1.326}},
+    }))
+    assert prop_bands(tmp_path) == {"points": 4.557, "assists": 1.326}
+    assert prop_bands(tmp_path / "missing") is None
+
+
+# ---------------------------------------------------------------------------
+# The graded day
+# ---------------------------------------------------------------------------
+
+
+def _two_day_world(tmp_path):
+    """Day 1 (2026-10-30) exists only as baseline history; day 2 (2026-11-01)
+    is the graded day. Player A averages 20 points over two prior recorded
+    games; the model called 30 and he scored 31."""
+    db_path = tmp_path / "tracking.db"
+    schedule = [
+        _game("g0", "2026-10-28"),
+        _game("g1", "2026-10-30"),
+        _game("g2", "2026-11-01"),
+    ]
+    picks = [
+        _pick("g2", "A", "points", 30.0, "2026-11-01T12:00:00+00:00"),
+        _pick("g2", "B", "points", 10.0, "2026-11-01T12:00:00+00:00"),
+    ]
+    outcomes = [
+        _outcome("g0", "A", "points", 18.0),
+        _outcome("g1", "A", "points", 22.0),
+        _outcome("g2", "A", "points", 31.0),
+        _outcome("g2", "B", "points", 4.0),
+    ]
+    _seed(db_path, schedule, picks, outcomes, names=(("A", "Player A"), ("B", "Player B")))
+    return db_path, schedule
+
+
+def test_latest_day_is_the_most_recent_day_with_graded_rows(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path, schedule = _two_day_world(tmp_path)
+    payload = build_prop_grading(db_path, schedule, BANDS)
+
+    assert payload["latest_day"]["date"] == "2026-11-01"
+    assert payload["latest_day"]["n_graded"] == 2
+    games = payload["latest_day"]["games"]
+    assert [g["game_id"] for g in games] == ["g2"]
+    row_a = next(r for r in games[0]["rows"] if r["player_id"] == "A")
+    # delta = actual - projected: beating the projection is positive.
+    assert row_a["predicted"] == 30.0
+    assert row_a["actual"] == 31.0
+    assert row_a["delta"] == 1.0
+    # |1.0| <= 0.5 x 4.0 MAE -> on the number.
+    assert row_a["grade"] == "On the number"
+    assert row_a["player_name"] == "Player A"
+    assert row_a["made_before_tip"] is True
+
+
+def test_biggest_surprises_rank_by_absolute_delta_both_directions(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path, schedule = _two_day_world(tmp_path)
+    payload = build_prop_grading(db_path, schedule, BANDS)
+
+    surprises = payload["biggest_surprises"]
+    # B fell 6 short (|delta| 6) outranks A's +1, and the sign is preserved.
+    assert [r["player_id"] for r in surprises] == ["B", "A"]
+    assert surprises[0]["delta"] == -6.0
+    assert surprises[0]["grade"] == "Off"  # 6 > 1x MAE (4), <= 2x MAE (8)
+
+
+def test_most_confident_ranks_by_departure_from_the_rolling_average(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path, schedule = _two_day_world(tmp_path)
+    payload = build_prop_grading(db_path, schedule, BANDS)
+
+    # A's baseline is his two prior recorded games: (18 + 22) / 2 = 20. The
+    # graded game's own 31 never enters it.
+    confident = payload["most_confident"]
+    assert [r["player_id"] for r in confident] == ["A"]
+    assert confident[0]["baseline"] == 20.0
+    assert confident[0]["departure"] == 10.0
+    # B has no recorded prior game: graded, but unrankable here -- and the
+    # payload says how many rows the ranking could cover.
+    assert payload["n_with_baseline"] == 1
+    day_rows = payload["latest_day"]["games"][0]["rows"]
+    row_b = next(r for r in day_rows if r["player_id"] == "B")
+    assert row_b["baseline"] is None and row_b["departure"] is None
+
+
+def test_baseline_uses_only_the_previous_ten_games(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path = tmp_path / "tracking.db"
+    schedule = [_game(f"h{i}", f"2026-10-{10 + i:02d}") for i in range(12)] + [_game("gx", "2026-11-01")]
+    outcomes = []
+    # Two early 0-point games fall out of the 10-game window; the last ten are all 20s.
+    values = [0.0, 0.0] + [20.0] * 10
+    for game, value in zip(schedule[:12], values):
+        outcomes.append(_outcome(game["game_id"], "A", "points", value))
+    outcomes.append(_outcome("gx", "A", "points", 25.0))
+    picks = [_pick("gx", "A", "points", 24.0, "2026-11-01T12:00:00+00:00")]
+    _seed(db_path, schedule, picks, outcomes)
+
+    payload = build_prop_grading(db_path, schedule, BANDS)
+    row = payload["most_confident"][0]
+    assert row["baseline"] == 20.0
+
+
+def test_a_pick_that_cannot_prove_pre_tip_is_graded_and_labelled(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path = tmp_path / "tracking.db"
+    schedule = [_game("g2", "2026-11-01")]  # tips 19:00Z
+    picks = [
+        _pick("g2", "A", "points", 20.0, "2026-11-01T12:00:00+00:00"),   # before tip
+        _pick("g2", "B", "points", 20.0, "2026-11-01T23:30:00+00:00"),   # after tip
+    ]
+    outcomes = [_outcome("g2", "A", "points", 21.0), _outcome("g2", "B", "points", 21.0)]
+    _seed(db_path, schedule, picks, outcomes)
+
+    payload = build_prop_grading(db_path, schedule, BANDS)
+    assert payload["latest_day"]["n_graded"] == 2
+    assert payload["latest_day"]["n_pre_tip"] == 1
+    rows = {r["player_id"]: r for r in payload["latest_day"]["games"][0]["rows"]}
+    assert rows["A"]["made_before_tip"] is True
+    assert rows["B"]["made_before_tip"] is False
+
+
+def test_the_counted_pick_is_the_earliest_recorded(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path = tmp_path / "tracking.db"
+    schedule = [_game("g2", "2026-11-01")]
+    picks = [
+        _pick("g2", "A", "points", 20.0, "2026-11-01T12:00:00+00:00"),
+        _pick("g2", "A", "points", 99.0, "2026-11-01T13:00:00+00:00"),  # a rerun: history, not the pick
+    ]
+    outcomes = [_outcome("g2", "A", "points", 22.0)]
+    _seed(db_path, schedule, picks, outcomes)
+
+    payload = build_prop_grading(db_path, schedule, BANDS)
+    rows = payload["latest_day"]["games"][0]["rows"]
+    assert len(rows) == 1
+    assert rows[0]["predicted"] == 20.0
+
+
+def test_no_bands_means_rows_are_served_ungraded(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path, schedule = _two_day_world(tmp_path)
+    payload = build_prop_grading(db_path, schedule, None)
+    assert payload["bands"] is None
+    assert all(r["grade"] is None for r in payload["biggest_surprises"])
+
+
+def test_empty_store_grades_nothing(tmp_path):
+    from nba_predictor.tracking import store
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path = tmp_path / "tracking.db"
+    store.init_db(db_path)
+    payload = build_prop_grading(db_path, [], BANDS)
+    assert payload["latest_day"] is None
+    assert payload["most_confident"] == []
+    assert payload["biggest_surprises"] == []
+
+
+# ---------------------------------------------------------------------------
+# The snapshot carries the payload
+# ---------------------------------------------------------------------------
+
+
+def test_generate_snapshot_includes_prop_grading(tmp_path):
+    from nba_predictor.public_snapshot import generate_snapshot
+    from nba_predictor.tracking import store
+
+    schedule_path = tmp_path / "schedule" / "games.json"
+    schedule_path.parent.mkdir(parents=True)
+    schedule_path.write_text(json.dumps([_game("g2", "2026-11-01")]))
+    hub_dir = tmp_path / "hub"
+    hub_dir.mkdir()
+    for name in ("teams", "players", "rankings", "standings"):
+        (hub_dir / f"{name}.json").write_text("[]")
+    manifest_path = tmp_path / "models" / "manifest.json"
+    manifest_path.parent.mkdir(parents=True)
+    manifest_path.write_text(json.dumps({"model_version": "v1", "trained_at": _fresh_stamp(), "models": [], "metrics": {}}))
+    (tmp_path / "models" / "player_props_manifest.json").write_text(json.dumps({"metrics": {"points": {"mae": 4.0}}}))
+
+    db_path = tmp_path / "tracking.db"
+    store.init_db(db_path)
+    store.insert_player_prediction(
+        db_path, game_id="g2", player_id="A", stat="points",
+        predicted_value=20.0, created_at="2026-11-01T12:00:00+00:00",
+    )
+    store.insert_player_outcome(
+        db_path, game_id="g2", player_id="A", stat="points",
+        actual_value=26.0, recorded_at="2026-11-02T03:00:00+00:00",
+    )
+
+    snapshot = generate_snapshot(schedule_path, hub_dir, manifest_path, db_path)
+    grading = snapshot["prop_grading"]
+    assert grading["bands"] == {"points": 4.0}
+    assert grading["latest_day"]["date"] == "2026-11-01"
+    row = grading["biggest_surprises"][0]
+    assert row["delta"] == 6.0 and row["grade"] == "Off"

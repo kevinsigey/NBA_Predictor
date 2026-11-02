@@ -1,11 +1,13 @@
 import TeamsPanel from "../components/TeamsPanel";
 import PlayerHubPanel from "../components/PlayerHubPanel";
 import TrackRecordPanel from "../components/TrackRecordPanel";
+import PropGradingPanel from "../components/PropGradingPanel";
 
 const PANELS = {
   "team-hub": TeamsPanel,
   "player-hub": PlayerHubPanel,
   "track-record": TrackRecordPanel,
+  "prop-grading": PropGradingPanel,
 } as const;
 
 /**

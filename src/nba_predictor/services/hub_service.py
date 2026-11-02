@@ -19,8 +19,10 @@ from nba_predictor.api.schemas import (
     VsMarketOut,
     VsMarketScopeOut,
     VsMarketWeekOut,
+    PropGradingOut,
 )
 from nba_predictor.tracking import store
+from nba_predictor.tracking.prop_grading import build_prop_grading
 from nba_predictor.tracking.store import get_connection
 from nba_predictor.tracking.timing import (
     earliest_recorded,
@@ -150,6 +152,83 @@ def warm_player_props_cache(db_path: Path, *, now=time.monotonic) -> bool:
         logger.error("player-props cache warm failed for %s: %s: %s", db_path, type(exc).__name__, exc)
         return False
     return True
+
+
+# --------------------------------------------------------------------------
+# The prop-grading payload cache: the same discipline as the player-props
+# aggregate above, for the same reason. Building the grading reads every
+# recorded outcome (the rolling baselines) plus every resolved pick -- a
+# publish-time cost, not a per-request one -- and the answer changes only
+# when a game resolves, so a few minutes of disclosed staleness is the
+# accepted trade (NBA_Predictor#48). The public snapshot carries the same
+# payload computed at publish time; this cache is for the live route.
+# --------------------------------------------------------------------------
+
+_PROP_GRADING_CACHE: dict[str, tuple[float, "PropGradingOut | None", float | None]] = {}
+_PROP_GRADING_LOCK = threading.Lock()
+
+
+def clear_prop_grading_cache() -> None:
+    """Drop the cached grading payload. For tests."""
+    _PROP_GRADING_CACHE.clear()
+
+
+def _grading_with_freshness(value, stale_seconds):
+    if value is None:
+        return None
+    return value.model_copy(update={"served_stale_seconds": stale_seconds})
+
+
+def cached_prop_grading(
+    db_path: Path,
+    schedule: list[dict],
+    bands: dict[str, float] | None,
+    *,
+    now=time.monotonic,
+    compute=None,
+) -> "PropGradingOut":
+    """The prop-grading payload, from cache inside the TTL and fresh past it.
+
+    `compute` is injected so a test can count calls and fail on demand. The
+    failure rule matches the props aggregate: past the TTL a failed refresh
+    serves the last good payload and says how old it is; a cold failure
+    propagates, because inventing a grading is not on the menu.
+    """
+    key = str(db_path)
+    if compute is None:
+        def compute():
+            return PropGradingOut(**build_prop_grading(db_path, schedule, bands))
+
+    entry = _PROP_GRADING_CACHE.get(key)
+    if entry is not None and now() - entry[0] < PLAYER_PROPS_CACHE_TTL_SECONDS:
+        return _grading_with_freshness(entry[1], None)
+
+    waited = _PROP_GRADING_LOCK.acquire(timeout=PROPS_AGG_COMPUTE_WAIT_SECONDS)
+    try:
+        entry = _PROP_GRADING_CACHE.get(key)
+        if entry is not None and now() - entry[0] < PLAYER_PROPS_CACHE_TTL_SECONDS:
+            return _grading_with_freshness(entry[1], None)
+        try:
+            value = compute()
+        except Exception as exc:  # noqa: BLE001 - reported, never swallowed
+            if entry is None or entry[1] is None:
+                logger.error(
+                    "prop-grading failed with nothing cached for %s: %s: %s",
+                    db_path, type(exc).__name__, exc,
+                )
+                raise
+            logger.error(
+                "prop-grading refresh failed for %s, serving the last good "
+                "value (%.0fs old): %s: %s",
+                db_path, now() - entry[0], type(exc).__name__, exc,
+            )
+            _PROP_GRADING_CACHE[key] = (entry[0], entry[1], now())
+            return _grading_with_freshness(entry[1], now() - entry[0])
+        _PROP_GRADING_CACHE[key] = (now(), value, None)
+        return _grading_with_freshness(value, None)
+    finally:
+        if waited:
+            _PROP_GRADING_LOCK.release()
 
 
 def _with_freshness(value: TrackRecordOut | None, stale_seconds: float | None) -> TrackRecordOut | None:

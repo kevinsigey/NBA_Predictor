@@ -93,12 +93,12 @@ function ReviewColumn({
               <span className="min-w-0">
                 <span className="block truncate text-sm font-semibold text-pr-text">{row.player_name}</span>
                 <span className="block text-sm text-pr-text-dim">
-                  {row.actual} {statLabel(row.stat)} vs {row.projected.toFixed(1)} projected ({" "}
+                  Proj {row.projected.toFixed(1)} {"\u2192"} {row.actual} actual {"\u00b7"} {statLabel(row.stat)}{" "}
                   <span className={tone === "win" ? "text-pr-win" : "text-pr-loss"}>
-                    {row.gap > 0 ? "+" : ""}
-                    {row.gap.toFixed(1)}
-                  </span>
-                  )
+                    {row.gap > 0 ? "\u25b2" : "\u25bc"} {row.gap > 0 ? "+" : "\u2212"}
+                    {Math.abs(row.gap).toFixed(1)} vs proj
+                  </span>{" "}
+                  {"\u00b7"} {row.grade}
                 </span>
               </span>
             </li>

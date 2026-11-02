@@ -44,6 +44,7 @@ const TABS = [
   { id: "/hub", label: "Teams" },
   { id: "/players", label: "Players" },
   { id: "/track-record", label: "Track record" },
+  { id: "/prop-grading", label: "Prop grading" },
   { id: "/calibration-report", label: "Calibration" },
   { id: "/model", label: "Model" },
 ];
@@ -70,6 +71,7 @@ export default function App() {
         <Route path="/hub" element={<DataHubPage initialTab="team-hub" />} />
         <Route path="/players" element={<DataHubPage initialTab="player-hub" />} />
         <Route path="/track-record" element={<DataHubPage initialTab="track-record" />} />
+        <Route path="/prop-grading" element={<DataHubPage initialTab="prop-grading" />} />
         {/* The two old team tabs land on the Teams page. The power rankings' old
             link keeps its intent with ?sort=power. */}
         <Route path="/standings" element={<Navigate to="/hub" replace />} />

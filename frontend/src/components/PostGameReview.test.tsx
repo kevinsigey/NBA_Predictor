@@ -23,8 +23,10 @@ describe("PostGameReview", () => {
 
     const beat = screen.getByTestId("review-beat");
     expect(within(beat).getByText("Jayson Tatum")).toBeTruthy();
-    expect(beat.textContent).toContain("31 Pts vs 22.4 projected");
-    expect(within(beat).getByText("+8.6")).toBeTruthy();
+    expect(beat.textContent).toContain("Proj 22.4 \u2192 31 actual");
+    expect(within(beat).getByText("\u25b2 +8.6 vs proj")).toBeTruthy();
+    // 8.6 against a 4.6 band is inside twice the error: Off.
+    expect(beat.textContent).toContain("Off");
   });
 
   it("names the players who fell short", () => {
@@ -37,8 +39,8 @@ describe("PostGameReview", () => {
 
     const short = screen.getByTestId("review-short");
     expect(within(short).getByText("Jalen Brunson")).toBeTruthy();
-    expect(short.textContent).toContain("18 Pts vs 24.1 projected");
-    expect(within(short).getByText("-6.1")).toBeTruthy();
+    expect(short.textContent).toContain("Proj 24.1 \u2192 18 actual");
+    expect(within(short).getByText("\u25bc \u22126.1 vs proj")).toBeTruthy();
   });
 
   it("counts the lines that were on the number", () => {
