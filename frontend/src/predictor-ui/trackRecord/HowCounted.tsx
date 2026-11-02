@@ -1,7 +1,4 @@
-// Synced from predictor-ui@5b41a7e2d962. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
-// NBA local change, 2026-11-01 (hash recorded in SYNC.json): optional `asOf`
-// line, so the record carries the stamp of the data it was computed from.
-// Fold back upstream at the next sync.
+// Synced from predictor-ui@213533e42ec1. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
 import type { ReactNode } from "react";
 import type { Moment } from "../components/StatusBadge";
 import type { HeadlineMode } from "./types";
@@ -32,19 +29,24 @@ export function HowCounted({
 }: {
   moment?: Moment;
   headline?: HeadlineMode;
-  /** When the data behind this record was last written, pre-formatted by the
-   *  caller (e.g. "Nov 2, 2026, 4:15 AM UTC"). Omitted when unknown: an
-   *  absent stamp is honest, a guessed one is not. */
-  asOf?: string;
+  /** ISO timestamp of the snapshot this record was read from, shown as a
+   * "Record as of …" line. Absent or unparseable renders nothing — the
+   * stamp is a courtesy, never a reason to fail the block. */
+  asOf?: string | null;
   children?: ReactNode;
 }) {
+  const asOfDate = asOf ? new Date(asOf) : null;
+  const asOfText =
+    asOfDate && !Number.isNaN(asOfDate.getTime())
+      ? new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(asOfDate)
+      : null;
   return (
     <details className="rounded-pr border border-pr-rule bg-pr-panel px-4 py-3 text-sm">
       <summary className="cursor-pointer font-semibold text-pr-text">How this is counted</summary>
       <div className="mt-3 flex max-w-prose flex-col gap-2 text-pr-text-dim">
-        {asOf && <p>Record as of {asOf}.</p>}
         <p>{CORE}</p>
         <p>{modeLine(headline, moment)}</p>
+        {asOfText && <p>Record as of {asOfText}.</p>}
         {children}
       </div>
     </details>
