@@ -11,6 +11,7 @@ import {
   type BoxScoreRow,
   type StatKey,
 } from "../lib/boxScore";
+import { gradeForGap } from "../lib/review";
 import { teamName } from "../lib/teams";
 import { StickyStatTable, TeamSwitch, stat, type StickyRow } from "../predictor-ui";
 
@@ -58,7 +59,7 @@ function statCell(
         {showDelta && (
           <>
             {" "}(<span className={tone}>{actual - predicted > 0 ? "+" : ""}
-            {(actual - predicted).toFixed(1)}</span>)
+            {(actual - predicted).toFixed(1)}</span>){band !== undefined ? ` ${"\u00b7"} ${gradeForGap(gap, band)}` : ""}
           </>
         )}
       </span>
