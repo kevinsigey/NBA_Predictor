@@ -1,4 +1,7 @@
 // Synced from predictor-ui@5b41a7e2d962. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
+// NBA local change, 2026-11-01 (hash recorded in SYNC.json): optional `asOf`
+// line, so the record carries the stamp of the data it was computed from.
+// Fold back upstream at the next sync.
 import type { ReactNode } from "react";
 import type { Moment } from "../components/StatusBadge";
 import type { HeadlineMode } from "./types";
@@ -24,16 +27,22 @@ function modeLine(mode: HeadlineMode, moment: Moment): string {
 export function HowCounted({
   moment = "kickoff",
   headline = "counted",
+  asOf,
   children,
 }: {
   moment?: Moment;
   headline?: HeadlineMode;
+  /** When the data behind this record was last written, pre-formatted by the
+   *  caller (e.g. "Nov 2, 2026, 4:15 AM UTC"). Omitted when unknown: an
+   *  absent stamp is honest, a guessed one is not. */
+  asOf?: string;
   children?: ReactNode;
 }) {
   return (
     <details className="rounded-pr border border-pr-rule bg-pr-panel px-4 py-3 text-sm">
       <summary className="cursor-pointer font-semibold text-pr-text">How this is counted</summary>
       <div className="mt-3 flex max-w-prose flex-col gap-2 text-pr-text-dim">
+        {asOf && <p>Record as of {asOf}.</p>}
         <p>{CORE}</p>
         <p>{modeLine(headline, moment)}</p>
         {children}

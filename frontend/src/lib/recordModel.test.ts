@@ -16,7 +16,7 @@ const rows: (TrackRecord & { confidence_buckets?: unknown })[] = [
   {
     market: "h2h", total_predictions: 10, correct_predictions: 5, hit_rate: 0.5, n_rebuilt: 0, settled: true,
     pre_tip: { total_predictions: 10, correct_predictions: 5, hit_rate: 0.5 },
-    per_pick: [pick({ game_id: "older", gameday: "2026-10-01" }), pick({ game_id: "newer", gameday: "2026-10-09" }), pick({ game_id: "rerun", counted: false })],
+    recent_picks: [pick({ game_id: "older", gameday: "2026-10-01" }), pick({ game_id: "newer", gameday: "2026-10-09" }), pick({ game_id: "rerun", counted: false })],
     confidence_buckets: [{ bucket: "50-60%", total_predictions: 4, correct_predictions: 2, hit_rate: 0.5 }],
   },
   { market: "player_props", total_predictions: 121148, correct_predictions: 0, hit_rate: null, settled: false },

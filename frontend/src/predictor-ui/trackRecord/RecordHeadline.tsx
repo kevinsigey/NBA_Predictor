@@ -1,4 +1,8 @@
 // Synced from predictor-ui@5b41a7e2d962. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
+// NBA local change, 2026-11-01 (hash recorded in SYNC.json): the headline leads
+// with the percentage -- big, tabular, with a rate bar -- per Kevin's call that
+// percentages are the easiest-read numbers on the page. Fold back upstream at
+// the next sync.
 import type { Moment } from "../components/StatusBadge";
 import { marketRank } from "./vocabulary";
 import { wilsonInterval } from "./wilson";
@@ -22,29 +26,58 @@ const whole = (x: number) => `${Math.round(x * 100)}%`;
 
 type Line = { key: string; label: string; correct: number; n: number; beside: Tally | null };
 
-/** One counted-record line: "5 of 10", and a bar showing the range that sample allows. */
+/**
+ * One counted-record line, percentage first: the rate is the big number --
+ * percentages are the easiest-read figures on the page -- with the tally
+ * ("5 of 10") under it, then two bars: the rate itself, filled to its value,
+ * and under it the range that sample allows (Wilson), which is the honest
+ * width of the number above.
+ */
 function TallyLine({ line, lead, moment }: { line: Line; lead?: boolean; moment: Moment }) {
   const range = wilsonInterval(line.correct, line.n);
   const rate = line.n > 0 ? line.correct / line.n : null;
   return (
     <div
       data-testid={`tally-${line.key}`}
-      className="grid grid-cols-[minmax(7rem,9rem)_1fr] items-center gap-x-4 gap-y-1 sm:grid-cols-[minmax(7rem,9rem)_8rem_1fr]"
+      className="grid grid-cols-[minmax(7rem,9rem)_1fr] items-start gap-x-4 gap-y-1 sm:grid-cols-[minmax(7rem,9rem)_minmax(7.5rem,9rem)_1fr]"
     >
       <span className={lead ? "font-pr-display text-sm font-semibold text-pr-text" : "text-sm text-pr-text-dim"}>{line.label}</span>
-      <span className={`tabular-nums ${lead ? "font-pr-display text-3xl font-semibold" : "text-lg font-semibold"} text-pr-text`}>
-        {line.correct}
-        <span className="text-pr-text-faint"> of </span>
-        {line.n}
-        {rate != null && <span className="ml-2 text-sm font-normal text-pr-text-dim">{whole(rate)}</span>}
+      <span className="flex flex-col">
+        {rate != null ? (
+          <>
+            <span
+              data-testid={`rate-${line.key}`}
+              className={`font-pr-display tabular-nums font-semibold leading-none text-pr-text ${lead ? "text-4xl" : "text-2xl"}`}
+            >
+              {whole(rate)}
+            </span>
+            <span className="mt-1 text-sm tabular-nums text-pr-text-dim">
+              {line.correct} of {line.n}
+            </span>
+          </>
+        ) : (
+          <span className="text-lg font-semibold tabular-nums text-pr-text">
+            {line.correct}
+            <span className="text-pr-text-faint"> of </span>
+            {line.n}
+          </span>
+        )}
       </span>
       <div className="col-span-2 sm:col-span-1">
         {range ? (
           <>
             <div
               role="img"
-              aria-label={`Plausible range ${whole(range[0])} to ${whole(range[1])}, 50 percent marked`}
+              aria-label={`Hit rate ${whole(rate ?? 0)}`}
               className="relative h-2 rounded-pr bg-pr-panel-2"
+            >
+              <span className="absolute inset-y-0 left-0 rounded-pr bg-pr-accent" style={{ width: `${(rate ?? 0) * 100}%` }} />
+              <span className="absolute -inset-y-1 left-1/2 w-px bg-pr-text-faint" />
+            </div>
+            <div
+              role="img"
+              aria-label={`Plausible range ${whole(range[0])} to ${whole(range[1])}, 50 percent marked`}
+              className="relative mt-2 h-2 rounded-pr bg-pr-panel-2"
             >
               <span
                 className="absolute inset-y-0 rounded-pr bg-pr-accent/70"

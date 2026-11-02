@@ -302,14 +302,37 @@ export interface TrackRecord {
   n_pre_tip?: number;
   /** The pre-tip subset beside the headline. Absent only where `settled` is false. */
   pre_tip?: TrackRecordTally;
-  /** Every recorded pick for this market, counted or not. */
+  /**
+   * Every recorded pick for this market, counted or not. No longer inlined
+   * in the summary response (it was ~14 MB); the rows are paged from
+   * `getTrackRecordPicks`. Kept on the type for the picks page's own rows.
+   */
   per_pick?: TrackRecordPick[];
+  /** This market's latest counted pre-tip picks, newest first (bounded
+   *  server-side): what the "Latest counted picks" block renders. */
+  recent_picks?: TrackRecordPick[];
   /** False when the backend has no rule for judging this market: never render a rate. */
   settled?: boolean;
   /** Player props only: how far the projections were off, per stat (no hit rate exists for them). */
   per_stat?: { stat: string; n: number; mae: number; mean_signed_error: number }[];
   /** Every week since tracking began, through this week; gaps carried as tracked=false. */
   weekly?: TrackRecordWeek[];
+}
+
+/** One page of the every-recorded-pick disclosure, from /hub/track-record/picks. */
+export interface TrackRecordPicksPage {
+  /** The whole filtered set, before paging. */
+  total: number;
+  limit: number;
+  offset: number;
+  picks: TrackRecordPick[];
+}
+
+/** When the data the site serves was last written. `generated_at` is null
+ *  when nothing has been written yet. */
+export interface SnapshotMeta {
+  generated_at: string | null;
+  source: string;
 }
 
 export interface VsMarketWeek {
@@ -545,7 +568,20 @@ export const api = {
    *  its last five games and its next game with the model's pick. */
   getHubTeamOverview: () => fetchJson<TeamOverview>("/hub/team-overview"),
   getTrackRecord: () => fetchJson<TrackRecord[]>("/hub/track-record"),
+  /** The every-recorded-pick disclosure, one page at a time. Fetched only
+   *  when a reader opens the table (or the odds block asks for its games):
+   *  the full set is tens of thousands of rows. */
+  getTrackRecordPicks: (params: { market?: string; gameIds?: string[]; limit?: number; offset?: number } = {}) => {
+    const query = new URLSearchParams();
+    if (params.market) query.set("market", params.market);
+    for (const id of params.gameIds ?? []) query.append("game_id", id);
+    if (params.limit != null) query.set("limit", String(params.limit));
+    if (params.offset != null) query.set("offset", String(params.offset));
+    const qs = query.toString();
+    return fetchJson<TrackRecordPicksPage>(`/hub/track-record/picks${qs ? `?${qs}` : ""}`);
+  },
   getVsMarket: () => fetchJson<VsMarket>("/hub/vs-market"),
+  getSnapshotMeta: () => fetchJson<SnapshotMeta>("/snapshot-meta"),
   getManifest: () => fetchJson<Manifest>("/manifest"),
   getPlayerPropsManifest: () => fetchJson<PlayerPropsManifest>("/player-props-manifest"),
   getCalibration: () => fetchJson<CalibrationBin[]>("/calibration"),

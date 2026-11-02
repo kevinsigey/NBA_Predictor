@@ -319,8 +319,16 @@ class TrackRecordOut(BaseModel):
     settled: bool = True
     # The pre-tip subset beside the headline. None only where `settled` is false.
     pre_tip: TrackRecordTallyOut | None = None
-    # Every recorded pick for this market, counted or not.
+    # Every recorded pick for this market, counted or not. Only the service's
+    # full builder fills this; the summary route serves it empty and the rows
+    # are paged from GET /hub/track-record/picks instead (see
+    # TrackRecordPicksOut) -- inlined here they made the summary ~14 MB.
     per_pick: list[TrackRecordPickOut] = []
+    # This market's latest counted pre-tip picks, newest first, bounded by
+    # hub_service.RECENT_PICKS_PER_MARKET. The page's "Latest counted picks"
+    # block renders from these, so the summary carries the handful of rows it
+    # actually shows rather than the whole disclosure.
+    recent_picks: list[TrackRecordPickOut] = []
     # Weekly table; the headline's n adds up to `total_predictions`.
     weekly: list["TrackRecordWeekOut"] = []
     # Confidence buckets over the counted graded picks (50-60/60-70/70%+).
@@ -331,6 +339,23 @@ class TrackRecordOut(BaseModel):
     per_position_mae: dict[str, float] | None = None
 
 
+
+
+class TrackRecordPicksOut(BaseModel):
+    """One page of the every-recorded-pick disclosure.
+
+    The rows are the same `per_pick` rows `compute_track_record` builds --
+    one builder, so the table can never disagree with the aggregates above
+    it -- paged here instead of inlined into the summary (the full list is
+    tens of thousands of rows). `total` counts the whole filtered set, so a
+    reader paging through knows when they have seen all of it. Rows are
+    newest-stamp-first, the order the table reads in.
+    """
+
+    total: int
+    limit: int
+    offset: int
+    picks: list[TrackRecordPickOut] = []
 
 
 class SeasonBoundsOut(BaseModel):

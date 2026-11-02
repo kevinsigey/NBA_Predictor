@@ -13,6 +13,7 @@ from nba_predictor.api.schemas import (
     PropStatOut,
     TrackRecordOut,
     TrackRecordPickOut,
+    TrackRecordPicksOut,
     TrackRecordTallyOut,
     TrackRecordWeekOut,
     VsMarketOut,
@@ -807,8 +808,30 @@ def _weekly_rows(graded: list[tuple[date, bool]], window: list[date]) -> list[Tr
     return rows
 
 
+#: How many of a market's latest counted pre-tip picks the summary carries in
+#: `recent_picks`. The page shows 12 across all markets and its adapter merges
+#: the per-market lists before slicing, so each market contributing its newest
+#: 24 makes the merged top 12 exact while the summary stays small.
+RECENT_PICKS_PER_MARKET = 24
+
+
+def _recent_picks(per_pick: list[TrackRecordPickOut]) -> list[TrackRecordPickOut]:
+    """A market's latest counted pre-tip picks, newest first.
+
+    The sort mirrors the frontend adapter's: the game day when the schedule
+    dated the game, else the pick's own stamp. Same population the page's
+    "Latest counted picks" block has always shown -- counted picks made
+    before tip-off -- lifted out of the full disclosure so the summary route
+    does not have to ship the disclosure to render a dozen rows.
+    """
+    counted = [p for p in per_pick if p.counted and p.made_before_tip]
+    counted.sort(key=lambda p: (p.gameday or p.created_at, p.created_at), reverse=True)
+    return counted[:RECENT_PICKS_PER_MARKET]
+
+
 def compute_track_record(
-    db_path: Path, schedule: list[dict] | None = None, today: date | None = None
+    db_path: Path, schedule: list[dict] | None = None, today: date | None = None,
+    *, include_picks: bool = True,
 ) -> list[TrackRecordOut]:
     schedule = schedule or []
     today = today or date.today()
@@ -864,7 +887,47 @@ def compute_track_record(
                 if row.pre_tip is not None:
                     row.pre_tip.weekly = _weekly_rows(pre_tip_by_market.get(row.market, []), window)
 
+    if not include_picks:
+        # The summary the page loads first: identical aggregates, no per-pick
+        # rows. The bounded recent list is lifted out of the disclosure
+        # before the disclosure is dropped, so "Latest counted picks" still
+        # renders from this response; the full disclosure is paged from
+        # compute_track_record_picks. Inlined, the rows were ~14 MB of a
+        # ~14.4 MB response -- the page deferred rendering the table until
+        # its fold opened, but the download happened up front.
+        for row in rows:
+            row.recent_picks = _recent_picks(row.per_pick)
+            row.per_pick = []
+
     return rows
+
+
+def compute_track_record_picks(
+    db_path: Path, schedule: list[dict] | None = None, *,
+    market: str | None = None, game_ids: list[str] | None = None,
+    limit: int = 200, offset: int = 0,
+) -> TrackRecordPicksOut:
+    """One page of the every-recorded-pick disclosure, newest stamp first.
+
+    The rows are the same `per_pick` rows compute_track_record builds -- one
+    builder, so the table can never disagree with the aggregates above it --
+    filtered and paged here rather than shipped whole. `market` narrows to
+    one market's rows; `game_ids` narrows to specific games (the odds
+    comparison block asks for exactly the games it lists). `total` counts
+    the filtered set before paging.
+    """
+    rows = compute_track_record(db_path, schedule)
+    picks = [p for row in rows for p in row.per_pick]
+    if market is not None:
+        picks = [p for p in picks if p.market == market]
+    if game_ids:
+        wanted = set(game_ids)
+        picks = [p for p in picks if p.game_id in wanted]
+    picks.sort(key=lambda p: (p.created_at, p.game_id), reverse=True)
+    return TrackRecordPicksOut(
+        total=len(picks), limit=limit, offset=offset,
+        picks=picks[offset:offset + limit],
+    )
 
 
 # The sentences the page prints verbatim, once per key it sends. A number

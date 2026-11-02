@@ -76,15 +76,20 @@ export function toRecordModel(rows: TrackRecord[]): RecordModel {
       })),
     }));
 
-  // The latest counted pre-tip picks, newest first. The adapter sorts because the
-  // kit only slices, and a formatted date string would sort alphabetically.
+  // The latest counted pre-tip picks, newest first. The backend ships each
+  // market's bounded `recent_picks` (the full per-pick disclosure moved to
+  // /hub/track-record/picks); the adapter merges and sorts because the kit
+  // only slices, and a formatted date string would sort alphabetically. The
+  // counted/pre-tip filter stays here too, so the block's population is the
+  // headline's even if a row's list ever widens.
   const recent = rows
-    .flatMap((r) => (r.per_pick ?? []).map((p) => ({ market: r.market, p })))
+    .flatMap((r) => (r.recent_picks ?? []).map((p) => ({ market: r.market, p })))
     .filter(({ p }) => p.counted && p.made_before_tip)
     .sort((a, b) => (b.p.gameday ?? b.p.created_at).localeCompare(a.p.gameday ?? a.p.created_at))
     .map(({ market, p }) => toPick(market, p));
 
   // No `all`: this page's "Every recorded pick" table also shows whether a pick
-  // was counted or rebuilt, which `RecentPick` does not carry. It reads the rows.
+  // was counted or rebuilt, which `RecentPick` does not carry. It pages the rows
+  // from /hub/track-record/picks when its fold opens, not from this payload.
   return { markets, lead: lead?.market ?? "", headline: "preKickoff", weeks, calibration, recent };
 }

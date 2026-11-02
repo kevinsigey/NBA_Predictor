@@ -13,6 +13,8 @@ vi.mock("../api/client", () => ({
     getHubRankings: vi.fn().mockResolvedValue([]),
     getHubStandings: vi.fn().mockResolvedValue([]),
     getTrackRecord: vi.fn().mockResolvedValue([]),
+    getTrackRecordPicks: vi.fn().mockResolvedValue({ total: 0, limit: 200, offset: 0, picks: [] }),
+    getSnapshotMeta: vi.fn().mockResolvedValue({ generated_at: null, source: "live" }),
     getVsMarket: vi.fn().mockResolvedValue({
       market: "h2h",
       n: 0,

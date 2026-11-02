@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { api, type TrackRecord, type VsMarket } from "../api/client";
+import { useEffect, useRef, useState } from "react";
+import { api, type TrackRecord, type TrackRecordPick, type VsMarket } from "../api/client";
 import {
   CalibrationBlock,
   EmptyState,
@@ -22,6 +22,16 @@ const STAT_LABEL: Record<string, string> = { points: "Points", rebounds: "Reboun
 
 const n0 = (x: number) => x.toLocaleString("en-US");
 
+/** "Nov 2, 2026, 4:15 AM UTC" -- the stamp the record was computed from. */
+const formatAsOf = (iso: string): string => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return `${d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "UTC" })} UTC`;
+};
+
+/** Rows per page of the every-pick table: enough to read, small enough to fetch on a phone. */
+const PICKS_PAGE = 200;
+
 /**
  * The track record, led by the only number that cannot flatter the model: picks
  * made before tip-off, counted once per game and market. Everything the model
@@ -34,9 +44,22 @@ const n0 = (x: number) => x.toLocaleString("en-US");
  */
 export default function TrackRecordPanel() {
   const [rows, setRows] = useState<TrackRecord[] | null>(null);
-  // The every-pick table is ~1,400 rows (tens of thousands of DOM nodes on a phone), so it is built only once opened.
+  // The every-pick table is tens of thousands of rows, so it is neither shipped
+  // with the record nor built until opened: the rows are paged from
+  // /hub/track-record/picks, a page at a time, once the fold first opens.
   const [picksOpen, setPicksOpen] = useState(false);
+  const [picks, setPicks] = useState<TrackRecordPick[] | null>(null);
+  const [picksTotal, setPicksTotal] = useState(0);
+  const [picksLoading, setPicksLoading] = useState(false);
+  // Whether page one of the disclosure has been requested for the current
+  // record load; the gate that keeps the toggle, the effect below and a
+  // retry from racing each other into duplicate fetches.
+  const picksRequested = useRef(false);
   const [vsMarket, setVsMarket] = useState<VsMarket | null>(null);
+  // The counted moneyline rows for exactly the games the odds block lists,
+  // fetched when the comparison lands (the summary no longer inlines them).
+  const [disagreementPicks, setDisagreementPicks] = useState<TrackRecordPick[] | null>(null);
+  const [asOf, setAsOf] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [vsError, setVsError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
@@ -46,11 +69,57 @@ export default function TrackRecordPanel() {
     setVsError(false);
     setRows(null);
     setVsMarket(null);
+    setDisagreementPicks(null);
+    setPicks(null);
+    setPicksTotal(0);
+    picksRequested.current = false;
+    setAsOf(null);
     // Two requests, each with its own failure: a broken comparison block must
     // not take the record above it down with it.
     api.getTrackRecord().then(setRows).catch(() => setError(true));
     api.getVsMarket().then(setVsMarket).catch(() => setVsError(true));
+    // The as-of stamp fails silently: the record without a stamp is honest,
+    // a stamp that blocks the page is not.
+    api.getSnapshotMeta()
+      .then((meta) => { if (meta.generated_at) setAsOf(formatAsOf(meta.generated_at)); })
+      .catch(() => {});
   }, [reloadKey]);
+
+  useEffect(() => {
+    if (vsMarket === null) return;
+    const ids = vsMarket.disagreement_game_ids;
+    if (ids.length === 0) {
+      setDisagreementPicks([]);
+      return;
+    }
+    let cancelled = false;
+    api.getTrackRecordPicks({ market: "h2h", gameIds: ids, limit: ids.length })
+      .then((page) => { if (!cancelled) setDisagreementPicks(page.picks); })
+      .catch(() => { if (!cancelled) setDisagreementPicks([]); });
+    return () => { cancelled = true; };
+  }, [vsMarket]);
+
+  const loadPicks = (offset: number) => {
+    setPicksLoading(true);
+    api.getTrackRecordPicks({ limit: PICKS_PAGE, offset })
+      .then((page) => {
+        setPicks((prev) => (offset === 0 || prev === null ? page.picks : [...prev, ...page.picks]));
+        setPicksTotal(page.total);
+      })
+      .catch(() => { if (offset === 0) setPicks([]); })
+      .finally(() => setPicksLoading(false));
+  };
+
+  // Page one loads when the fold first opens (and again after a reload reset
+  // the rows while the fold stayed open).
+  useEffect(() => {
+    if (!picksOpen) picksRequested.current = false;
+    if (!picksOpen || picks !== null || picksRequested.current) return;
+    picksRequested.current = true;
+    loadPicks(0);
+    // loadPicks is stable enough for this guard's purpose; the ref is the gate.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [picksOpen, picks]);
 
   if (error) return <ErrorState message="We couldn't load the track record. Check your connection and try again." onRetry={() => setReloadKey((k) => k + 1)} />;
   if (rows === null) return <Skeleton label="Loading track record…" />;
@@ -75,9 +144,8 @@ export default function TrackRecordPanel() {
     }));
 
   // NBA's own blocks: the every-pick table (it also shows counted vs rebuilt,
-  // which the view model does not carry) and the pushes/unsettled disclosure.
-  const allPicks = rows.flatMap((r) => (r.per_pick ?? []).map((p) => ({ ...p, market: r.market })));
-  const h2hPicks = rows.find((r) => r.market === "h2h")?.per_pick ?? [];
+  // which the view model does not carry -- its rows are paged in on open) and
+  // the pushes/unsettled disclosure.
   const pushes = rows.reduce((n, r) => n + (r.n_push ?? 0), 0);
 
   return (
@@ -106,14 +174,14 @@ export default function TrackRecordPanel() {
                 Try again
               </button>
             </div>
-          ) : vsMarket === null ? (
+          ) : vsMarket === null || (vsMarket.n > 0 && disagreementPicks === null) ? (
             <Skeleton label="Loading comparison…" />
           ) : vsMarket.n === 0 ? (
             <p className="text-sm text-pr-text-dim">No finished game has a pre-tip price to compare with yet.</p>
           ) : (
             <Disagreements
               gameIds={vsMarket.disagreement_game_ids}
-              picks={h2hPicks}
+              picks={disagreementPicks ?? []}
               n={vsMarket.disagreement_n}
               hitRate={vsMarket.disagreement_hit_rate}
             />
@@ -171,11 +239,14 @@ export default function TrackRecordPanel() {
       >
         <summary className="cursor-pointer font-semibold text-pr-text">Every recorded pick</summary>
         <div className="mt-3">
-          {!picksOpen ? null : allPicks.length === 0 ? (
+          {!picksOpen ? null : picks === null ? (
+            <p className="text-pr-text-dim">Loading picks…</p>
+          ) : picks.length === 0 ? (
             <p className="text-pr-text-dim">No pick-level data in this response.</p>
           ) : (
+            <>
             <StatTable
-              rows={[...allPicks].sort((a, b) => b.created_at.localeCompare(a.created_at))}
+              rows={[...picks].sort((a, b) => b.created_at.localeCompare(a.created_at))}
               rowKey={(r) => `${r.market}-${r.game_id}-${r.created_at}`}
               caption="Every recorded pick"
               columns={[
@@ -197,11 +268,22 @@ export default function TrackRecordPanel() {
                 },
               ]}
             />
+            {picks.length < picksTotal && (
+              <button
+                type="button"
+                onClick={() => loadPicks(picks.length)}
+                disabled={picksLoading}
+                className="mt-3 rounded-pr border border-pr-rule bg-pr-panel-2 px-3 py-1.5 text-xs font-semibold text-pr-text hover:border-pr-accent disabled:opacity-50"
+              >
+                {picksLoading ? "Loading…" : `Show more picks (${n0(picks.length)} of ${n0(picksTotal)})`}
+              </button>
+            )}
+            </>
           )}
         </div>
       </details>
 
-      <HowCounted moment={moment} headline={model.headline}>
+      <HowCounted moment={moment} headline={model.headline} asOf={asOf ?? undefined}>
         {pushes > 0 && <p>{n0(pushes)} pick{pushes === 1 ? "" : "s"} landed on the line and {pushes === 1 ? "is" : "are"} left out of every rate, not scored as a miss.</p>}
         {unsettled.length > 0 && (
           <p>

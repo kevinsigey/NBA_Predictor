@@ -5,7 +5,9 @@ import TrackRecordPanel from "./TrackRecordPanel";
 import { wilsonInterval } from "../predictor-ui";
 import { api, type TrackRecord, type TrackRecordPick, type TrackRecordWeek, type VsMarket } from "../api/client";
 
-vi.mock("../api/client", () => ({ api: { getTrackRecord: vi.fn(), getVsMarket: vi.fn() } }));
+vi.mock("../api/client", () => ({
+  api: { getTrackRecord: vi.fn(), getVsMarket: vi.fn(), getTrackRecordPicks: vi.fn(), getSnapshotMeta: vi.fn() },
+}));
 
 const wk = (week_start: string, n: number, correct: number, tracked = true): TrackRecordWeek => ({
   week_start, n, correct, hit_rate: n ? correct / n : null, tracked,
@@ -25,6 +27,15 @@ const vs = (over: Partial<VsMarket> = {}): VsMarket => ({
   method: {}, ...over,
 });
 
+// The recorded moneyline rows: two counted pre-tip picks and one rerun that
+// lost the earliest-pick contest. The summary ships the counted pre-tip pair
+// as `recent_picks`; all three live behind the picks endpoint.
+const ALL_PICKS: TrackRecordPick[] = [
+  pick({ game_id: "g1" }),
+  pick({ game_id: "g2", hit: false, pick: "ATL", actual: "MEM" }),
+  pick({ game_id: "old", counted: false }),
+];
+
 // The live shape: the winner pick is mostly rebuilt after tip-off, with a small counted slice.
 const LIVE: Row[] = [
   row({
@@ -35,7 +46,7 @@ const LIVE: Row[] = [
   row({
     market: "h2h", total_predictions: 10, correct_predictions: 5, hit_rate: 0.5, n_rebuilt: 0,
     pre_tip: { total_predictions: 10, correct_predictions: 5, hit_rate: 0.5 },
-    per_pick: [pick({ game_id: "g1" }), pick({ game_id: "g2", hit: false, pick: "ATL", actual: "MEM" }), pick({ game_id: "old", counted: false })],
+    recent_picks: ALL_PICKS.filter((p) => p.counted),
     confidence_buckets: [
       { bucket: "50-60%", total_predictions: 4, correct_predictions: 2, hit_rate: 0.5 },
       { bucket: "60-70%", total_predictions: 3, correct_predictions: 2, hit_rate: 0.667 },
@@ -49,6 +60,17 @@ const LIVE: Row[] = [
 beforeEach(() => {
   vi.mocked(api.getTrackRecord).mockResolvedValue(LIVE as TrackRecord[]);
   vi.mocked(api.getVsMarket).mockResolvedValue(vs());
+  // No stamp by default: the as-of line is absent, as it is when the meta
+  // read fails or nothing has been written yet.
+  vi.mocked(api.getSnapshotMeta).mockResolvedValue({ generated_at: null, source: "live" });
+  // The picks endpoint, over the fixture rows: gameIds narrows to those
+  // games (the odds block), otherwise the table's pages over all of them.
+  vi.mocked(api.getTrackRecordPicks).mockImplementation(async (params = {}) => {
+    const pool = params.gameIds ? ALL_PICKS.filter((p) => params.gameIds!.includes(p.game_id)) : ALL_PICKS;
+    const offset = params.offset ?? 0;
+    const limit = params.limit ?? pool.length;
+    return { total: pool.length, limit, offset, picks: pool.slice(offset, offset + limit) };
+  });
 });
 
 describe("TrackRecordPanel", () => {
@@ -129,6 +151,48 @@ describe("TrackRecordPanel", () => {
     render(<TrackRecordPanel />);
     expect(await screen.findByText(/couldn't load the track record/i)).toBeInTheDocument();
   });
+
+  it("leads each headline line with the percentage, the tally under it", async () => {
+    render(<TrackRecordPanel />);
+    const lead = await screen.findByTestId("tally-game_outcome");
+    const rate = within(lead).getByTestId("rate-game_outcome");
+    expect(rate).toHaveTextContent("46%");
+    expect(lead).toHaveTextContent("11 of 24");
+  });
+
+  it("stamps the record with when its data was written", async () => {
+    vi.mocked(api.getSnapshotMeta).mockResolvedValue({ generated_at: "2026-11-02T04:15:00Z", source: "live" });
+    render(<TrackRecordPanel />);
+    expect(await screen.findByText(/record as of/i)).toHaveTextContent("Nov 2, 2026");
+  });
+
+  it("fetches the every-pick rows only when the fold opens, never with the record", async () => {
+    render(<TrackRecordPanel />);
+    await screen.findByTestId("tally-game_outcome");
+    await screen.findAllByTestId("disagreement");
+    const tableCalls = () => vi.mocked(api.getTrackRecordPicks).mock.calls.filter((call) => !call[0]?.gameIds);
+    expect(tableCalls()).toHaveLength(0);
+    await userEvent.click(screen.getByText("Every recorded pick"));
+    expect(await screen.findByRole("table")).toBeInTheDocument();
+    expect(tableCalls()).toEqual([[{ limit: 200, offset: 0 }]]);
+  });
+
+  it("pages the every-pick table with a show-more button until the total is reached", async () => {
+    const four = [0, 1, 2, 3].map((i) => pick({ game_id: `p${i}`, created_at: `2026-10-0${5 + i}T03:00:00Z` }));
+    vi.mocked(api.getTrackRecordPicks).mockImplementation(async (params = {}) => {
+      if (params.gameIds) return { total: 0, limit: 0, offset: 0, picks: [] };
+      const offset = params.offset ?? 0;
+      return { total: four.length, limit: 2, offset, picks: four.slice(offset, offset + 2) };
+    });
+    render(<TrackRecordPanel />);
+    await screen.findByTestId("tally-game_outcome");
+    await userEvent.click(screen.getByText("Every recorded pick"));
+    const more = await screen.findByRole("button", { name: /show more picks \(2 of 4\)/i });
+    expect(within(screen.getByRole("table")).getAllByRole("row")).toHaveLength(3); // header + 2
+    await userEvent.click(more);
+    await waitFor(() => expect(screen.queryByRole("button", { name: /show more picks/i })).toBeNull());
+    expect(within(screen.getByRole("table")).getAllByRole("row")).toHaveLength(5); // header + 4
+  });
 });
 
 describe("wilson", () => {
@@ -150,6 +214,11 @@ describe("parity with the page before the kit", () => {
 
   // Each change, and why it is the only thing that may differ.
   const CORRECTIONS: [string, string][] = [
+    // The headline leads with the percentage now, the tally under it
+    // (percentage-forward headline, 2026-11-01): "11 of 24" then "46%" became
+    // "46%" then "11 of 24". Same figures, read in the other order.
+    ["11 of 2446%", "46%11 of 24"],
+    ["5 of 1050%", "50%5 of 10"],
     // The headline no longer calls the pre-tip subset the whole "counted record".
     ["Counted record: picks made before tip-off", "Picks made before tip-off"],
     // Rebuilt picks do feed a count elsewhere; it is only the headline that excludes them.

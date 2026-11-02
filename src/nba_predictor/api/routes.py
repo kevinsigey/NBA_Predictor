@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 
 from nba_predictor.api.availability import for_teams, resolve_doubtful_players, resolve_out_players
 from nba_predictor.models.probability import cover_prob, over_prob
@@ -42,6 +42,7 @@ from nba_predictor.api.schemas import (
     SeasonBoundsOut,
     TeamOut,
     TrackRecordOut,
+    TrackRecordPicksOut,
     VsMarketOut,
 )
 from nba_predictor.models.player_props import in_sample_mae_by_stat
@@ -56,6 +57,7 @@ from nba_predictor.pipeline.retrain import run_retrain_pipeline
 from nba_predictor.services.calibration_service import compute_model_calibration
 from nba_predictor.services.hub_service import (
     compute_track_record,
+    compute_track_record_picks,
     compute_vs_market,
     load_hub_cache,
     player_name_map,
@@ -832,7 +834,31 @@ def hub_team_overview(
 def hub_track_record(
     db_path: Path = Depends(get_db_path), schedule: list[dict] = Depends(get_schedule)
 ) -> list[TrackRecordOut]:
-    return compute_track_record(db_path, schedule)
+    """The record's aggregates, plus each market's latest counted pre-tip
+    picks (`recent_picks`). The per-pick disclosure is NOT inlined: it is
+    tens of thousands of rows (~14 MB) and is paged from
+    /hub/track-record/picks when a reader opens the table."""
+    return compute_track_record(db_path, schedule, include_picks=False)
+
+
+@router.get("/hub/track-record/picks", response_model=TrackRecordPicksOut)
+def hub_track_record_picks(
+    market: str | None = None,
+    game_id: list[str] = Query(default=[]),
+    limit: int = Query(default=200, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
+    db_path: Path = Depends(get_db_path), schedule: list[dict] = Depends(get_schedule),
+) -> TrackRecordPicksOut:
+    """One page of the every-recorded-pick disclosure, newest stamp first.
+
+    `market` narrows to one market; repeat `game_id` to narrow to specific
+    games (the odds-comparison block asks for exactly the games it lists).
+    `total` counts the whole filtered set, so a paging reader knows when
+    they have seen all of it."""
+    return compute_track_record_picks(
+        db_path, schedule, market=market, game_ids=game_id or None,
+        limit=limit, offset=offset,
+    )
 
 
 @router.get("/hub/vs-market", response_model=VsMarketOut)
