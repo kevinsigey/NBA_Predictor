@@ -1,6 +1,6 @@
 {
-  "model_version": "v20260918120240",
-  "trained_at": "2026-09-18T12:02:40.134071+00:00",
+  "model_version": "v20261102012954",
+  "trained_at": "2026-11-02T01:29:54.708415+00:00",
   "models": [
     "points",
     "rebounds",
@@ -9,20 +9,28 @@
   ],
   "metrics": {
     "points": {
-      "mae": 4.55730492533218
+      "mae": 4.627685922334451,
+      "naive_mae": 4.724499228438928,
+      "in_sample_mae": 4.547874241618236
     },
     "rebounds": {
-      "mae": 1.8904872796858927
+      "mae": 1.9332922697974189,
+      "naive_mae": 1.96466737970577,
+      "in_sample_mae": 1.9113700426851823
     },
     "assists": {
-      "mae": 1.3264503198972473
+      "mae": 1.3550589679213632,
+      "naive_mae": 1.3763567436072646,
+      "in_sample_mae": 1.3091194887375945
     },
     "threes": {
-      "mae": 0.8849121795403851
+      "mae": 0.8982286060505047,
+      "naive_mae": 0.9052778827457543,
+      "in_sample_mae": 0.8624730656511261
     }
   },
   "training": {
-    "in_sample_metrics": true,
-    "note": "written before the chronological holdout existed; every mae here is the error on the rows the model was fitted on"
+    "n_train_player_games": 213347,
+    "in_sample_metrics": false
   }
 }
