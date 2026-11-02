@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { AppFrame } from "./predictor-ui";
 import { SITES } from "./lib/sites";
@@ -5,6 +6,30 @@ import GamesPage from "./pages/GamesPage";
 import DataHubPage from "./pages/DataHubPage";
 import ModelSummaryPage from "./pages/ModelSummaryPage";
 import CalibrationPage from "./pages/CalibrationPage";
+
+declare global {
+  interface Window {
+    goatcounter?: {
+      count: (vars?: { path?: string; title?: string; event?: boolean }) => void;
+    };
+  }
+}
+
+// GoatCounter counts the initial page load itself (the count.js onload); this
+// tracker counts every client-side navigation after it. No-ops until count.js
+// has loaded, and in tests where it never does.
+function GoatCounterTracker() {
+  const { pathname } = useLocation();
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    window.goatcounter?.count({ path: pathname });
+  }, [pathname]);
+  return null;
+}
 
 // Page tabs map onto the existing routes, so deep links and refreshes keep working.
 // The aggregate "Data Hub" tab is dropped; its panels each have their own route.
@@ -29,6 +54,8 @@ export default function App() {
   const active = TABS.find((tab) => tab.id !== "/" && pathname.startsWith(tab.id))?.id ?? "/";
 
   return (
+    <>
+      <GoatCounterTracker />
     <AppFrame
       sport="nba"
       sportName="NBA"
@@ -51,5 +78,6 @@ export default function App() {
         <Route path="/calibration-report" element={<CalibrationPage />} />
       </Routes>
     </AppFrame>
+    </>
   );
 }
