@@ -326,6 +326,67 @@ def append_api_rows(history_path: Path, api_rows: list[dict]) -> int:
     return len(new_rows)
 
 
+#: The keys a served prop-grading payload must carry before it may stand in
+#: for a locally computed one. Anything less is not the grading -- it is an
+#: error page or a different endpoint wearing the grading's URL -- and
+#: publishing it would replace an honest empty with a dishonest something.
+_PROP_GRADING_KEYS = (
+    "bands", "counting", "confidence_basis", "grade_basis",
+    "latest_day", "most_confident", "biggest_surprises", "n_with_baseline",
+)
+
+
+def fetch_prop_grading(picks_api: str, timeout: float = 30.0) -> dict | None:
+    """The live API's prop grading, or None when it has none to give.
+
+    The grading is computed from the tracking store, and the snapshot build
+    runs where that store does not exist (CI -- the real one lives on the
+    VPS), so a locally built grading there is the empty payload forever:
+    correct bands over no days, which is the failure this fetch exists to
+    end. The pick history below solves the identical problem the identical
+    way, by asking the live API for what only it can compute.
+
+    A payload counts only if it carries every grading key AND a graded day:
+    an API with no graded day yet has nothing better than the local empty,
+    and swapping one empty for another would only disguise whose it was.
+    `served_stale_seconds` is dropped: it describes the API process's cache
+    state at fetch time, and the snapshot's own `generated_at` is the stamp
+    a reader should date this copy by.
+    """
+    import urllib.request
+
+    url = f"{picks_api.rstrip('/')}/hub/prop-grading"
+    with urllib.request.urlopen(urllib.request.Request(url), timeout=timeout) as resp:
+        data = json.loads(resp.read().decode())
+    if not isinstance(data, dict) or any(key not in data for key in _PROP_GRADING_KEYS):
+        return None
+    if not isinstance(data.get("latest_day"), dict):
+        return None
+    if not isinstance(data.get("most_confident"), list) or not isinstance(data.get("biggest_surprises"), list):
+        return None
+    grading = dict(data)
+    grading.pop("served_stale_seconds", None)
+    return grading
+
+
+def fill_prop_grading_from_api(snapshot: dict, picks_api: str) -> bool:
+    """Replace the snapshot's grading with the API's, but only an empty one.
+
+    A build that HAS the store (a VPS-local run) computed its grading from
+    the same counted picks the track record counts, and that grading wins:
+    the fetch fills a gap, it never overrules a measurement. Returns whether
+    a substitution happened.
+    """
+    local = snapshot.get("prop_grading") or {}
+    if local.get("latest_day") is not None:
+        return False
+    grading = fetch_prop_grading(picks_api)
+    if grading is None:
+        return False
+    snapshot["prop_grading"] = grading
+    return True
+
+
 def fetch_and_append_picks(picks_api: str, history_path: Path, timeout: float = 30.0) -> int:
     """Fetch every pick the API has made since the last one in the history, and append them.
 
@@ -353,6 +414,23 @@ def main() -> None:
         manifest_path=config.PROJECT_ROOT / "models" / "manifest.json",
         db_path=config.TRACKING_DB_PATH,
     )
+
+    # In CI the tracking DB is empty (the real one lives on the VPS), so the
+    # grading built above is the empty payload -- and before this fill, that
+    # empty is what every snapshot published, forever, under correct bands
+    # and the counting text. When PICKS_API names the live API, fill an
+    # empty grading from the API's own served grading, the same remedy the
+    # pick history below already uses. Fail soft: a failed fetch warns and
+    # publishes the local grading as it was.
+    picks_api = os.environ.get("PICKS_API")
+    if picks_api and (snapshot.get("prop_grading") or {}).get("latest_day") is None:
+        try:
+            if fill_prop_grading_from_api(snapshot, picks_api):
+                print("prop grading: filled from PICKS_API (the local store had no graded props)")
+        except Exception as exc:  # noqa: BLE001 - warned, not raised
+            warnings.warn(f"PICKS_API prop-grading fetch failed: {exc}")
+            print(f"prop grading: PICKS_API fetch failed: {exc}")
+
     write_snapshot(snapshot, config.DATA_DIR / "public_snapshot.json")
 
     manifest = json.loads((config.PROJECT_ROOT / "models" / "manifest.json").read_text()) if (
@@ -368,7 +446,6 @@ def main() -> None:
 
     # In CI the tracking DB is empty (the real one lives on the VPS), so the picks come from the live API's
     # /picks/history. Fail soft: a failed fetch warns and leaves the history as it was.
-    picks_api = os.environ.get("PICKS_API")
     if picks_api:
         try:
             added = fetch_and_append_picks(picks_api, config.DATA_DIR / "picks_history.jsonl.gz")
