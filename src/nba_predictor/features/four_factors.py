@@ -15,12 +15,12 @@ def season_of(game_date: str) -> int:
 
 
 def carry_over_weight(games_into_season: int, *, window: int, weight: float) -> float:
-    """How much of a prior-season rolling value survives into a new season.
+    """How strongly a stale rolling value is pulled toward the pre-season mean.
 
-    Linear decay to zero by `window` games: full strength on a team's first game,
-    nothing left once it has played a full window of current-season games. Any
-    longer tail and a team stays shrunk for months; any shorter and the first
-    couple of games are treated as if they had history.
+    The shrinkage applied to a team's rolling value on its (k+1)-th game of a
+    season: `weight` on the first game, decaying linearly to zero by `window`
+    games, and zero from then on -- by then the rolling window holds only
+    current-season games and there is nothing stale left to correct.
     """
     if games_into_season >= window:
         return 0.0
@@ -125,7 +125,13 @@ def add_rolling_four_factors(
         )
         # Only apply regression where target is available (has a prior-season mean).
         mask = target.notna()
-        games.loc[mask, col] = target[mask] + w[mask] * (games.loc[mask, col] - target[mask])
+        # Shrink the roll toward the target by w: corrected = roll + w*(target - roll).
+        # (The previous form, target + w*(roll - target), applied 1-w instead: with
+        # w decaying to zero by `window`, the shrinkage GREW over the first window
+        # of games and the value ended up pinned to the mean from game `window`
+        # onward -- the inversion the 2026-10-20 audit flagged, still live here
+        # because the weak tests below could not see it.)
+        games.loc[mask, col] = games.loc[mask, col] + w[mask] * (target[mask] - games.loc[mask, col])
         # Rows without a target keep their original rolling value (no regression).
 
     return games

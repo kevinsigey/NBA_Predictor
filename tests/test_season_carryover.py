@@ -118,43 +118,48 @@ def test_carry_over_weight_decays_to_zero_as_the_window_fills():
 
 
 def test_a_larger_weight_pulls_a_first_game_further_toward_the_mean():
+    """Distance is measured from the regression TARGET -- the pre-season league
+    mean the code pulls toward. (This used to measure distance from the
+    fixture's raw fgm mean, a counting number ~43, against a percentage ~0.56:
+    the comparison was meaningless and passed under both the correct and the
+    inverted formula.)"""
     games = _two_seasons()
-    league = games["fgm"].mean()
+    raw = add_rolling_four_factors(games)
+    raw_first = raw[raw.game_date == "2025-10-20"].iloc[0]["efg_pct_roll"]
 
     values = {}
-    for weight in (0.0, 0.25, 0.5, 0.75):
+    for weight in (0.0, 0.25, 0.5, 0.75, 1.0):
         out = add_rolling_four_factors(games, carry_over_weight_value=weight)
-        row = out[out.game_date == "2025-10-20"].iloc[0]
-        values[weight] = row["efg_pct_roll"]
+        values[weight] = out[out.game_date == "2025-10-20"].iloc[0]["efg_pct_roll"]
 
-    # Weight 0 must equal the raw prior-season mean.
-    raw = values[0.0]
-    for weight, value in values.items():
-        distance_from_mean = abs(value - league)
-        if weight > 0:
-            assert distance_from_mean < abs(raw - league) + 1e-12, (
-                f"weight {weight} did not pull the value toward the mean"
-            )
-    # Monotone: more weight, less distance from the league mean.
-    distances = [abs(values[w] - league) for w in (0.0, 0.25, 0.5, 0.75)]
+    # Weight 0 is no correction at all; weight 1 lands exactly on the target.
+    assert values[0.0] == pytest.approx(raw_first)
+    target = values[1.0]
+    distances = [abs(values[w] - target) for w in (0.0, 0.25, 0.5, 0.75, 1.0)]
     assert distances == sorted(distances, reverse=True), (
-        f"distance from the league mean is not monotone in the weight: {distances}"
+        f"distance from the regression target is not monotone in the weight: {distances}"
     )
+    assert distances[0] > 0 and distances[-1] == pytest.approx(0.0)
 
 
 def test_after_the_window_is_full_the_carry_over_has_no_effect_at_all():
-    """The 11th game of a season must be identical whatever the weight was."""
+    """The 11th game of a season must equal the UNCORRECTED value, whatever the
+    weight was. (This used to compare two weighted arms against each other --
+    which passes even when both are pinned to the league mean, as they were
+    under the inverted formula.)"""
     games = _two_seasons(n_per_season=20)
+    raw = add_rolling_four_factors(games)
     light = add_rolling_four_factors(games, carry_over_weight_value=0.2)
     heavy = add_rolling_four_factors(games, carry_over_weight_value=0.9)
 
     late = light[light.game_date >= "2025-10-30"]
     assert len(late) > 0, "fixture has no late-season games"
     for col in ("efg_pct_roll", "tov_rate_roll"):
-        np.testing.assert_allclose(
-            light.set_index("game_date")[col].loc[late.game_date].to_numpy(),
-            heavy.set_index("game_date")[col].loc[late.game_date].to_numpy(),
-        )
+        for arm in (light, heavy):
+            np.testing.assert_allclose(
+                arm.set_index("game_date")[col].loc[late.game_date].to_numpy(),
+                raw.set_index("game_date")[col].loc[late.game_date].to_numpy(),
+            )
 
 
 def test_a_rejected_weight_is_refused_rather_than_clamped():
