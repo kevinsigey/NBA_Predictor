@@ -38,7 +38,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/cache/schedule/games.json data/cache/hub/*.json \
-                  models/*.pkl models/manifest.json models/manifest_history.jsonl \
+                  models/*.pkl models/manifest.json models/manifest_history.jsonl models/player_props_manifest.json \
                   data/public_snapshot.json
           git diff --staged --quiet || git commit -m "chore: refresh NBA data and retrain"
           for i in 1 2 3 4; do

@@ -63,7 +63,10 @@ def test_retrain_manifest_has_training_counts(tmp_path):
     assert training["n_train_games"] > 0
     assert training["n_holdout_games"] > 0
     assert training["n_train_games"] + training["n_holdout_games"] == len(games)
-    assert training["n_current_season_games"] <= training["n_train_games"]
+    # Full-frame count: this fixture is a single season, so every game is a
+    # current-season game (the old train-split count under-reported by the
+    # holdout's share and read 0 in production early in a season).
+    assert training["n_current_season_games"] == len(games)
     on_disk = json.loads((models_dir / "manifest.json").read_text())
     assert on_disk["training"] == training
 

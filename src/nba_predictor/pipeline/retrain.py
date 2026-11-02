@@ -123,8 +123,13 @@ def run_retrain_pipeline(
     train_games, holdout_games = chronological_split(games, date_col="game_date", holdout_fraction=0.2)
 
     latest_season = _nba_season_start_year(games["game_date"].max())
+    # Counted on the FULL frame, not the train split: the chronological
+    # holdout holds the newest games by construction, so a train-split count
+    # reads 0 for the current season until it is nearly over (it read 0 all
+    # through Oct-Nov 2026 while ~100 current-season games sat in holdout).
+    # The field means "games of the latest season present in the data".
     n_current_season_games = int(
-        (train_games["game_date"].apply(_nba_season_start_year) == latest_season).sum()
+        (games["game_date"].apply(_nba_season_start_year) == latest_season).sum()
     )
 
     train_df, feature_cols = build_training_frame(train_games, players=players)
