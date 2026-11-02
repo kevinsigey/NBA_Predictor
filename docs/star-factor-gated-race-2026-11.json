@@ -1,0 +1,159 @@
+{
+  "preregistration": "docs/star-factor-gated-preregistration-2026-11.md",
+  "data": {
+    "file": "data/history/nba_history.json.gz",
+    "player_rows_minutes_gt_0": 184279
+  },
+  "split": {
+    "holdout_fraction": 0.2,
+    "date_aligned": true,
+    "train_max_date": "2024-02-04",
+    "holdout_min_date": "2024-02-05",
+    "n_holdout": 36551,
+    "star_out_1_rows": 10607,
+    "star_out_0_rows": 25944
+  },
+  "bootstrap": {
+    "resamples": 2000,
+    "seed": 20261102
+  },
+  "max_consistency_diff_vs_harness": 0.0,
+  "anchor_reproduced_all": true,
+  "markets": {
+    "points": {
+      "naive_mae": 4.695683710909696,
+      "base_mae": 4.60640337518007,
+      "candidate_mae": 4.607384104627072,
+      "delta": 0.0009807294470016714,
+      "ci95": [
+        -0.0011411943194908644,
+        0.003097692649669939
+      ],
+      "anchor": {
+        "trial1_naive_mae": 4.696,
+        "trial1_base_mae": 4.606,
+        "reproduced": true
+      },
+      "slices": {
+        "star_out_1": {
+          "n": 10607,
+          "mae_base": 4.69173682621605,
+          "mae_candidate": 4.707846859751856,
+          "bias_base": -0.26464665599151194,
+          "bias_candidate": -0.09516354810621755
+        },
+        "star_out_0": {
+          "n": 25944,
+          "mae_base": 4.571515466024248,
+          "mae_candidate": 4.566310698690879,
+          "bias_base": -0.037298755566904,
+          "bias_candidate": -0.07697304416099816
+        }
+      }
+    },
+    "rebounds": {
+      "naive_mae": 1.9559884796759301,
+      "base_mae": 1.9262028101325437,
+      "candidate_mae": 1.9265741099036313,
+      "delta": 0.0003712997710876298,
+      "ci95": [
+        -0.0002636892436852074,
+        0.0010365850985179028
+      ],
+      "anchor": {
+        "trial1_naive_mae": 1.956,
+        "trial1_base_mae": 1.926,
+        "reproduced": true
+      },
+      "slices": {
+        "star_out_1": {
+          "n": 10607,
+          "mae_base": 1.9650904096082096,
+          "mae_candidate": 1.9703824384796684,
+          "bias_base": -0.10380862908234322,
+          "bias_candidate": -0.06482149274115222
+        },
+        "star_out_0": {
+          "n": 25944,
+          "mae_base": 1.9103039214631639,
+          "mae_candidate": 1.9086634199095662,
+          "bias_base": -0.019248293150438044,
+          "bias_candidate": -0.028935519973234815
+        }
+      }
+    },
+    "assists": {
+      "naive_mae": 1.3740356918122234,
+      "base_mae": 1.3554083263421364,
+      "candidate_mae": 1.3558733730669246,
+      "delta": 0.0004650467247881984,
+      "ci95": [
+        -0.00026170265264137475,
+        0.0012375535868483947
+      ],
+      "anchor": {
+        "trial1_naive_mae": 1.374,
+        "trial1_base_mae": 1.355,
+        "reproduced": true
+      },
+      "slices": {
+        "star_out_1": {
+          "n": 10607,
+          "mae_base": 1.367405420900279,
+          "mae_candidate": 1.3750447404534087,
+          "bias_base": -0.11045833750596941,
+          "bias_candidate": -0.04414460792093752
+        },
+        "star_out_0": {
+          "n": 25944,
+          "mae_base": 1.35050340875124,
+          "mae_candidate": 1.3480353105527234,
+          "bias_base": -0.011804384947043674,
+          "bias_candidate": -0.02991815154778711
+        }
+      }
+    },
+    "threes": {
+      "naive_mae": 0.8959328301008419,
+      "base_mae": 0.8929057254721338,
+      "candidate_mae": 0.8938589049224706,
+      "delta": 0.0009531794503367941,
+      "ci95": [
+        0.0006165110886739322,
+        0.0012990407697872986
+      ],
+      "anchor": {
+        "trial1_naive_mae": 0.896,
+        "trial1_base_mae": 0.893,
+        "reproduced": true
+      },
+      "slices": {
+        "star_out_1": {
+          "n": 10607,
+          "mae_base": 0.883324362911728,
+          "mae_candidate": 0.8877933192186144,
+          "bias_base": -0.04136848611821705,
+          "bias_candidate": -0.02554869208234888
+        },
+        "star_out_0": {
+          "n": 25944,
+          "mae_base": 0.8968229900681184,
+          "mae_candidate": 0.8963387718497294,
+          "bias_base": -0.04043780522941973,
+          "bias_candidate": -0.043714939964683994
+        }
+      }
+    }
+  },
+  "gate": {
+    "clause_a_any_improves_and_none_worsens_beyond_noise": false,
+    "clause_b_improving_stat_ci_excludes_zero": false,
+    "clause_c_ci_green": null,
+    "improved": [],
+    "confirmed": [],
+    "worsened_beyond_noise": [
+      "threes"
+    ],
+    "passes_pre_ci": false
+  }
+}
