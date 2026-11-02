@@ -17,6 +17,13 @@ average rather than serving a silently collapsed number.
 
 import pandas as pd
 
+# The hand-fitted stand-in models below must be fitted on the CURRENT feature
+# width: score_upcoming_player_props deliberately skips a model whose
+# n_features_in_ is not the current set's (see the old-feature-set test at the
+# bottom of this file), so a hard-coded width silently turns "the model's
+# numbers are guarded" tests into "the model was skipped" non-tests.
+from nba_predictor.features.prop_model_frame import PROP_FEATURE_COLUMNS
+
 
 def _box(pid, name, team, pts=20.0, pos="G"):
     return {
@@ -190,7 +197,7 @@ def test_a_collapsed_model_publishes_nothing(tmp_path):
     models_dir.mkdir()
     for stat in ingest.PLAYER_STAT_TARGET_COLUMNS:
         collapsed = DummyRegressor(strategy="constant", constant=1.0)
-        collapsed.fit([[0.0] * 12], [1.0])
+        collapsed.fit([[0.0] * len(PROP_FEATURE_COLUMNS)], [1.0])
         joblib.dump(collapsed, models_dir / f"player_{stat}_model.pkl")
 
     db_path = tmp_path / "t.db"
@@ -221,7 +228,7 @@ def test_clamps_on_deep_bench_players_alone_do_not_block_publication(tmp_path):
     models_dir.mkdir()
     for stat in ingest.PLAYER_STAT_TARGET_COLUMNS:
         m = DummyRegressor(strategy="constant", constant=30.0)
-        m.fit([[0.0] * 12], [30.0])
+        m.fit([[0.0] * len(PROP_FEATURE_COLUMNS)], [30.0])
         joblib.dump(m, models_dir / f"player_{stat}_model.pkl")
 
     db_path = tmp_path / "t.db"
@@ -248,7 +255,7 @@ def test_opening_week_serves_last_seasons_average_not_the_models_window(tmp_path
     models_dir.mkdir()
     for stat in ingest.PLAYER_STAT_TARGET_COLUMNS:
         m = DummyRegressor(strategy="constant", constant=20.0)
-        m.fit([[0.0] * 12], [20.0])
+        m.fit([[0.0] * len(PROP_FEATURE_COLUMNS)], [20.0])
         joblib.dump(m, models_dir / f"player_{stat}_model.pkl")
 
     db_path = tmp_path / "t.db"
@@ -343,7 +350,7 @@ def test_a_few_clamps_still_publish_the_guarded_values(tmp_path, monkeypatch):
     models_dir = tmp_path / "models"; models_dir.mkdir()
     for stat in ingest.PLAYER_STAT_TARGET_COLUMNS:
         sane = DummyRegressor(strategy="constant", constant=20.0 if stat == "points" else 5.0)
-        sane.fit([[0.0] * 12], [1.0])
+        sane.fit([[0.0] * len(PROP_FEATURE_COLUMNS)], [1.0])
         joblib.dump(sane, models_dir / f"player_{stat}_model.pkl")
     # twelve players x four stats = 48 projections; make exactly one of them need a clamp by giving one player a tiny average
     boxes["c2"][0] = _box("p0", "P0", "DET", 2.0)
