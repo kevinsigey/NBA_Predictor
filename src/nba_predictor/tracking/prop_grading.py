@@ -185,6 +185,31 @@ def _round1(value: float | None) -> float | None:
     return None if value is None else round(float(value), 1)
 
 
+def _props_tables_present(db_path: Path) -> bool:
+    """Whether the store carries the player-prop tables at all.
+
+    A store whose `init_db` never ran -- the snapshot staleness tests drive
+    `generate_snapshot` against exactly such a path -- or one created before
+    player props existed holds no recorded props by definition. That is an
+    empty grading, not an error: the snapshot must still publish, with the
+    sections empty, rather than refuse over tables it never promised.
+    """
+    import sqlite3
+
+    try:
+        with store.get_connection(db_path) as conn:
+            found = {
+                row[0]
+                for row in conn.execute(
+                    "SELECT name FROM sqlite_master WHERE type = 'table' "
+                    "AND name IN ('player_prediction_snapshots', 'game_player_outcomes')"
+                )
+            }
+    except sqlite3.Error:
+        return False
+    return found == {"player_prediction_snapshots", "game_player_outcomes"}
+
+
 def build_prop_grading(
     db_path: Path,
     schedule: list[dict],
@@ -208,7 +233,10 @@ def build_prop_grading(
         "latest_day": None,
         "most_confident": [],
         "biggest_surprises": [],
+        "n_with_baseline": 0,
     }
+    if not _props_tables_present(db_path):
+        return payload
     resolved = resolved_player_props(db_path, schedule)
     if not resolved:
         return payload

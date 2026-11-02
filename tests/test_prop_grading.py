@@ -240,6 +240,20 @@ def test_no_bands_means_rows_are_served_ungraded(tmp_path):
     assert all(r["grade"] is None for r in payload["biggest_surprises"])
 
 
+def test_a_store_without_props_tables_grades_nothing(tmp_path):
+    """A DB whose props tables were never created holds no recorded props:
+    the grading is empty and building it must not raise. The public snapshot
+    builds against such a path whenever init_db did not run (the staleness
+    tests pin exactly that), and it must still publish."""
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    payload = build_prop_grading(tmp_path / "never-initialised.db", [], BANDS)
+    assert payload["latest_day"] is None
+    assert payload["most_confident"] == []
+    assert payload["biggest_surprises"] == []
+    assert payload["n_with_baseline"] == 0
+
+
 def test_empty_store_grades_nothing(tmp_path):
     from nba_predictor.tracking import store
     from nba_predictor.tracking.prop_grading import build_prop_grading
