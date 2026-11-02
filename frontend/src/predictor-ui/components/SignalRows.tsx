@@ -1,4 +1,4 @@
-// Synced from predictor-ui@5b41a7e2d962. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
+// Synced from predictor-ui@213533e42ec1. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
 /**
  * `Signal[]` as the facts block renders it: one compact row per finding, a
  * headline of at most 12 words, and a collapsed evidence line a keyboard can
