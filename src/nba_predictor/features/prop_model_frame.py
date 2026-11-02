@@ -7,7 +7,9 @@ rest, usage trend) and home/away. With all of them the model beats the rolling m
 [-0.082,-0.068]), rebounds (-0.026) and assists (-0.013), and ties on threes; the five rolling means alone only tie it.
 
 Plus the vacated-production block (features/star_factor.py): per-stat sums of what the game's absent rotation
-teammates were producing, under the 0-minutes + 1-game absence proxy. Those columns are never NaN -- a team-game
+teammates were producing, under the 0-minutes + 1-game absence proxy, with the trial-2 star_out gate applied
+(the magnitude columns register only when the absent set includes the team's #1 usage player; preregistered in
+docs/star-factor-gated-preregistration-2026-11.md). Those columns are never NaN -- a team-game
 with no previous completed game gets the documented 0.0 ("nobody known to be missing"), like the availability
 features, because an invented absence would be worse than a stated default.
 
@@ -21,7 +23,7 @@ import pandas as pd
 
 from nba_predictor.features.player_stats import PLAYER_FEATURE_COLUMNS, build_player_feature_frame
 from nba_predictor.features.prop_matchup import NEW_FEATURE_COLUMNS, build_prop_features
-from nba_predictor.features.star_factor import STAR_FACTOR_COLUMNS, compute_star_factor_features
+from nba_predictor.features.star_factor import STAR_FACTOR_COLUMNS, apply_star_out_gate, compute_star_factor_features
 
 EXTRA_FEATURE_COLUMNS = NEW_FEATURE_COLUMNS + ["is_home", "min_last", "min_ewm5"]
 PROP_FEATURE_COLUMNS = PLAYER_FEATURE_COLUMNS + EXTRA_FEATURE_COLUMNS + STAR_FACTOR_COLUMNS
@@ -60,9 +62,10 @@ def build_prop_model_frame(player_games: pd.DataFrame) -> tuple[pd.DataFrame, li
     minutes = m.sort_values(["player_id", "game_date"]).groupby("player_id")["minutes"]
     m["min_last"] = minutes.shift(1).reindex(m.index)
     m["min_ewm5"] = minutes.transform(lambda s: s.shift(1).ewm(span=5, min_periods=1).mean()).reindex(m.index)
-    # Vacated production (features/star_factor.py): what this game's absent rotation teammates were producing.
-    # Same function on the training frame and the scoring frame, so the columns mean the same thing in both.
-    m[STAR_FACTOR_COLUMNS] = compute_star_factor_features(m)
+    # Vacated production (features/star_factor.py): what this game's absent rotation teammates were producing,
+    # with the trial-2 star_out gate applied to the magnitude columns. Same path on the training frame and the
+    # scoring frame, so the columns mean the same thing in both.
+    m[STAR_FACTOR_COLUMNS] = apply_star_out_gate(compute_star_factor_features(m))
     frame, _ = build_player_feature_frame(m)
     frame[PROP_FEATURE_COLUMNS] = frame[PROP_FEATURE_COLUMNS].astype(float)
     return frame, PROP_FEATURE_COLUMNS

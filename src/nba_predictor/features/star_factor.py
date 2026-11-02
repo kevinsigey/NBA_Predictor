@@ -77,6 +77,28 @@ _VAC_OF_STAT = (
     ("vac_pts", "points"), ("vac_reb", "rebounds"), ("vac_ast", "assists"),
     ("vac_fg3m", "fg3m"), ("vac_min", "minutes"),
 )
+#: The magnitude columns: how much production the absent rotation teammates
+#: were producing. The gate below zeroes exactly these.
+GATED_MAGNITUDE_COLUMNS = [col for col, _ in _VAC_OF_STAT]
+
+
+def apply_star_out_gate(features: pd.DataFrame) -> pd.DataFrame:
+    """The star_out gate (trial 2, preregistered in
+    docs/star-factor-gated-preregistration-2026-11.md): the magnitude columns
+    keep their value only on rows where the absent set includes the team's
+    #1 usage player (`star_out == 1`); everywhere else they are 0.0. `vac_n`
+    and `star_out` pass through ungated.
+
+    Trial 1's ungated columns moved the absence-slice bias the right way but
+    converted to no MAE, on a slice (vac_n > 0) covering 95.8% of rows; the
+    causal study's effect lives in the ~12% of team-games where a star sits.
+    The gate concentrates the magnitudes on that population. Applied by
+    build_prop_model_frame, the one path training and serving share, so the
+    gated columns mean the same thing in both. The input is not mutated.
+    """
+    gated = features.copy()
+    gated.loc[gated["star_out"] == 0, GATED_MAGNITUDE_COLUMNS] = 0.0
+    return gated
 
 
 def _season_of(game_date: str) -> int:
