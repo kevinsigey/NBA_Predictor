@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T14:30:06.795749+00:00",
+  "generated_at": "2026-11-02T20:00:49.920618+00:00",
   "schedule": [
     {
       "game_id": "401812480",
@@ -26203,6 +26203,21 @@
     ]
   },
   "track_record": [],
+  "prop_grading": {
+    "bands": {
+      "points": 4.627685922334451,
+      "rebounds": 1.9332922697974189,
+      "assists": 1.3550589679213632,
+      "threes": 0.8982286060505047
+    },
+    "counting": "Graded from the recorded predictions in the tracking store: the earliest recorded projection per player and stat, the same pick the track record counts. A row is labelled made before tip-off only where its own timestamp proves it; rows that cannot prove it are graded and labelled, not dropped.",
+    "confidence_basis": "Most confident ranks the day's projections by how far the model moved from the player's own rolling average -- the mean of his previous 10 recorded games. It is the model's biggest departures from baseline, not a probability, and it is ranked only over rows whose baseline the stored record can prove.",
+    "grade_basis": "Grades measure the miss against the props model's own holdout error for that stat (MAE): On the number is within half the error, Close within the error, Off within twice it, Way off beyond that. The delta is actual minus projected: positive means the player beat the projection.",
+    "latest_day": null,
+    "most_confident": [],
+    "biggest_surprises": [],
+    "n_with_baseline": 0
+  },
   "manifest": {
     "model_version": "v20261102012954",
     "trained_at": "2026-11-02T01:29:54.708415+00:00",
