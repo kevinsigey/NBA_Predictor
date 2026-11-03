@@ -1,6 +1,6 @@
 {
-  "model_version": "v20261102211234",
-  "trained_at": "2026-11-02T21:12:34.842220+00:00",
+  "model_version": "v20261103190115",
+  "trained_at": "2026-11-03T19:01:15.400385+00:00",
   "models": [
     "win_probability",
     "margin",
@@ -8,34 +8,34 @@
   ],
   "metrics": {
     "win_probability": {
-      "accuracy": 0.6737309019221291,
-      "log_loss": 0.6270468621186667,
-      "brier": 0.21863081950242727,
-      "auc": 0.6954179856579883,
-      "sigma": 13.579123411152565,
-      "n": 4854
+      "accuracy": 0.671097981290005,
+      "log_loss": 0.6270098961868594,
+      "brier": 0.2186157252294374,
+      "auc": 0.6957858928194632,
+      "sigma": 13.577383558134597,
+      "n": 4857
     },
     "margin": {
-      "mae": 11.434249118004917,
-      "wf_mae": 10.834572918995372,
-      "residual_sigma": 13.579123411152565
+      "mae": 11.43533393426112,
+      "wf_mae": 10.83318471713427,
+      "residual_sigma": 13.577383558134597
     },
     "total": {
-      "mae": 15.457260578338905,
-      "drift": 2.6305419197748883,
-      "wf_mae": 14.942908170195576,
-      "residual_sigma": 18.72815806231341
+      "mae": 15.442367319026154,
+      "drift": 2.4019765378084554,
+      "wf_mae": 14.937256143569183,
+      "residual_sigma": 18.721074297438065
     },
     "win_classifier": {
-      "log_loss": 0.6275754446448758,
-      "brier": 0.21888872373767515,
-      "auc": 0.6942463571097698
+      "log_loss": 0.6275999016643988,
+      "brier": 0.21890111586420413,
+      "auc": 0.6945203740459718
     }
   },
   "training": {
-    "n_train_games": 8119,
-    "n_holdout_games": 2029,
-    "n_current_season_games": 158,
+    "n_train_games": 8128,
+    "n_holdout_games": 2031,
+    "n_current_season_games": 173,
     "win_candidate": "logistic",
     "margin_candidate": "ridge",
     "total_candidate": "ridge"
