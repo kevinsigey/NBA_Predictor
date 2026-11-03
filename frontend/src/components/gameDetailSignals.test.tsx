@@ -62,6 +62,8 @@ vi.mock("../api/client", () => ({
     // The signal fetch. A bare `vi.fn()` returns `undefined`, which the modal
     // calls `.then` on -- the same trap PL's five client mocks fell into.
     getGameSignals: vi.fn(async () => ({ sport: "nba", id: "401", signals: [] })),
+    // The post-game review's own feed: null is its absence (no counted props, or unreadable).
+    getGamePropGrading: vi.fn(async () => null),
   },
 }));
 

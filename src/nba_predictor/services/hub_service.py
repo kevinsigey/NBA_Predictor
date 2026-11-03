@@ -19,10 +19,11 @@ from nba_predictor.api.schemas import (
     VsMarketOut,
     VsMarketScopeOut,
     VsMarketWeekOut,
+    PropGameGradingOut,
     PropGradingOut,
 )
 from nba_predictor.tracking import store
-from nba_predictor.tracking.prop_grading import build_prop_grading
+from nba_predictor.tracking.prop_grading import build_game_prop_grading, build_prop_grading
 from nba_predictor.tracking.store import get_connection
 from nba_predictor.tracking.timing import (
     earliest_recorded,
@@ -169,8 +170,9 @@ _PROP_GRADING_LOCK = threading.Lock()
 
 
 def clear_prop_grading_cache() -> None:
-    """Drop the cached grading payload. For tests."""
+    """Drop the cached grading payloads, the day's and every game's. For tests."""
     _PROP_GRADING_CACHE.clear()
+    _GAME_GRADING_CACHE.clear()
 
 
 def _grading_with_freshness(value, stale_seconds):
@@ -229,6 +231,45 @@ def cached_prop_grading(
     finally:
         if waited:
             _PROP_GRADING_LOCK.release()
+
+
+# One game's grading, cached per game on the same TTL as the day payload:
+# building it reads the same resolved population, and a finished game's
+# grading changes only when a late outcome lands. A game with no counted
+# rows caches as None -- absence is an answer, and re-paying the full build
+# on every modal open for a game nobody projected would be waste dressed as
+# freshness. A failed build propagates rather than caching the failure: the
+# review treats an error as absence for that open, and the next open asks
+# again.
+_GAME_GRADING_CACHE: dict[tuple[str, str], tuple[float, "PropGameGradingOut | None"]] = {}
+
+
+def cached_game_prop_grading(
+    db_path: Path,
+    schedule: list[dict],
+    bands: dict[str, float] | None,
+    game_id: str,
+    *,
+    now=time.monotonic,
+    compute=None,
+) -> "PropGameGradingOut | None":
+    """The one game's complete counted grading, from cache inside the TTL.
+
+    `compute` is injected so a test can count calls, mirroring
+    `cached_prop_grading`.
+    """
+    key = (str(db_path), game_id)
+    entry = _GAME_GRADING_CACHE.get(key)
+    if entry is not None and now() - entry[0] < PLAYER_PROPS_CACHE_TTL_SECONDS:
+        return entry[1]
+    if compute is None:
+        def compute():
+            built = build_game_prop_grading(db_path, schedule, bands, game_id)
+            return PropGameGradingOut(**built) if built is not None else None
+
+    value = compute()
+    _GAME_GRADING_CACHE[key] = (now(), value)
+    return value
 
 
 def _with_freshness(value: TrackRecordOut | None, stale_seconds: float | None) -> TrackRecordOut | None:

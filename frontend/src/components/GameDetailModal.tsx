@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { api, type GameDetail, type OutPlayer, type DoubtfulPlayer, type PlayerProp, type PlayerHubRow, type MarketPrediction, type TrackRecord, type Prediction } from "../api/client";
+import { api, type GameDetail, type OutPlayer, type DoubtfulPlayer, type PlayerProp, type PlayerHubRow, type MarketPrediction, type PropGameGrading, type TrackRecord, type Prediction } from "../api/client";
 import { ModelRecordLine } from "./ModelRecordLine";
 import TeamLogo from "./TeamLogo";
 import TopCalls from "./TopCalls";
@@ -117,6 +117,10 @@ export default function GameDetailModal({ gameId, onClose }: GameDetailModalProp
   // is better absent than wrong. `null` while loading and after a failure, so
   // the block is passed no record at all rather than an empty one.
   const [trackRecord, setTrackRecord] = useState<TrackRecord[] | null>(null);
+  // This game's counted prop grading, for the post-game review. `null` while
+  // loading, after a failure, and for a game with no counted props -- all
+  // three are the same rendering (no review section), so they share a state.
+  const [gameGrading, setGameGrading] = useState<PropGameGrading | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const titleId = useId();
@@ -177,6 +181,31 @@ export default function GameDetailModal({ gameId, onClose }: GameDetailModalProp
       // Swallow only. The `[]` at this effect's head already covers every re-run, so
       // repeating it here would be a second place to keep the same rule -- PL's
       // proved that redundant, by passing its whole suite with the clear deleted.
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [gameId, detail, reloadKey]);
+
+  // The game's counted prop grading, for the post-game review. Its own
+  // fetch, gated on `detail.game_id === gameId` for the signals effect's
+  // reason (this modal keeps the previous game in state until the new one
+  // lands), and asked only of a COMPLETED game: an unplayed game has no
+  // counted rows to grade, and asking would be a request per game for a
+  // known empty. The client call already folds every failure into null --
+  // a game with no counted props and a grading that could not be read are
+  // the same rendering (no review section), and the review must never
+  // become the page's error state.
+  useEffect(() => {
+    let cancelled = false;
+    setGameGrading(null);
+    if (!detail || detail.game_id !== gameId) return;
+    if (!detail.completed) return;
+    api
+      .getGamePropGrading(gameId)
+      .then((grading) => {
+        if (!cancelled) setGameGrading(grading);
+      })
       .catch(() => {});
     return () => {
       cancelled = true;
@@ -715,14 +744,17 @@ export default function GameDetailModal({ gameId, onClose }: GameDetailModalProp
             roster is the thing this must not be, and one list per category with
             at most three rows each cannot be read that way. Gated on the out
             feed having loaded -- see `outPlayers`. */}
-        {/* The post-game review, above the player block: what the model got
-            right about the players, judged against its own error. */}
-        {detail?.completed && players && players.length > 0 && (
+        {/* The post-game review, above the player block: this game's counted
+            prop lines, graded against the model's own error, in the match's
+            context. It renders from the game's grading payload alone -- a
+            game with no counted props has no section, whatever its box
+            score holds. */}
+        {detail?.completed && gameGrading && gameGrading.rows.length > 0 && (
           <section aria-labelledby={`${titleId}-review`} className="mb-5 border-b border-[var(--color-line)] pb-5">
             <h3 id={`${titleId}-review`} className="sr-only">
               Player review
             </h3>
-            <PostGameReview props={players} bands={detail.prop_bands} />
+            <PostGameReview grading={gameGrading} />
           </section>
         )}
 

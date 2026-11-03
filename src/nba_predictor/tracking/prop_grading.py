@@ -2,10 +2,15 @@
 
 The track record already grades player props as one aggregate MAE per stat
 (`services/hub_service.py::_summarize_player_props`). This is the per-pick
-counterpart: every counted projection for the most recent completed game
-day, laid against the player's actual box score, and graded in units of the
-model's own error -- the PL predictor's fixture-grading shape, applied to
-players instead of matches.
+counterpart: every counted projection, laid against the player's actual
+box score and graded in units of the model's own error -- the PL
+predictor's fixture-grading shape, applied to players instead of matches.
+One graded population, three reads of it: the most recent completed game
+day (`build_prop_grading`), a single game's complete grading for its
+post-game review (`build_game_prop_grading`), and the model's tracking
+aggregates over the whole counted record (inside `build_prop_grading`'s
+payload -- per stat, pre-tip rows only, because an aggregate is the
+model's record and the record is pre-tip by definition).
 
 **Which pick is graded.** The COUNTED pick, exactly the one the track
 record counts: the earliest recorded projection per (game, player, stat),
@@ -92,6 +97,18 @@ GRADE_NOTE = (
     "the error, Off within twice it, Way off beyond that. The delta is "
     "actual minus projected: positive means the player beat the projection."
 )
+AGGREGATES_NOTE = (
+    "Prop-model tracking over the whole counted record: every counted "
+    "projection made before tip-off (the earliest recorded projection per "
+    "player and stat whose own timestamp proves it was made in time), graded "
+    "against what the player did. Per stat: the average miss, the average "
+    "signed miss, and how the grades fall across the bands, beside the "
+    "model's own holdout error for the stat."
+)
+
+#: The grade labels in band order, tightest first -- the order a distribution
+#: bar reads in.
+GRADES = (GRADE_ON_THE_NUMBER, GRADE_CLOSE, GRADE_OFF, GRADE_WAY_OFF)
 
 
 def grade_for(abs_delta: float, mae: float | None) -> str | None:
@@ -210,36 +227,29 @@ def _props_tables_present(db_path: Path) -> bool:
     return found == {"player_prediction_snapshots", "game_player_outcomes"}
 
 
-def build_prop_grading(
+def _publish(row_list: list[dict]) -> list[dict]:
+    """The public shape of graded rows: the private ranking keys (``_abs_*``)
+    never leave the builder."""
+    return [{k: v for k, v in r.items() if not k.startswith("_")} for r in row_list]
+
+
+def _graded_rows(
     db_path: Path,
     schedule: list[dict],
     bands: dict[str, float] | None,
-    *,
-    limit: int = SECTION_LIMIT,
-) -> dict:
-    """The graded player props for the most recent completed game day.
+) -> list[dict]:
+    """Every counted player projection in the store, graded -- the one
+    population the day payload, the per-game payload and the aggregates all
+    read from, so the three can never disagree about which rows exist.
 
-    Computed from stored data only: recorded predictions, recorded outcomes,
-    the schedule, and the manifest's published MAEs. Nothing is recomputed
-    from model files and nothing is fetched; callers cache or snapshot the
-    result (the public snapshot carries it, and the hub route serves it
-    behind the props cache's TTL discipline).
+    A store without the props tables (or with no resolved picks) grades to
+    an empty list, not an error: see `_props_tables_present`.
     """
-    payload: dict = {
-        "bands": bands,
-        "counting": COUNTING_NOTE,
-        "confidence_basis": CONFIDENCE_NOTE,
-        "grade_basis": GRADE_NOTE,
-        "latest_day": None,
-        "most_confident": [],
-        "biggest_surprises": [],
-        "n_with_baseline": 0,
-    }
     if not _props_tables_present(db_path):
-        return payload
+        return []
     resolved = resolved_player_props(db_path, schedule)
     if not resolved:
-        return payload
+        return []
 
     games = {g.get("game_id"): g for g in schedule if g.get("game_id")}
     names = store.load_player_names(db_path)
@@ -276,6 +286,108 @@ def build_prop_grading(
                 "_abs_departure": abs(predicted - baseline) if baseline is not None else None,
             }
         )
+    return rows
+
+
+def _prop_aggregates(rows: list[dict], bands: dict[str, float] | None) -> dict:
+    """How the prop model is tracking, over the whole counted record.
+
+    **Pre-tip rows only.** The day payload grades every counted row and
+    labels the ones that cannot prove they were made in time; the model's
+    record may not do that -- an aggregate over rows made after tip-off
+    would grade the model on answers it had already seen. So the tracking
+    counts only rows whose own timestamp proves they were made before
+    tip-off, and says so in its note.
+
+    Per stat: how many, the average miss (MAE), the average signed miss
+    (positive = players beat the projections on average -- the projections
+    run low), how the grades fall across the bands as shares of the banded
+    rows, and the stat's holdout MAE beside them as the reference the live
+    figure is tracking against. Plus the daily MAE per stat, so the record
+    reads as form over time rather than one settled number.
+    """
+    pre_tip = [r for r in rows if r["made_before_tip"]]
+
+    per_stat: list[dict] = []
+    for stat in STATS:
+        srows = [r for r in pre_tip if r["stat"] == stat]
+        if not srows:
+            continue
+        banded = [r for r in srows if r["grade"] is not None]
+        shares = [
+            {
+                "grade": label,
+                "n": sum(1 for r in banded if r["grade"] == label),
+                "pct": round(100.0 * sum(1 for r in banded if r["grade"] == label) / len(banded), 1),
+            }
+            for label in GRADES
+        ] if banded else []
+        per_stat.append(
+            {
+                "stat": stat,
+                "n": len(srows),
+                "mae": round(sum(abs(r["delta"]) for r in srows) / len(srows), 3),
+                "bias": round(sum(r["delta"] for r in srows) / len(srows), 3),
+                "holdout_mae": (bands or {}).get(stat),
+                "band_n": len(banded),
+                "bands": shares,
+            }
+        )
+
+    by_day: dict[str, dict[str, list[float]]] = {}
+    for r in pre_tip:
+        by_day.setdefault(r["game_date"], {}).setdefault(r["stat"], []).append(abs(r["delta"]))
+    daily = [
+        {
+            "date": date,
+            "stats": {
+                stat: {"n": len(misses), "mae": round(sum(misses) / len(misses), 3)}
+                for stat, misses in sorted(stats.items())
+            },
+        }
+        for date, stats in sorted(by_day.items())
+    ]
+
+    dates = [r["game_date"] for r in pre_tip]
+    return {
+        "basis": AGGREGATES_NOTE,
+        "from_date": min(dates) if dates else None,
+        "to_date": max(dates) if dates else None,
+        "n_days": len(daily),
+        "total": len(pre_tip),
+        "per_stat": per_stat,
+        "daily": daily,
+    }
+
+
+def build_prop_grading(
+    db_path: Path,
+    schedule: list[dict],
+    bands: dict[str, float] | None,
+    *,
+    limit: int = SECTION_LIMIT,
+) -> dict:
+    """The graded player props for the most recent completed game day, plus
+    the model's tracking aggregates over the whole counted record.
+
+    Computed from stored data only: recorded predictions, recorded outcomes,
+    the schedule, and the manifest's published MAEs. Nothing is recomputed
+    from model files and nothing is fetched; callers cache or snapshot the
+    result (the public snapshot carries it, and the hub route serves it
+    behind the props cache's TTL discipline).
+    """
+    rows = _graded_rows(db_path, schedule, bands)
+    payload: dict = {
+        "bands": bands,
+        "counting": COUNTING_NOTE,
+        "confidence_basis": CONFIDENCE_NOTE,
+        "grade_basis": GRADE_NOTE,
+        "latest_day": None,
+        "most_confident": [],
+        "biggest_surprises": [],
+        "n_with_baseline": 0,
+        "aggregates": _prop_aggregates(rows, bands),
+    }
     if not rows:
         return payload
 
@@ -308,18 +420,57 @@ def build_prop_grading(
         day_rows, key=lambda r: (-r["_abs_delta"], r["player_name"] or r["player_id"])
     )[:limit]
 
-    def publish(row_list: list[dict]) -> list[dict]:
-        return [{k: v for k, v in r.items() if not k.startswith("_")} for r in row_list]
-
     payload["latest_day"] = {
         "date": latest,
         "n_graded": len(day_rows),
         "n_pre_tip": sum(1 for r in day_rows if r["made_before_tip"]),
         "games": [
-            {**g, "rows": publish(g["rows"])} for g in games_out
+            {**g, "rows": _publish(g["rows"])} for g in games_out
         ],
     }
-    payload["most_confident"] = publish(most_confident)
-    payload["biggest_surprises"] = publish(surprises)
+    payload["most_confident"] = _publish(most_confident)
+    payload["biggest_surprises"] = _publish(surprises)
     payload["n_with_baseline"] = len(ranked)
     return payload
+
+
+def build_game_prop_grading(
+    db_path: Path,
+    schedule: list[dict],
+    bands: dict[str, float] | None,
+    game_id: str,
+    *,
+    limit: int = SECTION_LIMIT,
+) -> dict | None:
+    """One game's complete counted grading, for its post-game review.
+
+    Every counted row for the game -- the review is where a reader asks how
+    the props did in THIS match, so the day payload's latest-day window is
+    the wrong shape for it. Rows that cannot prove they were made before
+    tip-off are included and labelled, exactly as the day payload treats
+    them. None when the game has no counted rows at all: an unplayed game,
+    an unknown id, and a played game nobody projected are all the same
+    absence to the review, and the review shows no section for it.
+    """
+    rows = [r for r in _graded_rows(db_path, schedule, bands) if r["game_id"] == game_id]
+    if not rows:
+        return None
+    stat_order = {stat: i for i, stat in enumerate(STATS)}
+    rows.sort(key=lambda r: ((r["player_name"] or r["player_id"]), stat_order.get(r["stat"], 99)))
+    surprises = sorted(
+        rows, key=lambda r: (-r["_abs_delta"], r["player_name"] or r["player_id"])
+    )[:limit]
+    first = rows[0]
+    return {
+        "game_id": game_id,
+        "game_date": first["game_date"],
+        "home_team": first["home_team"],
+        "away_team": first["away_team"],
+        "n_graded": len(rows),
+        "n_pre_tip": sum(1 for r in rows if r["made_before_tip"]),
+        "rows": _publish(rows),
+        "biggest_surprises": _publish(surprises),
+        "bands": bands,
+        "counting": COUNTING_NOTE,
+        "grade_basis": GRADE_NOTE,
+    }

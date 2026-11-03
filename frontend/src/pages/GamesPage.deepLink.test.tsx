@@ -12,6 +12,8 @@ vi.mock("../api/client", () => ({
     // GameDetailModal.test.tsx. A valid EMPTY list -- spec §2's "no data, no row" --
     // because a bare `vi.fn()` returns `undefined` and the modal calls `.then`.
     getGameSignals: vi.fn(async () => ({ sport: "nba", id: "", signals: [] })),
+    // The post-game review's own feed: null is its absence (no counted props, or unreadable).
+    getGamePropGrading: vi.fn(async () => null),
     getSeasonFirstWeek: vi.fn(), getGamesWeek: vi.fn(), getGameDetail: vi.fn(),
     getGamePlayers: vi.fn(), getHubPlayers: vi.fn().mockResolvedValue([]),
     // The gate's sibling route; see GameDetailModal.test.tsx.

@@ -308,6 +308,40 @@ export interface PropGradingDay {
   games: PropGradingGame[];
 }
 
+/** One grade's share of a stat's banded rows in the tracking aggregates. */
+export interface PropBandShare {
+  grade: string;
+  n: number;
+  pct: number;
+}
+
+/** One stat's tracking over the whole counted record, pre-tip rows only:
+ *  the average miss, the average signed miss (`bias` -- positive means the
+ *  players beat the projections on average), the band shares, and the
+ *  stat's holdout MAE as the reference the live figure tracks against. */
+export interface PropStatAggregate {
+  stat: string;
+  n: number;
+  mae: number;
+  bias: number;
+  holdout_mae: number | null;
+  band_n: number;
+  bands: PropBandShare[];
+}
+
+/** The prop model's tracking: aggregates over the full counted record the
+ *  store holds. `from_date`/`to_date`/`n_days` state the exact window;
+ *  `daily` is the per-day, per-stat MAE the form trend reads. */
+export interface PropAggregates {
+  basis: string;
+  from_date: string | null;
+  to_date: string | null;
+  n_days: number;
+  total: number;
+  per_stat: PropStatAggregate[];
+  daily: { date: string; stats: Record<string, { n: number; mae: number }> }[];
+}
+
 /** The prop-grading payload for the most recent completed game day. The
  *  three note strings are the backend's wording, printed verbatim. */
 export interface PropGrading {
@@ -319,7 +353,25 @@ export interface PropGrading {
   most_confident: PropGradingRow[];
   biggest_surprises: PropGradingRow[];
   n_with_baseline: number;
+  aggregates?: PropAggregates | null;
   served_stale_seconds?: number | null;
+}
+
+/** One game's complete counted grading, served for its post-game review.
+ *  Every counted row for the game (post-tip rows included and labelled),
+ *  plus the game's biggest surprises. */
+export interface PropGameGrading {
+  game_id: string;
+  game_date: string;
+  home_team: string | null;
+  away_team: string | null;
+  n_graded: number;
+  n_pre_tip: number;
+  rows: PropGradingRow[];
+  biggest_surprises: PropGradingRow[];
+  bands: Record<string, number> | null;
+  counting: string;
+  grade_basis: string;
 }
 
 export interface TrackRecord {
@@ -634,6 +686,19 @@ export const api = {
     return fetchJson<TrackRecordPicksPage>(`/hub/track-record/picks${qs ? `?${qs}` : ""}`);
   },
   getPropGrading: () => fetchJson<PropGrading>("/hub/prop-grading"),
+  /** One game's complete counted grading, for its post-game review. Null
+   *  on ANY failure -- a 404 (the game has no counted props), a network
+   *  error and an unreadable payload are deliberately indistinguishable
+   *  here: the review is an enhancement on the game page, its absence is
+   *  the honest rendering for all three, and it must never become the
+   *  page's error state. The same rule the signal rows follow. */
+  getGamePropGrading: async (gameId: string): Promise<PropGameGrading | null> => {
+    try {
+      return await fetchJson<PropGameGrading>(`/hub/prop-grading/games/${encodeURIComponent(gameId)}`);
+    } catch {
+      return null;
+    }
+  },
   getVsMarket: () => fetchJson<VsMarket>("/hub/vs-market"),
   getSnapshotMeta: () => fetchJson<SnapshotMeta>("/snapshot-meta"),
   getManifest: () => fetchJson<Manifest>("/manifest"),

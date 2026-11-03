@@ -336,6 +336,77 @@ class PropGradingDayOut(BaseModel):
     games: list[PropGradingGameOut] = []
 
 
+class PropBandShareOut(BaseModel):
+    """One grade's share of a stat's banded rows, as a count and a percent."""
+
+    grade: str
+    n: int
+    pct: float
+
+
+class PropStatAggregateOut(BaseModel):
+    """One stat's tracking over the whole counted record, pre-tip rows only.
+
+    `bias` is the average signed delta (actual minus projected): positive
+    means the players beat the projections on average -- the projections run
+    low, in the page's words. `holdout_mae` is the manifest's own error for
+    the stat, the reference the live `mae` is tracking against; None when
+    the manifest publishes none (no row of the stat is then banded either).
+    """
+
+    stat: str
+    n: int
+    mae: float
+    bias: float
+    holdout_mae: float | None = None
+    # How many of the stat's rows carried a grade at all; the band shares
+    # are shares of these, never of a larger set they were not judged in.
+    band_n: int = 0
+    bands: list[PropBandShareOut] = []
+
+
+class PropDailyStatOut(BaseModel):
+    n: int
+    mae: float
+
+
+class PropDailyMaeOut(BaseModel):
+    date: str
+    stats: dict[str, PropDailyStatOut] = {}
+
+
+class PropAggregatesOut(BaseModel):
+    """The prop model's tracking: aggregates over the full counted record
+    the store holds, counted pre-tip rows only. `from_date`/`to_date`/
+    `n_days` state the exact window the figures cover."""
+
+    basis: str
+    from_date: str | None = None
+    to_date: str | None = None
+    n_days: int = 0
+    total: int = 0
+    per_stat: list[PropStatAggregateOut] = []
+    daily: list[PropDailyMaeOut] = []
+
+
+class PropGameGradingOut(BaseModel):
+    """One game's complete counted grading, for its post-game review."""
+
+    game_id: str
+    game_date: str
+    home_team: str | None = None
+    away_team: str | None = None
+    # Every graded counted row for the game, and how many of them prove
+    # they were made before tip-off; the pair sits together, as on the day.
+    n_graded: int
+    n_pre_tip: int
+    rows: list[PropGradingRowOut] = []
+    biggest_surprises: list[PropGradingRowOut] = []
+    bands: dict[str, float] | None = None
+    counting: str
+    grade_basis: str
+
+
 class PropGradingOut(BaseModel):
     # The holdout MAE per stat the grades were judged against; None when the
     # manifest publishes none (every grade is then None too).
@@ -350,6 +421,9 @@ class PropGradingOut(BaseModel):
     # How many of the day's graded rows carried a provable rolling-average
     # baseline and so could be ranked in most_confident at all.
     n_with_baseline: int = 0
+    # The model's tracking over the whole counted record (pre-tip rows
+    # only), computed from the same graded population as the day above.
+    aggregates: PropAggregatesOut | None = None
     # Set only when a cached value is served because a refresh failed; see
     # TrackRecordOut.served_stale_seconds for the rule.
     served_stale_seconds: float | None = None

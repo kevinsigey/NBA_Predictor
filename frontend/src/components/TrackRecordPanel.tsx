@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { api, type TrackRecord, type TrackRecordPick, type VsMarket } from "../api/client";
+import { api, type PropAggregates, type PropGrading, type PropStatAggregate, type TrackRecord, type TrackRecordPick, type VsMarket } from "../api/client";
 import {
   CalibrationBlock,
   EmptyState,
@@ -56,6 +56,10 @@ export default function TrackRecordPanel() {
   // retry from racing each other into duplicate fetches.
   const picksRequested = useRef(false);
   const [vsMarket, setVsMarket] = useState<VsMarket | null>(null);
+  // The prop model's tracking aggregates, from the grading payload. Its own
+  // fetch with its own failure, like the comparison's: a grading that cannot
+  // be read costs the page its tracking block, never the record above it.
+  const [propGrading, setPropGrading] = useState<PropGrading | null>(null);
   // The counted moneyline rows for exactly the games the odds block lists,
   // fetched when the comparison lands (the summary no longer inlines them).
   const [disagreementPicks, setDisagreementPicks] = useState<TrackRecordPick[] | null>(null);
@@ -69,6 +73,7 @@ export default function TrackRecordPanel() {
     setVsError(false);
     setRows(null);
     setVsMarket(null);
+    setPropGrading(null);
     setDisagreementPicks(null);
     setPicks(null);
     setPicksTotal(0);
@@ -78,6 +83,7 @@ export default function TrackRecordPanel() {
     // not take the record above it down with it.
     api.getTrackRecord().then(setRows).catch(() => setError(true));
     api.getVsMarket().then(setVsMarket).catch(() => setVsError(true));
+    api.getPropGrading().then(setPropGrading).catch(() => {});
     // The as-of stamp fails silently: the record without a stamp is honest,
     // a stamp that blocks the page is not.
     api.getSnapshotMeta()
@@ -128,9 +134,13 @@ export default function TrackRecordPanel() {
   const model = toRecordModel(rows);
   const moment = momentFor("nba");
 
-  const props = rows.find((r) => r.market === "player_props" && !r.settled && (r.per_stat?.length ?? 0) > 0);
-  // Props are judged by error, shown in their own block; "no results rule yet" would be the wrong thing to say about them.
-  const unsettled = rows.filter((r) => !r.settled && r !== props);
+  const propsRow = rows.find((r) => r.market === "player_props" && !r.settled && (r.per_stat?.length ?? 0) > 0);
+  // Props are judged by error, tracked in their own block below; "no results rule yet" would be the wrong thing to say about them.
+  const unsettled = rows.filter((r) => !r.settled && r !== propsRow);
+  // The prop model's tracking, from the grading payload's aggregates over
+  // the whole counted record -- not from this page's record rows, whose
+  // props aggregate is a different (all-timing) population.
+  const aggregates = propGrading?.aggregates ?? null;
 
   // Backtest: everything counted but made at or after tip-off. Hit rate only: these rows carry no stated confidence.
   const backtest = rows
@@ -192,23 +202,16 @@ export default function TrackRecordPanel() {
         </RecordBlock>
       </div>
 
-      {props && (
-        <RecordBlock id="tr-props" title="Player projections: how far off">
-          <p className="max-w-prose text-sm text-pr-text-dim">
-            Props have no win/lose result, so they are judged by the average miss between the projection and what the player
-            did, over {n0(props.total_predictions)} projections that have since been played.
+      {aggregates && aggregates.per_stat.length > 0 && (
+        <RecordBlock id="tr-props" title="Player projections: how the model is tracking">
+          <p className="max-w-prose text-sm text-pr-text-dim">{aggregates.basis}</p>
+          <p className="mt-1 max-w-prose text-sm text-pr-text-dim">
+            {n0(aggregates.total)} counted lines, {formatDay(aggregates.from_date)} {"\u2013"} {formatDay(aggregates.to_date)},{" "}
+            over <span className="tabular-nums">{aggregates.n_days}</span> game days.
           </p>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {props.per_stat!.map((s) => (
-              <li key={s.stat} data-testid={`prop-stat-${s.stat}`} className="rounded-pr border border-pr-rule bg-pr-panel px-4 py-3">
-                <p className="text-xs text-pr-text-dim">{STAT_LABEL[s.stat] ?? s.stat}</p>
-                <p className="font-pr-display text-lg font-semibold tabular-nums text-pr-text">
-                  off by {s.mae.toFixed(1)} <span className="text-pr-text-faint">on average</span>
-                </p>
-                <p className="text-xs text-pr-text-faint">
-                  {s.mean_signed_error > 0.05 ? `runs high by ${s.mean_signed_error.toFixed(1)}` : s.mean_signed_error < -0.05 ? `runs low by ${Math.abs(s.mean_signed_error).toFixed(1)}` : "no lean"} · {n0(s.n)} games
-                </p>
-              </li>
+          <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {aggregates.per_stat.map((s) => (
+              <PropStatTile key={s.stat} aggregate={s} daily={aggregates.daily} />
             ))}
           </ul>
         </RecordBlock>
@@ -302,5 +305,113 @@ export default function TrackRecordPanel() {
         )}
       </HowCounted>
     </div>
+  );
+}
+
+/** "Nov 1, 2026" -- a game day in the aggregates' stated window. */
+const formatDay = (iso: string | null): string => {
+  if (!iso) return "—";
+  const d = new Date(`${iso}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+};
+
+const BAND_STYLES: Record<string, string> = {
+  "On the number": "bg-pr-win",
+  Close: "bg-pr-text-dim",
+  Off: "bg-pr-lean",
+  "Way off": "bg-pr-loss",
+};
+
+/**
+ * One stat's tracking tile. The percentage leads -- the share of its counted
+ * lines that landed within the model's own error -- then the average miss
+ * against the holdout reference it is tracking, the lean, the grade
+ * distribution as a bar, and the daily miss as form over the last game days.
+ * A stat with no published holdout error has no bands to share: the tile
+ * leads with the average miss instead, and says nothing about grades.
+ */
+function PropStatTile({ aggregate: s, daily }: { aggregate: PropStatAggregate; daily: PropAggregates["daily"] }) {
+  const within = s.bands
+    .filter((b) => b.grade === "On the number" || b.grade === "Close")
+    .reduce((sum, b) => sum + b.pct, 0);
+  const trend = daily.filter((d) => d.stats[s.stat]).slice(-14);
+  const scaleMax = Math.max(s.holdout_mae ?? 0, ...trend.map((d) => d.stats[s.stat].mae), 0.001);
+  return (
+    <li data-testid={`prop-stat-${s.stat}`} className="rounded-pr border border-pr-rule bg-pr-panel px-4 py-3">
+      <p className="text-xs text-pr-text-dim">{STAT_LABEL[s.stat] ?? s.stat}</p>
+      {s.bands.length > 0 ? (
+        <p className="font-pr-display text-2xl font-semibold tabular-nums text-pr-text">
+          {Math.round(within)}% <span className="text-sm font-normal text-pr-text-faint">within its own error</span>
+        </p>
+      ) : (
+        <p className="font-pr-display text-2xl font-semibold tabular-nums text-pr-text">
+          {s.mae.toFixed(1)} <span className="text-sm font-normal text-pr-text-faint">average miss</span>
+        </p>
+      )}
+      <p className="mt-1 text-xs text-pr-text-faint">
+        off by {s.mae.toFixed(1)} on average
+        {s.holdout_mae !== null && (
+          <>
+            {" \u00b7 "}holdout error {s.holdout_mae.toFixed(1)}, tracking {s.mae <= s.holdout_mae ? "inside it" : "above it"}
+          </>
+        )}
+      </p>
+      <p className="text-xs text-pr-text-faint">
+        {s.bias > 0.05
+          ? `runs low by ${s.bias.toFixed(1)}`
+          : s.bias < -0.05
+            ? `runs high by ${Math.abs(s.bias).toFixed(1)}`
+            : "no lean"}{" "}
+        {"\u00b7"} {n0(s.n)} counted
+      </p>
+      {s.bands.length > 0 && (
+        <>
+          <div
+            className="mt-2 flex h-2 overflow-hidden rounded-full"
+            role="img"
+            aria-label={`Grade distribution for ${STAT_LABEL[s.stat] ?? s.stat}`}
+          >
+            {s.bands.map((b) => (
+              <span
+                key={b.grade}
+                className={BAND_STYLES[b.grade] ?? "bg-pr-rule"}
+                style={{ width: `${b.pct}%` }}
+                title={`${b.grade}: ${b.pct.toFixed(0)}%`}
+              />
+            ))}
+          </div>
+          <p className="mt-1 text-xs text-pr-text-faint">
+            {s.bands.map((b) => `${b.grade} ${b.pct.toFixed(0)}%`).join(" \u00b7 ")}
+          </p>
+        </>
+      )}
+      {trend.length > 1 && (
+        <>
+          <div className="relative mt-3">
+            <div className="flex h-8 items-end gap-[2px]">
+              {trend.map((d) => (
+                <span
+                  key={d.date}
+                  className="flex-1 rounded-sm bg-pr-text-dim/70"
+                  style={{ height: `${Math.max(8, (d.stats[s.stat].mae / scaleMax) * 100)}%` }}
+                  title={`${d.date}: off by ${d.stats[s.stat].mae.toFixed(1)} on ${n0(d.stats[s.stat].n)} lines`}
+                />
+              ))}
+            </div>
+            {s.holdout_mae !== null && (
+              <span
+                className="absolute inset-x-0 border-t border-dashed border-pr-lean"
+                style={{ bottom: `${(s.holdout_mae / scaleMax) * 100}%` }}
+              />
+            )}
+          </div>
+          <p className="mt-1 text-xs text-pr-text-faint">
+            Daily miss, last {trend.length} game days
+            {s.holdout_mae !== null ? " \u00b7 dashed line is the holdout error" : ""}
+          </p>
+        </>
+      )}
+    </li>
   );
 }

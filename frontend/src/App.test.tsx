@@ -74,7 +74,7 @@ describe("App family frame", () => {
     expect(within(pages).getByRole("tab", { name: "Games" })).not.toHaveAttribute("aria-selected", "true");
     expect(
       within(pages).getAllByRole("tab").map((b) => b.textContent),
-    ).toEqual(["Games", "Teams", "Players", "Track record", "Prop grading", "Calibration", "Model"]);
+    ).toEqual(["Games", "Teams", "Players", "Track record", "Calibration", "Model"]);
   });
 
   it("sends the old standings link to the Teams page", async () => {
@@ -89,6 +89,31 @@ describe("App family frame", () => {
     expect(await screen.findByText(/no team data/i)).toBeInTheDocument();
     const pages = screen.getByRole("tablist", { name: "Pages" });
     expect(within(pages).getByRole("tab", { name: "Teams" })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("sends the old prop-grading link to the track record, where the tracking aggregates live", async () => {
+    // Not the blanket empty mock: the record panel reads fields off the
+    // vs-market object, and an array wearing its place would throw in an
+    // effect -- the real API always answers the object.
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+      const body = String(input).includes("/hub/vs-market")
+        ? {
+            market: "h2h", n: 0, mean_model_probability: null, mean_market_probability: null,
+            mean_edge_points: null, disagreement_n: 0, disagreement_hit_rate: null,
+            disagreement_game_ids: [], weekly: [], scope: {}, method: {},
+          }
+        : [];
+      return { ok: true, json: async () => body } as Response;
+    });
+    render(
+      <MemoryRouter initialEntries={["/prop-grading"]}>
+        <App />
+      </MemoryRouter>
+    );
+    expect(await screen.findByText(/no tracked predictions/i)).toBeInTheDocument();
+    const pages = screen.getByRole("tablist", { name: "Pages" });
+    expect(within(pages).getByRole("tab", { name: "Track record" })).toHaveAttribute("aria-selected", "true");
+    expect(within(pages).queryByRole("tab", { name: "Prop grading" })).toBeNull();
   });
 
   it("navigates when a page tab is pressed", async () => {

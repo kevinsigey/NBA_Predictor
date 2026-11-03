@@ -3,11 +3,46 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TrackRecordPanel from "./TrackRecordPanel";
 import { wilsonInterval } from "../predictor-ui";
-import { api, type TrackRecord, type TrackRecordPick, type TrackRecordWeek, type VsMarket } from "../api/client";
+import { api, type PropGrading, type TrackRecord, type TrackRecordPick, type TrackRecordWeek, type VsMarket } from "../api/client";
 
 vi.mock("../api/client", () => ({
-  api: { getTrackRecord: vi.fn(), getVsMarket: vi.fn(), getTrackRecordPicks: vi.fn(), getSnapshotMeta: vi.fn() },
+  api: { getTrackRecord: vi.fn(), getVsMarket: vi.fn(), getTrackRecordPicks: vi.fn(), getSnapshotMeta: vi.fn(), getPropGrading: vi.fn() },
 }));
+
+// The grading payload's aggregates: the prop model's tracking over the
+// counted pre-tip record. Points ran high (bias is actual minus projected,
+// so a negative bias is projections above what players did); rebounds had
+// no lean. Three game days of daily miss for the trend.
+const GRADING = {
+  bands: { points: 4.6, rebounds: 1.9 },
+  counting: "", confidence_basis: "", grade_basis: "",
+  latest_day: null, most_confident: [], biggest_surprises: [], n_with_baseline: 0,
+  aggregates: {
+    basis: "Prop-model tracking over the whole counted record.",
+    from_date: "2026-10-21", to_date: "2026-11-01", n_days: 3, total: 120,
+    per_stat: [
+      { stat: "points", n: 60, mae: 4.3, bias: -0.31, holdout_mae: 4.6, band_n: 60,
+        bands: [
+          { grade: "On the number", n: 15, pct: 25 },
+          { grade: "Close", n: 21, pct: 35 },
+          { grade: "Off", n: 15, pct: 25 },
+          { grade: "Way off", n: 9, pct: 15 },
+        ] },
+      { stat: "rebounds", n: 60, mae: 1.9, bias: -0.02, holdout_mae: 1.9, band_n: 60,
+        bands: [
+          { grade: "On the number", n: 18, pct: 30 },
+          { grade: "Close", n: 18, pct: 30 },
+          { grade: "Off", n: 15, pct: 25 },
+          { grade: "Way off", n: 9, pct: 15 },
+        ] },
+    ],
+    daily: [
+      { date: "2026-10-21", stats: { points: { n: 20, mae: 4.9 }, rebounds: { n: 20, mae: 2.1 } } },
+      { date: "2026-10-28", stats: { points: { n: 20, mae: 4.4 }, rebounds: { n: 20, mae: 1.8 } } },
+      { date: "2026-11-01", stats: { points: { n: 20, mae: 3.9 }, rebounds: { n: 20, mae: 1.9 } } },
+    ],
+  },
+} as unknown as PropGrading;
 
 const wk = (week_start: string, n: number, correct: number, tracked = true): TrackRecordWeek => ({
   week_start, n, correct, hit_rate: n ? correct / n : null, tracked,
@@ -60,6 +95,7 @@ const LIVE: Row[] = [
 beforeEach(() => {
   vi.mocked(api.getTrackRecord).mockResolvedValue(LIVE as TrackRecord[]);
   vi.mocked(api.getVsMarket).mockResolvedValue(vs());
+  vi.mocked(api.getPropGrading).mockResolvedValue(GRADING);
   // No stamp by default: the as-of line is absent, as it is when the meta
   // read fails or nothing has been written yet.
   vi.mocked(api.getSnapshotMeta).mockResolvedValue({ generated_at: null, source: "live" });
@@ -119,12 +155,28 @@ describe("TrackRecordPanel", () => {
     expect(rows).toHaveLength(2);
   });
 
-  it("shows props by how far off they are, never as a hit rate", async () => {
+  it("tracks the prop model from the grading aggregates, never as a hit rate", async () => {
     render(<TrackRecordPanel />);
-    expect(await screen.findByTestId("prop-stat-points")).toHaveTextContent("off by 4.8");
-    expect(screen.getByTestId("prop-stat-points")).toHaveTextContent("runs high by 0.3");
+    const points = await screen.findByTestId("prop-stat-points");
+    // The percentage leads: On the number (25%) + Close (35%) landed within
+    // the model's own error.
+    expect(points).toHaveTextContent("60%");
+    expect(points).toHaveTextContent("within its own error");
+    expect(points).toHaveTextContent("off by 4.3 on average");
+    expect(points).toHaveTextContent("holdout error 4.6, tracking inside it");
+    // Bias is actual minus projected: -0.31 means the projections ran high.
+    expect(points).toHaveTextContent("runs high by 0.3");
+    expect(points).toHaveTextContent("On the number 25%");
+    expect(points).toHaveTextContent("Way off 15%");
     expect(screen.getByTestId("prop-stat-rebounds")).toHaveTextContent("no lean");
     expect(screen.queryByText(/no results rule yet/i)).toBeNull();
+  });
+
+  it("keeps a broken grading read from taking the record down", async () => {
+    vi.mocked(api.getPropGrading).mockRejectedValue(new Error("x"));
+    render(<TrackRecordPanel />);
+    expect(await screen.findByTestId("tally-game_outcome")).toBeInTheDocument();
+    expect(screen.queryByTestId("prop-stat-points")).toBeNull();
   });
 
   it("never prints a rate for a market the backend cannot judge", async () => {
@@ -232,6 +284,17 @@ describe("parity with the page before the kit", () => {
     // the headline as two paragraphs, so the space that joined them in the old
     // single paragraph is gone. Same words, one line break.
     ["never counted twice. The record above", "never counted twice.The record above"],
+    // The props block was replaced outright (2026-11-02, the grading
+    // relocation): the old block averaged every played projection whatever
+    // its timing; the new one is the grading payload's tracking over the
+    // counted pre-tip record only -- the share within the model's own error
+    // leading, the average miss against the holdout reference, the grade
+    // distribution and the daily trend. The fixture above (GRADING) is what
+    // renders the new text.
+    [
+      "Player projections: how far offProps have no win/lose result, so they are judged by the average miss between the projection and what the player did, over 121,148 projections that have since been played.Pointsoff by 4.8 on averageruns high by 0.3 · 20,000 gamesReboundsoff by 1.9 on averageno lean · 20,000 games",
+      "Player projections: how the model is trackingProp-model tracking over the whole counted record.120 counted lines, Oct 21, 2026 – Nov 1, 2026, over 3 game days.Points60% within its own erroroff by 4.3 on average · holdout error 4.6, tracking inside itruns high by 0.3 · 60 countedOn the number 25% · Close 35% · Off 25% · Way off 15%Daily miss, last 3 game days · dashed line is the holdout errorRebounds60% within its own erroroff by 1.9 on average · holdout error 1.9, tracking inside itno lean · 60 countedOn the number 30% · Close 30% · Off 25% · Way off 15%Daily miss, last 3 game days · dashed line is the holdout error",
+    ],
   ];
 
   it("renders everything as before, except the corrections", async () => {

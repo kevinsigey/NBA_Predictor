@@ -333,6 +333,7 @@ def append_api_rows(history_path: Path, api_rows: list[dict]) -> int:
 _PROP_GRADING_KEYS = (
     "bands", "counting", "confidence_basis", "grade_basis",
     "latest_day", "most_confident", "biggest_surprises", "n_with_baseline",
+    "aggregates",
 )
 
 

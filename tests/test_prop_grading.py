@@ -267,6 +267,176 @@ def test_empty_store_grades_nothing(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# The aggregates: the model's tracking over the whole counted record
+# ---------------------------------------------------------------------------
+
+
+def test_aggregates_cover_the_counted_record_with_mae_bias_and_band_shares(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path, schedule = _two_day_world(tmp_path)
+    aggregates = build_prop_grading(db_path, schedule, BANDS)["aggregates"]
+
+    # Both graded rows are points, both pre-tip: A +1.0, B -6.0.
+    (points,) = aggregates["per_stat"]
+    assert points["stat"] == "points"
+    assert points["n"] == 2
+    assert points["mae"] == 3.5                       # (1 + 6) / 2
+    assert points["bias"] == -2.5                     # (1 - 6) / 2: projections ran high
+    assert points["holdout_mae"] == 4.0               # the manifest band, as the reference
+    assert points["band_n"] == 2
+    shares = {s["grade"]: s for s in points["bands"]}
+    assert shares["On the number"] == {"grade": "On the number", "n": 1, "pct": 50.0}
+    assert shares["Off"] == {"grade": "Off", "n": 1, "pct": 50.0}
+    assert shares["Close"]["pct"] == 0.0 and shares["Way off"]["pct"] == 0.0
+    # The window is stated, and the daily trend carries the same MAE.
+    assert aggregates["from_date"] == aggregates["to_date"] == "2026-11-01"
+    assert aggregates["n_days"] == 1 and aggregates["total"] == 2
+    assert aggregates["daily"] == [{"date": "2026-11-01", "stats": {"points": {"n": 2, "mae": 3.5}}}]
+
+
+def test_aggregates_count_only_rows_that_prove_they_were_made_before_tip(tmp_path):
+    """The day payload grades the post-tip row and labels it; the model's
+    tracking may not count it -- an aggregate over answers seen in advance
+    would grade the model on a test it had already read."""
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path = tmp_path / "tracking.db"
+    schedule = [_game("g2", "2026-11-01")]
+    picks = [
+        _pick("g2", "A", "points", 20.0, "2026-11-01T12:00:00+00:00"),   # before tip
+        _pick("g2", "B", "points", 20.0, "2026-11-01T23:30:00+00:00"),   # after tip
+    ]
+    outcomes = [_outcome("g2", "A", "points", 21.0), _outcome("g2", "B", "points", 29.0)]
+    _seed(db_path, schedule, picks, outcomes)
+
+    aggregates = build_prop_grading(db_path, schedule, BANDS)["aggregates"]
+    (points,) = aggregates["per_stat"]
+    assert aggregates["total"] == 1
+    assert points["n"] == 1 and points["mae"] == 1.0  # only A's +1.0; B's +9.0 is not the model's record
+
+
+def test_aggregates_without_a_band_for_a_stat_carry_no_shares(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path, schedule = _two_day_world(tmp_path)
+    aggregates = build_prop_grading(db_path, schedule, {"rebounds": 2.0})["aggregates"]
+    (points,) = aggregates["per_stat"]
+    assert points["holdout_mae"] is None
+    assert points["band_n"] == 0 and points["bands"] == []
+    assert points["mae"] == 3.5  # the miss is still measured; only the judging is withheld
+
+
+def test_aggregates_daily_trend_spans_every_graded_day(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_prop_grading
+
+    db_path = tmp_path / "tracking.db"
+    schedule = [_game("g1", "2026-10-30"), _game("g2", "2026-11-01")]
+    picks = [
+        _pick("g1", "A", "points", 20.0, "2026-10-30T12:00:00+00:00"),
+        _pick("g2", "A", "points", 20.0, "2026-11-01T12:00:00+00:00"),
+    ]
+    outcomes = [_outcome("g1", "A", "points", 22.0), _outcome("g2", "A", "points", 26.0)]
+    _seed(db_path, schedule, picks, outcomes)
+
+    aggregates = build_prop_grading(db_path, schedule, BANDS)["aggregates"]
+    assert aggregates["from_date"] == "2026-10-30" and aggregates["to_date"] == "2026-11-01"
+    assert aggregates["n_days"] == 2
+    assert [d["date"] for d in aggregates["daily"]] == ["2026-10-30", "2026-11-01"]
+    assert aggregates["daily"][0]["stats"]["points"]["mae"] == 2.0
+    assert aggregates["daily"][1]["stats"]["points"]["mae"] == 6.0
+
+
+# ---------------------------------------------------------------------------
+# One game's grading: the post-game review's payload
+# ---------------------------------------------------------------------------
+
+
+def test_game_grading_returns_the_games_complete_rows(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_game_prop_grading
+
+    db_path, schedule = _two_day_world(tmp_path)
+    grading = build_game_prop_grading(db_path, schedule, BANDS, "g2")
+
+    assert grading["game_date"] == "2026-11-01"
+    assert grading["n_graded"] == 2 and grading["n_pre_tip"] == 2
+    assert [r["player_id"] for r in grading["rows"]] == ["A", "B"]  # by player, as the day payload orders them
+    # The game's biggest surprise is B's -6.0, ahead of A's +1.0.
+    assert [r["player_id"] for r in grading["biggest_surprises"]] == ["B", "A"]
+    assert grading["bands"] == BANDS
+
+
+def test_game_grading_labels_the_post_tip_row_and_keeps_it(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_game_prop_grading
+
+    db_path = tmp_path / "tracking.db"
+    schedule = [_game("g2", "2026-11-01")]
+    picks = [
+        _pick("g2", "A", "points", 20.0, "2026-11-01T12:00:00+00:00"),
+        _pick("g2", "B", "points", 20.0, "2026-11-01T23:30:00+00:00"),
+    ]
+    outcomes = [_outcome("g2", "A", "points", 21.0), _outcome("g2", "B", "points", 21.0)]
+    _seed(db_path, schedule, picks, outcomes)
+
+    grading = build_game_prop_grading(db_path, schedule, BANDS, "g2")
+    assert grading["n_graded"] == 2 and grading["n_pre_tip"] == 1
+    rows = {r["player_id"]: r for r in grading["rows"]}
+    assert rows["B"]["made_before_tip"] is False and rows["B"]["grade"] is not None
+
+
+def test_game_grading_is_none_when_the_game_has_no_counted_rows(tmp_path):
+    from nba_predictor.tracking.prop_grading import build_game_prop_grading
+
+    db_path, schedule = _two_day_world(tmp_path)
+    # g1 was played and has recorded outcomes, but nobody's projection was
+    # counted for it; an unknown id is the same absence.
+    assert build_game_prop_grading(db_path, schedule, BANDS, "g1") is None
+    assert build_game_prop_grading(db_path, schedule, BANDS, "nope") is None
+
+
+def test_game_grading_route_serves_the_game_and_404s_the_absence(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from nba_predictor import config
+    from nba_predictor.api import deps
+    from nba_predictor.api.app import app
+    from nba_predictor.tracking import store
+
+    schedule = [_game("g2", "2026-11-01")]
+    db_path = tmp_path / "tracking.db"
+    store.init_db(db_path)
+    store.insert_player_prediction(
+        db_path, game_id="g2", player_id="A", stat="points",
+        predicted_value=20.0, created_at="2026-11-01T12:00:00+00:00",
+    )
+    store.insert_player_outcome(
+        db_path, game_id="g2", player_id="A", stat="points",
+        actual_value=26.0, recorded_at="2026-11-02T03:00:00+00:00",
+    )
+    monkeypatch.setattr(config, "DATA_DIR", tmp_path)
+    sched_dir = tmp_path / "cache" / "schedule"
+    sched_dir.mkdir(parents=True)
+    (sched_dir / "games.json").write_text(json.dumps(schedule))
+    models_dir = tmp_path / "models"
+    models_dir.mkdir()
+    (models_dir / "player_props_manifest.json").write_text(json.dumps({"metrics": {"points": {"mae": 4.0}}}))
+    app.dependency_overrides[deps.get_db_path] = lambda: db_path
+    app.dependency_overrides[deps.get_models_dir] = lambda: models_dir
+    try:
+        client = TestClient(app)
+        body = client.get("/hub/prop-grading/games/g2").json()
+        assert body["n_graded"] == 1 and body["rows"][0]["delta"] == 6.0
+        assert body["rows"][0]["grade"] == "Off"
+        assert client.get("/hub/prop-grading/games/nope").status_code == 404
+        # The day payload carries the aggregates over the same population.
+        day = client.get("/hub/prop-grading").json()
+        assert day["aggregates"]["total"] == 1
+        assert day["aggregates"]["per_stat"][0]["mae"] == 6.0
+    finally:
+        app.dependency_overrides.clear()
+
+
+# ---------------------------------------------------------------------------
 # The snapshot carries the payload
 # ---------------------------------------------------------------------------
 

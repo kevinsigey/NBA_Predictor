@@ -14,6 +14,10 @@ vi.mock("../api/client", () => ({
     getHubStandings: vi.fn().mockResolvedValue([]),
     getTrackRecord: vi.fn().mockResolvedValue([]),
     getTrackRecordPicks: vi.fn().mockResolvedValue({ total: 0, limit: 200, offset: 0, picks: [] }),
+    getPropGrading: vi.fn().mockResolvedValue({
+      bands: null, counting: "", confidence_basis: "", grade_basis: "",
+      latest_day: null, most_confident: [], biggest_surprises: [], n_with_baseline: 0, aggregates: null,
+    }),
     getSnapshotMeta: vi.fn().mockResolvedValue({ generated_at: null, source: "live" }),
     getVsMarket: vi.fn().mockResolvedValue({
       market: "h2h",

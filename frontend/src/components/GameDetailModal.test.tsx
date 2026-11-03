@@ -13,6 +13,8 @@ vi.mock("../api/client", () => ({
     // Default: a valid EMPTY list -- spec §2's "no data, no row". A bare `vi.fn()`
     // returns `undefined` and the modal calls `.then` on it.
     getGameSignals: vi.fn(async () => ({ sport: "nba", id: "", signals: [] })),
+    // The post-game review's own feed: null is its absence (no counted props, or unreadable) -- the state these tests want unless they say otherwise.
+    getGamePropGrading: vi.fn(async () => null),
     getGameDetail: vi.fn(),
     getGamePlayers: vi.fn(),
     // The gate's own sibling route, fetched separately. These tests are about
@@ -128,12 +130,26 @@ describe("GameDetailModal", () => {
       { player_id: "203999", player_name: "Nikola Jokic", stat: "points", predicted_value: 27.5, actual_value: 24.0 },
     ]);
     vi.mocked(api.getHubPlayers).mockResolvedValue(hub);
+    // The review reads the game's counted grading: Jokic's counted line,
+    // 27.5 projected and 24 scored, graded Close against the 4.6 band.
+    vi.mocked(api.getGamePropGrading).mockResolvedValue({
+      game_id: "g2", game_date: "2026-01-05", home_team: "BOS", away_team: "MIA",
+      n_graded: 1, n_pre_tip: 1,
+      rows: [
+        { game_id: "g2", game_date: "2026-01-05", home_team: "BOS", away_team: "MIA",
+          player_id: "203999", player_name: "Nikola Jokic", stat: "points",
+          predicted: 27.5, actual: 24.0, delta: -3.5, grade: "Close",
+          made_before_tip: true, baseline: null, departure: null },
+      ],
+      biggest_surprises: [], bands: { points: 4.6 }, counting: "", grade_basis: "",
+    } as never);
 
     render(<GameDetailModal gameId="g2" onClose={() => {}} />);
 
     await screen.findByTestId("post-game-review");
-    // 3.5 points is inside the model's own 4.6, so the line is on the number.
+    // 3.5 points is inside the model's own 4.6, so the line is within range.
     expect(screen.getByTestId("review-on-the-number").textContent).toContain("1 of 1");
+    expect(screen.getByTestId("post-game-review").textContent).toContain("Nikola Jokic");
   });
 
   it("shows a finished game's ratings, under the verdict, as they stood before the game", async () => {
@@ -159,12 +175,14 @@ describe("GameDetailModal", () => {
     ).toBeTruthy();
   });
 
-  it("shows no player review without bands: there is no measured error to judge against", async () => {
+  it("shows no player review when the game has no counted grading", async () => {
     vi.mocked(api.getGameDetail).mockResolvedValue({ ...completedDetail, prop_bands: null } as never);
     vi.mocked(api.getGamePlayers).mockResolvedValue([
       { player_id: "203999", player_name: "Nikola Jokic", stat: "points", predicted_value: 27.5, actual_value: 24.0 },
     ]);
     vi.mocked(api.getHubPlayers).mockResolvedValue(hub);
+    // The grading feed answers null (the default): no counted props for
+    // this game, so no review section -- the box score still renders.
 
     render(<GameDetailModal gameId="g2" onClose={() => {}} />);
 

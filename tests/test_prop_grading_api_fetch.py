@@ -38,6 +38,7 @@ def _grading_payload(date="2026-11-01"):
         "most_confident": [{"player_id": "A"}],
         "biggest_surprises": [{"player_id": "A"}],
         "n_with_baseline": 1,
+        "aggregates": {"basis": "tracking text", "per_stat": [], "daily": []},
         "served_stale_seconds": 42.0,
     }
 
@@ -67,6 +68,16 @@ def test_fetch_prop_grading_returns_none_when_the_api_has_no_graded_day(monkeypa
 
 def test_fetch_prop_grading_returns_none_for_a_payload_that_is_not_the_grading(monkeypatch):
     monkeypatch.setattr("urllib.request.urlopen", _api({"detail": "not found"}))
+    assert ps.fetch_prop_grading("https://api.test") is None
+
+
+def test_fetch_prop_grading_returns_none_when_the_aggregates_are_missing(monkeypatch):
+    """The aggregates are part of the grading now: a payload without them is
+    an older shape wearing the grading's URL, and standing it in would
+    publish a record page whose tracking block silently has nothing to say."""
+    payload = _grading_payload()
+    del payload["aggregates"]
+    monkeypatch.setattr("urllib.request.urlopen", _api(payload))
     assert ps.fetch_prop_grading("https://api.test") is None
 
 

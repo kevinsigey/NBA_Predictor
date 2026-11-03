@@ -13,6 +13,8 @@ vi.mock("../api/client", () => ({
     // Default: a valid EMPTY list -- spec §2's "no data, no row". A bare `vi.fn()`
     // returns `undefined` and the modal calls `.then` on it.
     getGameSignals: vi.fn(async () => ({ sport: "nba", id: "", signals: [] })),
+    // The post-game review's own feed: null is its absence (no counted props, or unreadable) -- the state these tests want unless they say otherwise.
+    getGamePropGrading: vi.fn(async () => null),
     getGameDetail: vi.fn(),
     getGamePlayers: vi.fn(),
     // The gate's sibling route. Empty here: these tests assert each figure

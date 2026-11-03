@@ -39,6 +39,7 @@ from nba_predictor.api.schemas import (
     OutPlayerOut,
     PlayerPropOut,
     PredictionOut,
+    PropGameGradingOut,
     PropGradingOut,
     SeasonBoundsOut,
     TeamOut,
@@ -58,6 +59,7 @@ from nba_predictor.pipeline.refresh_odds import refresh_market_predictions
 from nba_predictor.pipeline.retrain import run_retrain_pipeline
 from nba_predictor.services.calibration_service import compute_model_calibration
 from nba_predictor.services.hub_service import (
+    cached_game_prop_grading,
     cached_prop_grading,
     compute_track_record,
     compute_track_record_picks,
@@ -868,6 +870,24 @@ def hub_prop_grading(
     served behind the props cache's TTL: the payload changes when a game
     resolves, not when a request arrives."""
     return cached_prop_grading(db_path, schedule, _prop_bands(models_dir))
+
+
+@router.get("/hub/prop-grading/games/{game_id}", response_model=PropGameGradingOut)
+def hub_game_prop_grading(
+    game_id: str,
+    db_path: Path = Depends(get_db_path),
+    schedule: list[dict] = Depends(get_schedule),
+    models_dir: Path = Depends(get_models_dir),
+) -> PropGameGradingOut:
+    """One game's complete counted grading, for its post-game review: every
+    counted row for the game, graded and labelled, plus the game's biggest
+    surprises. A game with no counted rows -- unplayed, unknown, or played
+    with nobody projected -- is a 404: the review shows no section for it,
+    and an empty grading object would invite it to draw one."""
+    grading = cached_game_prop_grading(db_path, schedule, _prop_bands(models_dir), game_id)
+    if grading is None:
+        raise HTTPException(status_code=404, detail=f"No graded player props for game: {game_id}")
+    return grading
 
 
 @router.get("/hub/vs-market", response_model=VsMarketOut)

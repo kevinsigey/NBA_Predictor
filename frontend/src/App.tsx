@@ -44,7 +44,6 @@ const TABS = [
   { id: "/hub", label: "Teams" },
   { id: "/players", label: "Players" },
   { id: "/track-record", label: "Track record" },
-  { id: "/prop-grading", label: "Prop grading" },
   { id: "/calibration-report", label: "Calibration" },
   { id: "/model", label: "Model" },
 ];
@@ -71,7 +70,11 @@ export default function App() {
         <Route path="/hub" element={<DataHubPage initialTab="team-hub" />} />
         <Route path="/players" element={<DataHubPage initialTab="player-hub" />} />
         <Route path="/track-record" element={<DataHubPage initialTab="track-record" />} />
-        <Route path="/prop-grading" element={<DataHubPage initialTab="prop-grading" />} />
+        {/* Prop grading has no page of its own any more: the graded lines
+            live inside each game's post-game review, and the model's
+            tracking aggregates live on the track record. An old link lands
+            on the record, where the aggregates are. */}
+        <Route path="/prop-grading" element={<Navigate to="/track-record" replace />} />
         {/* The two old team tabs land on the Teams page. The power rankings' old
             link keeps its intent with ?sort=power. */}
         <Route path="/standings" element={<Navigate to="/hub" replace />} />
