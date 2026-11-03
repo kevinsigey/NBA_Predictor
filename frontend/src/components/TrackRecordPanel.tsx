@@ -22,13 +22,6 @@ const STAT_LABEL: Record<string, string> = { points: "Points", rebounds: "Reboun
 
 const n0 = (x: number) => x.toLocaleString("en-US");
 
-/** "Nov 2, 2026, 4:15 AM UTC" -- the stamp the record was computed from. */
-const formatAsOf = (iso: string): string => {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return `${d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "UTC" })} UTC`;
-};
-
 /** Rows per page of the every-pick table: enough to read, small enough to fetch on a phone. */
 const PICKS_PAGE = 200;
 
@@ -81,7 +74,7 @@ export default function TrackRecordPanel() {
     // The as-of stamp fails silently: the record without a stamp is honest,
     // a stamp that blocks the page is not.
     api.getSnapshotMeta()
-      .then((meta) => { if (meta.generated_at) setAsOf(formatAsOf(meta.generated_at)); })
+      .then((meta) => { if (meta.generated_at) setAsOf(meta.generated_at); })
       .catch(() => {});
   }, [reloadKey]);
 
@@ -283,7 +276,7 @@ export default function TrackRecordPanel() {
         </div>
       </details>
 
-      <HowCounted moment={moment} headline={model.headline} asOf={asOf ?? undefined}>
+      <HowCounted moment={moment} headline={model.headline} asOf={asOf}>
         {pushes > 0 && <p>{n0(pushes)} pick{pushes === 1 ? "" : "s"} landed on the line and {pushes === 1 ? "is" : "are"} left out of every rate, not scored as a miss.</p>}
         {unsettled.length > 0 && (
           <p>
