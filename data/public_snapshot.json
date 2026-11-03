@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T00:20:04.081155+00:00",
+  "generated_at": "2026-11-03T00:26:38.430954+00:00",
   "schedule": [
     {
       "game_id": "401812480",
@@ -32225,7 +32225,579 @@
         "departure": 0.2
       }
     ],
-    "n_with_baseline": 356
+    "n_with_baseline": 356,
+    "aggregates": {
+      "basis": "Prop-model tracking over the whole counted record: every counted projection made before tip-off (the earliest recorded projection per player and stat whose own timestamp proves it was made in time), graded against what the player did. Per stat: the average miss, the average signed miss, and how the grades fall across the bands, beside the model's own holdout error for the stat.",
+      "from_date": "2026-10-03",
+      "to_date": "2026-11-01",
+      "n_days": 21,
+      "total": 11672,
+      "per_stat": [
+        {
+          "stat": "points",
+          "n": 2918,
+          "mae": 5.493,
+          "bias": -0.356,
+          "holdout_mae": 4.626755027252971,
+          "band_n": 2918,
+          "bands": [
+            {
+              "grade": "On the number",
+              "n": 777,
+              "pct": 26.6
+            },
+            {
+              "grade": "Close",
+              "n": 764,
+              "pct": 26.2
+            },
+            {
+              "grade": "Off",
+              "n": 854,
+              "pct": 29.3
+            },
+            {
+              "grade": "Way off",
+              "n": 523,
+              "pct": 17.9
+            }
+          ]
+        },
+        {
+          "stat": "rebounds",
+          "n": 2918,
+          "mae": 2.18,
+          "bias": 0.024,
+          "holdout_mae": 1.9329309202565148,
+          "band_n": 2918,
+          "bands": [
+            {
+              "grade": "On the number",
+              "n": 869,
+              "pct": 29.8
+            },
+            {
+              "grade": "Close",
+              "n": 749,
+              "pct": 25.7
+            },
+            {
+              "grade": "Off",
+              "n": 848,
+              "pct": 29.1
+            },
+            {
+              "grade": "Way off",
+              "n": 452,
+              "pct": 15.5
+            }
+          ]
+        },
+        {
+          "stat": "assists",
+          "n": 2918,
+          "mae": 1.559,
+          "bias": -0.059,
+          "holdout_mae": 1.3547060481919289,
+          "band_n": 2918,
+          "bands": [
+            {
+              "grade": "On the number",
+              "n": 883,
+              "pct": 30.3
+            },
+            {
+              "grade": "Close",
+              "n": 749,
+              "pct": 25.7
+            },
+            {
+              "grade": "Off",
+              "n": 831,
+              "pct": 28.5
+            },
+            {
+              "grade": "Way off",
+              "n": 455,
+              "pct": 15.6
+            }
+          ]
+        },
+        {
+          "stat": "threes",
+          "n": 2918,
+          "mae": 0.955,
+          "bias": -0.039,
+          "holdout_mae": 0.8983614465282949,
+          "band_n": 2918,
+          "bands": [
+            {
+              "grade": "On the number",
+              "n": 997,
+              "pct": 34.2
+            },
+            {
+              "grade": "Close",
+              "n": 697,
+              "pct": 23.9
+            },
+            {
+              "grade": "Off",
+              "n": 831,
+              "pct": 28.5
+            },
+            {
+              "grade": "Way off",
+              "n": 393,
+              "pct": 13.5
+            }
+          ]
+        }
+      ],
+      "daily": [
+        {
+          "date": "2026-10-03",
+          "stats": {
+            "assists": {
+              "n": 11,
+              "mae": 2.018
+            },
+            "points": {
+              "n": 11,
+              "mae": 5.118
+            },
+            "rebounds": {
+              "n": 11,
+              "mae": 2.9
+            },
+            "threes": {
+              "n": 11,
+              "mae": 0.836
+            }
+          }
+        },
+        {
+          "date": "2026-10-04",
+          "stats": {
+            "assists": {
+              "n": 20,
+              "mae": 1.73
+            },
+            "points": {
+              "n": 20,
+              "mae": 6.53
+            },
+            "rebounds": {
+              "n": 20,
+              "mae": 2.32
+            },
+            "threes": {
+              "n": 20,
+              "mae": 0.935
+            }
+          }
+        },
+        {
+          "date": "2026-10-05",
+          "stats": {
+            "assists": {
+              "n": 55,
+              "mae": 1.48
+            },
+            "points": {
+              "n": 55,
+              "mae": 5.558
+            },
+            "rebounds": {
+              "n": 55,
+              "mae": 2.585
+            },
+            "threes": {
+              "n": 55,
+              "mae": 0.782
+            }
+          }
+        },
+        {
+          "date": "2026-10-06",
+          "stats": {
+            "assists": {
+              "n": 31,
+              "mae": 1.606
+            },
+            "points": {
+              "n": 31,
+              "mae": 5.158
+            },
+            "rebounds": {
+              "n": 31,
+              "mae": 2.09
+            },
+            "threes": {
+              "n": 31,
+              "mae": 0.829
+            }
+          }
+        },
+        {
+          "date": "2026-10-13",
+          "stats": {
+            "assists": {
+              "n": 139,
+              "mae": 1.376
+            },
+            "points": {
+              "n": 139,
+              "mae": 4.581
+            },
+            "rebounds": {
+              "n": 139,
+              "mae": 1.906
+            },
+            "threes": {
+              "n": 139,
+              "mae": 0.858
+            }
+          }
+        },
+        {
+          "date": "2026-10-14",
+          "stats": {
+            "assists": {
+              "n": 189,
+              "mae": 1.425
+            },
+            "points": {
+              "n": 189,
+              "mae": 4.949
+            },
+            "rebounds": {
+              "n": 189,
+              "mae": 1.766
+            },
+            "threes": {
+              "n": 189,
+              "mae": 0.871
+            }
+          }
+        },
+        {
+          "date": "2026-10-15",
+          "stats": {
+            "assists": {
+              "n": 61,
+              "mae": 1.52
+            },
+            "points": {
+              "n": 61,
+              "mae": 4.913
+            },
+            "rebounds": {
+              "n": 61,
+              "mae": 1.848
+            },
+            "threes": {
+              "n": 61,
+              "mae": 1.046
+            }
+          }
+        },
+        {
+          "date": "2026-10-16",
+          "stats": {
+            "assists": {
+              "n": 332,
+              "mae": 1.427
+            },
+            "points": {
+              "n": 332,
+              "mae": 4.747
+            },
+            "rebounds": {
+              "n": 332,
+              "mae": 2.181
+            },
+            "threes": {
+              "n": 332,
+              "mae": 0.884
+            }
+          }
+        },
+        {
+          "date": "2026-10-20",
+          "stats": {
+            "assists": {
+              "n": 68,
+              "mae": 1.41
+            },
+            "points": {
+              "n": 68,
+              "mae": 4.874
+            },
+            "rebounds": {
+              "n": 68,
+              "mae": 1.956
+            },
+            "threes": {
+              "n": 68,
+              "mae": 1.056
+            }
+          }
+        },
+        {
+          "date": "2026-10-21",
+          "stats": {
+            "assists": {
+              "n": 254,
+              "mae": 1.594
+            },
+            "points": {
+              "n": 254,
+              "mae": 5.897
+            },
+            "rebounds": {
+              "n": 254,
+              "mae": 1.998
+            },
+            "threes": {
+              "n": 254,
+              "mae": 0.931
+            }
+          }
+        },
+        {
+          "date": "2026-10-22",
+          "stats": {
+            "assists": {
+              "n": 45,
+              "mae": 1.629
+            },
+            "points": {
+              "n": 45,
+              "mae": 4.593
+            },
+            "rebounds": {
+              "n": 45,
+              "mae": 2.547
+            },
+            "threes": {
+              "n": 45,
+              "mae": 0.867
+            }
+          }
+        },
+        {
+          "date": "2026-10-23",
+          "stats": {
+            "assists": {
+              "n": 277,
+              "mae": 1.534
+            },
+            "points": {
+              "n": 277,
+              "mae": 5.542
+            },
+            "rebounds": {
+              "n": 277,
+              "mae": 2.353
+            },
+            "threes": {
+              "n": 277,
+              "mae": 0.882
+            }
+          }
+        },
+        {
+          "date": "2026-10-24",
+          "stats": {
+            "assists": {
+              "n": 170,
+              "mae": 1.63
+            },
+            "points": {
+              "n": 170,
+              "mae": 5.658
+            },
+            "rebounds": {
+              "n": 170,
+              "mae": 2.066
+            },
+            "threes": {
+              "n": 170,
+              "mae": 1.034
+            }
+          }
+        },
+        {
+          "date": "2026-10-25",
+          "stats": {
+            "assists": {
+              "n": 156,
+              "mae": 1.747
+            },
+            "points": {
+              "n": 156,
+              "mae": 5.639
+            },
+            "rebounds": {
+              "n": 156,
+              "mae": 2.385
+            },
+            "threes": {
+              "n": 156,
+              "mae": 0.969
+            }
+          }
+        },
+        {
+          "date": "2026-10-26",
+          "stats": {
+            "assists": {
+              "n": 212,
+              "mae": 1.488
+            },
+            "points": {
+              "n": 212,
+              "mae": 5.378
+            },
+            "rebounds": {
+              "n": 212,
+              "mae": 2.363
+            },
+            "threes": {
+              "n": 212,
+              "mae": 0.927
+            }
+          }
+        },
+        {
+          "date": "2026-10-27",
+          "stats": {
+            "assists": {
+              "n": 94,
+              "mae": 1.495
+            },
+            "points": {
+              "n": 94,
+              "mae": 6.373
+            },
+            "rebounds": {
+              "n": 94,
+              "mae": 2.076
+            },
+            "threes": {
+              "n": 94,
+              "mae": 1.147
+            }
+          }
+        },
+        {
+          "date": "2026-10-28",
+          "stats": {
+            "assists": {
+              "n": 256,
+              "mae": 1.685
+            },
+            "points": {
+              "n": 256,
+              "mae": 5.793
+            },
+            "rebounds": {
+              "n": 256,
+              "mae": 2.332
+            },
+            "threes": {
+              "n": 256,
+              "mae": 0.974
+            }
+          }
+        },
+        {
+          "date": "2026-10-29",
+          "stats": {
+            "assists": {
+              "n": 66,
+              "mae": 1.845
+            },
+            "points": {
+              "n": 66,
+              "mae": 6.415
+            },
+            "rebounds": {
+              "n": 66,
+              "mae": 2.127
+            },
+            "threes": {
+              "n": 66,
+              "mae": 1.106
+            }
+          }
+        },
+        {
+          "date": "2026-10-30",
+          "stats": {
+            "assists": {
+              "n": 232,
+              "mae": 1.578
+            },
+            "points": {
+              "n": 232,
+              "mae": 6.084
+            },
+            "rebounds": {
+              "n": 232,
+              "mae": 2.181
+            },
+            "threes": {
+              "n": 232,
+              "mae": 1.004
+            }
+          }
+        },
+        {
+          "date": "2026-10-31",
+          "stats": {
+            "assists": {
+              "n": 161,
+              "mae": 1.584
+            },
+            "points": {
+              "n": 161,
+              "mae": 5.656
+            },
+            "rebounds": {
+              "n": 161,
+              "mae": 2.089
+            },
+            "threes": {
+              "n": 161,
+              "mae": 1.047
+            }
+          }
+        },
+        {
+          "date": "2026-11-01",
+          "stats": {
+            "assists": {
+              "n": 89,
+              "mae": 1.754
+            },
+            "points": {
+              "n": 89,
+              "mae": 6.16
+            },
+            "rebounds": {
+              "n": 89,
+              "mae": 2.639
+            },
+            "threes": {
+              "n": 89,
+              "mae": 1.162
+            }
+          }
+        }
+      ]
+    }
   },
   "manifest": {
     "model_version": "v20261102211234",
