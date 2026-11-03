@@ -1,8 +1,4 @@
-// Synced from predictor-ui@5b41a7e2d962. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
-// NBA local change, 2026-11-01 (hash recorded in SYNC.json): the headline leads
-// with the percentage -- big, tabular, with a rate bar -- per Kevin's call that
-// percentages are the easiest-read numbers on the page. Fold back upstream at
-// the next sync.
+// Synced from predictor-ui@213533e42ec1. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
 import type { Moment } from "../components/StatusBadge";
 import { marketRank } from "./vocabulary";
 import { wilsonInterval } from "./wilson";

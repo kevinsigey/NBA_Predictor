@@ -215,7 +215,13 @@ describe("TrackRecordPanel", () => {
   it("stamps the record with when its data was written", async () => {
     vi.mocked(api.getSnapshotMeta).mockResolvedValue({ generated_at: "2026-11-02T04:15:00Z", source: "live" });
     render(<TrackRecordPanel />);
-    expect(await screen.findByText(/record as of/i)).toHaveTextContent("Nov 2, 2026");
+    // The kit component owns formatting: it renders the raw ISO timestamp in
+    // the viewer's locale, so the expectation is derived the same way rather
+    // than pinning one timezone's string.
+    const expected = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(
+      new Date("2026-11-02T04:15:00Z"),
+    );
+    expect(await screen.findByText(/record as of/i)).toHaveTextContent(`Record as of ${expected}`);
   });
 
   it("fetches the every-pick rows only when the fold opens, never with the record", async () => {
