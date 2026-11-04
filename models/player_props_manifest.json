@@ -9,28 +9,30 @@
   ],
   "metrics": {
     "points": {
-      "mae": 4.628637165819442,
-      "naive_mae": 4.727901515041919,
+      "mae": 4.587887168677523,
+      "naive_mae": 4.674789455834196,
       "in_sample_mae": 4.547871678000548
     },
     "rebounds": {
-      "mae": 1.9314725223717748,
-      "naive_mae": 1.9639012412860883,
+      "mae": 1.9093867525064419,
+      "naive_mae": 1.937570155780054,
       "in_sample_mae": 1.9110896355460818
     },
     "assists": {
-      "mae": 1.3548234356129145,
-      "naive_mae": 1.3764417250623462,
+      "mae": 1.3485930245113313,
+      "naive_mae": 1.3685744010253849,
       "in_sample_mae": 1.309183358772597
     },
     "threes": {
-      "mae": 0.8985893216127747,
-      "naive_mae": 0.9058323623904003,
+      "mae": 0.8939271432525729,
+      "naive_mae": 0.8997884920215872,
       "in_sample_mae": 0.8626719185847498
     }
   },
   "training": {
     "n_train_player_games": 213631,
-    "in_sample_metrics": false
+    "in_sample_metrics": false,
+    "holdout_season": "2025-26",
+    "holdout_method": "mae = season holdout: retrained on 2018-19 .. 2024-25, scored on the 2025-26 season (scripts/props_holdout_mae.py, see docs/props-holdout-mae.md). in_sample_mae = the shipped pickles on their own training rows. The shipped pickles are NOT the models that produced mae; model_version is unchanged."
   }
 }

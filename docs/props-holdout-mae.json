@@ -1,0 +1,227 @@
+{
+  "generated_at": "2026-11-04T03:17:41.219263+00:00",
+  "method": {
+    "split": "season holdout; train on all seasons before the holdout season, score the holdout season",
+    "features": "pipeline features (build_prop_model_frame), causal shift(1); frame truncated at the holdout season",
+    "filters": "minutes > 0, preseason dropped (as train_player_prop_models)",
+    "models": "train_player_stat_model defaults (XGBRegressor 200 trees, depth 4, lr 0.05)",
+    "bootstrap": "paired, clustered by game, 2000 draws, seed 20261103",
+    "shipped_pickles_replaced": false
+  },
+  "data": {
+    "window_fetch_seconds": 500.3,
+    "window_player_rows": 30538,
+    "combined_player_rows": 212792,
+    "seasons": {
+      "2018-19": 27884,
+      "2019-20": 22270,
+      "2020-21": 26090,
+      "2021-22": 27672,
+      "2022-23": 27823,
+      "2023-24": 26309,
+      "2024-25": 26231,
+      "2025-26": 28513
+    }
+  },
+  "holdouts": {
+    "latest": {
+      "holdout_season": "2025-26",
+      "train_seasons": "2018-19 .. 2024-25",
+      "train_max_date": "2025-04-13",
+      "holdout_min_date": "2025-10-21",
+      "holdout_max_date": "2026-06-13",
+      "markets": {
+        "points": {
+          "holdout_mae": 4.587887168677523,
+          "naive_mae": 4.674789455834196,
+          "in_sample_mae": 4.540783250193819,
+          "generalisation_gap": 0.0471039184837041,
+          "n_train": 182967,
+          "n_holdout": 28409
+        },
+        "rebounds": {
+          "holdout_mae": 1.9093867525064419,
+          "naive_mae": 1.937570155780054,
+          "in_sample_mae": 1.912004221895575,
+          "generalisation_gap": -0.002617469389133209,
+          "n_train": 182967,
+          "n_holdout": 28409
+        },
+        "assists": {
+          "holdout_mae": 1.3485930245113313,
+          "naive_mae": 1.3685744010253849,
+          "in_sample_mae": 1.3024265445973293,
+          "generalisation_gap": 0.04616647991400202,
+          "n_train": 182967,
+          "n_holdout": 28409
+        },
+        "threes": {
+          "holdout_mae": 0.8939271432525729,
+          "naive_mae": 0.8997884920215872,
+          "in_sample_mae": 0.8568750416132377,
+          "generalisation_gap": 0.037052101639335255,
+          "n_train": 182967,
+          "n_holdout": 28409
+        }
+      },
+      "retrained_vs_shipped": {
+        "points": {
+          "shipped_mae_on_holdout_rows": 4.561570172971361,
+          "retrained_mae_on_holdout_rows": 4.587887168677523,
+          "retrained_minus_shipped": {
+            "mean_diff": 0.02631699570616177,
+            "ci95": [
+              0.02377146508041054,
+              0.029088828145323126
+            ],
+            "share_draws_retrained_worse": 1.0,
+            "games": 1318
+          },
+          "note": "shipped pickle was fitted on these rows; this comparison favours it by construction"
+        },
+        "rebounds": {
+          "shipped_mae_on_holdout_rows": 1.8991791263415194,
+          "retrained_mae_on_holdout_rows": 1.9093867525064419,
+          "retrained_minus_shipped": {
+            "mean_diff": 0.010207626164922526,
+            "ci95": [
+              0.00904691539554634,
+              0.011268983123168003
+            ],
+            "share_draws_retrained_worse": 1.0,
+            "games": 1318
+          },
+          "note": "shipped pickle was fitted on these rows; this comparison favours it by construction"
+        },
+        "assists": {
+          "shipped_mae_on_holdout_rows": 1.341645584388974,
+          "retrained_mae_on_holdout_rows": 1.3485930245113313,
+          "retrained_minus_shipped": {
+            "mean_diff": 0.006947440122357098,
+            "ci95": [
+              0.006167458682776721,
+              0.007764115205935149
+            ],
+            "share_draws_retrained_worse": 1.0,
+            "games": 1318
+          },
+          "note": "shipped pickle was fitted on these rows; this comparison favours it by construction"
+        },
+        "threes": {
+          "shipped_mae_on_holdout_rows": 0.8899071941818169,
+          "retrained_mae_on_holdout_rows": 0.8939271432525729,
+          "retrained_minus_shipped": {
+            "mean_diff": 0.0040199490707560626,
+            "ci95": [
+              0.003544798119639344,
+              0.004494223119045999
+            ],
+            "share_draws_retrained_worse": 1.0,
+            "games": 1318
+          },
+          "note": "shipped pickle was fitted on these rows; this comparison favours it by construction"
+        }
+      }
+    },
+    "earlier": {
+      "holdout_season": "2024-25",
+      "train_seasons": "2018-19 .. 2023-24",
+      "train_max_date": "2024-04-14",
+      "holdout_min_date": "2024-10-22",
+      "holdout_max_date": "2025-04-13",
+      "markets": {
+        "points": {
+          "holdout_mae": 4.626342128699099,
+          "naive_mae": 4.714676176504534,
+          "in_sample_mae": 4.525981757501089,
+          "generalisation_gap": 0.10036037119800945,
+          "n_train": 156837,
+          "n_holdout": 26130
+        },
+        "rebounds": {
+          "holdout_mae": 1.9332684166578329,
+          "naive_mae": 1.9645034443168774,
+          "in_sample_mae": 1.9084417483689056,
+          "generalisation_gap": 0.024826668288927323,
+          "n_train": 156837,
+          "n_holdout": 26130
+        },
+        "assists": {
+          "holdout_mae": 1.3506126710967548,
+          "naive_mae": 1.371542030385314,
+          "in_sample_mae": 1.2937559338939753,
+          "generalisation_gap": 0.056856737202779506,
+          "n_train": 156837,
+          "n_holdout": 26130
+        },
+        "threes": {
+          "holdout_mae": 0.9031259209573496,
+          "naive_mae": 0.9064165740285143,
+          "in_sample_mae": 0.8486955960787862,
+          "generalisation_gap": 0.05443032487856336,
+          "n_train": 156837,
+          "n_holdout": 26130
+        }
+      },
+      "retrained_vs_shipped": {
+        "points": {
+          "shipped_mae_on_holdout_rows": 4.601122660222657,
+          "retrained_mae_on_holdout_rows": 4.626342128699099,
+          "retrained_minus_shipped": {
+            "mean_diff": 0.025219468476441097,
+            "ci95": [
+              0.0216830690731527,
+              0.02863287154479888
+            ],
+            "share_draws_retrained_worse": 1.0,
+            "games": 1231
+          },
+          "note": "shipped pickle was fitted on these rows; this comparison favours it by construction"
+        },
+        "rebounds": {
+          "shipped_mae_on_holdout_rows": 1.9239386508964826,
+          "retrained_mae_on_holdout_rows": 1.9332684166578329,
+          "retrained_minus_shipped": {
+            "mean_diff": 0.009329765761350244,
+            "ci95": [
+              0.007895006502469932,
+              0.010728217129927126
+            ],
+            "share_draws_retrained_worse": 1.0,
+            "games": 1231
+          },
+          "note": "shipped pickle was fitted on these rows; this comparison favours it by construction"
+        },
+        "assists": {
+          "shipped_mae_on_holdout_rows": 1.343499854323374,
+          "retrained_mae_on_holdout_rows": 1.3506126710967548,
+          "retrained_minus_shipped": {
+            "mean_diff": 0.0071128167733806695,
+            "ci95": [
+              0.006074248187712302,
+              0.00812980811223531
+            ],
+            "share_draws_retrained_worse": 1.0,
+            "games": 1231
+          },
+          "note": "shipped pickle was fitted on these rows; this comparison favours it by construction"
+        },
+        "threes": {
+          "shipped_mae_on_holdout_rows": 0.8997634109929019,
+          "retrained_mae_on_holdout_rows": 0.9031259209573496,
+          "retrained_minus_shipped": {
+            "mean_diff": 0.003362509964447608,
+            "ci95": [
+              0.0027855400180350188,
+              0.003934760314711371
+            ],
+            "share_draws_retrained_worse": 1.0,
+            "games": 1231
+          },
+          "note": "shipped pickle was fitted on these rows; this comparison favours it by construction"
+        }
+      }
+    }
+  },
+  "runtime_seconds": 518.7
+}
