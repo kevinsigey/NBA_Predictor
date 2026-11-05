@@ -144,6 +144,22 @@ describe("boxScore team split", () => {
   });
 });
 
+describe("boxScore intervals", () => {
+  it("carries a prop's 80% range through the pivot, per stat", () => {
+    const props = propsFor("x", "X Man", [20, 5, 6, 2]).map((p) =>
+      p.stat === "points" ? { ...p, interval_low: 12.5, interval_high: 27.5 } : p,
+    );
+    const [row] = pivotProps(props);
+    expect(row.intervals.points).toEqual({ low: 12.5, high: 27.5 });
+    expect(row.intervals.rebounds).toBeUndefined();
+  });
+
+  it("leaves the range off a prop the API served without one", () => {
+    const [row] = pivotProps(propsFor("x", "X Man", [20, 5, 6, 2]));
+    expect(row.intervals).toEqual({});
+  });
+});
+
 describe("boxScore totals", () => {
   it("sums each side's own column", () => {
     const rows = attachHubRows(pivotProps(allProps), allHub);
@@ -339,5 +355,24 @@ describe("PlayerBoxScore", () => {
     pick("BOS");
     // Home has no actuals at all, so no actual row is drawn for it.
     expect(screen.queryByTestId("box-score-actual-totals")).toBeNull();
+  });
+
+  it("shows the 80% range under a projection before the game, and not after it", () => {
+    const withRange = propsFor("h1", "H One", [30, 10, 12, 4]).map((p) =>
+      p.stat === "points" ? { ...p, interval_low: 21.5, interval_high: 38.5 } : p,
+    );
+    const props = [...withRange, ...HOME.slice(1).flatMap((p) => propsFor(p.id, p.name, [...p.vals]))];
+    const first = renderBox({ props });
+    const rowEl = screen.getAllByTestId("box-score-row")[0];
+    expect(rowEl.textContent).toContain("30.0");
+    expect(rowEl.textContent).toContain("21.5\u201338.5");
+    first.unmount();
+
+    // Once the game is played the cell is judged against the actual; the
+    // pre-game range line goes away (the review carries the verdict).
+    const played = withRange.map((p) => ({ ...p, actual_value: 33 }));
+    renderBox({ props: [...played, ...HOME.slice(1).flatMap((p) => propsFor(p.id, p.name, [...p.vals]))] });
+    const playedRow = screen.getAllByTestId("box-score-row")[0];
+    expect(playedRow.textContent).not.toContain("21.5\u201338.5");
   });
 });

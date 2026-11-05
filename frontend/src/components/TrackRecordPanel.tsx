@@ -207,6 +207,11 @@ export default function TrackRecordPanel() {
               <PropStatTile key={s.stat} aggregate={s} daily={aggregates.daily} />
             ))}
           </ul>
+          {aggregates.interval_calibration && (
+            <p className="mt-3 max-w-prose text-sm text-pr-text-faint" data-testid="prop-interval-calibration">
+              {aggregates.interval_calibration}
+            </p>
+          )}
         </RecordBlock>
       )}
 
@@ -358,6 +363,18 @@ function PropStatTile({ aggregate: s, daily }: { aggregate: PropStatAggregate; d
             : "no lean"}{" "}
         {"\u00b7"} {n0(s.n)} counted
       </p>
+      {s.interval_coverage !== null && s.interval_coverage !== undefined &&
+        s.interval_n !== undefined && s.interval_n > 0 && (
+          // The honesty loop for the shipped ranges: at their 80% level,
+          // about eight in ten counted lines should land inside. If this
+          // drifts, the reader sees it here rather than trusting the label.
+          <p className="mt-1.5 text-sm text-pr-text-dim" data-testid={`prop-coverage-${s.stat}`}>
+            <span className="font-semibold tabular-nums text-pr-text">
+              {s.interval_coverage.toFixed(1)}%
+            </span>{" "}
+            landed inside their 80% range {"\u00b7"} {n0(s.interval_n)} ranged
+          </p>
+        )}
       {s.bands.length > 0 && (
         <>
           <div

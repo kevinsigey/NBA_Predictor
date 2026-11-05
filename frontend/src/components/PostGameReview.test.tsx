@@ -151,4 +151,56 @@ describe("PostGameReview", () => {
     expect(screen.queryByTestId("review-on-the-number")).toBeNull();
     expect(screen.queryByTestId("review-surprises")).toBeNull();
   });
+
+  it("shows each line's 80% range and whether the actual landed inside it", () => {
+    render(
+      <PostGameReview
+        grading={grading(
+          [
+            row({
+              player_id: "1", player_name: "Jayson Tatum", stat: "points",
+              predicted: 20, actual: 24, delta: 4, grade: "Close",
+              interval_low: 12.5, interval_high: 27.5, inside_interval: true,
+            }),
+            row({
+              player_id: "2", player_name: "Jalen Brunson", stat: "points",
+              predicted: 24, actual: 40, delta: 16, grade: "Way off",
+              interval_low: 17.0, interval_high: 31.0, inside_interval: false,
+            }),
+          ],
+          {
+            interval_method: "scaled",
+            interval_level: 0.8,
+            interval_basis: "80% ranges: scaled conformal, rolling 14 game days (n=812 counted lines before this game).",
+          },
+        )}
+      />,
+    );
+
+    const review = screen.getByTestId("post-game-review");
+    expect(review.textContent).toContain("80% range 12.5\u201327.5");
+    expect(review.textContent).toContain("80% range 17.0\u201331.0");
+    expect(review.textContent).toContain("\u2713 in the 80% range");
+    expect(review.textContent).toContain("\u2717 outside the 80% range");
+    // The summary counts exactly the ranged rows, and the basis is printed.
+    expect(screen.getByTestId("review-interval-count").textContent).toContain(
+      "1 of 2 lines landed inside their 80% range",
+    );
+    expect(screen.getByTestId("review-interval-basis").textContent).toContain("scaled conformal");
+  });
+
+  it("draws no range language when the day carried no ranges", () => {
+    render(
+      <PostGameReview
+        grading={grading([
+          row({ player_id: "1", stat: "points", predicted: 20, actual: 31, delta: 11, grade: "Off" }),
+        ])}
+      />,
+    );
+
+    const review = screen.getByTestId("post-game-review");
+    expect(review.textContent).not.toContain("80% range");
+    expect(screen.queryByTestId("review-interval-count")).toBeNull();
+    expect(screen.queryByTestId("review-interval-basis")).toBeNull();
+  });
 });

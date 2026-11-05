@@ -264,7 +264,12 @@ def _attach_intervals(
             r["interval_high"] = None
             r["inside_interval"] = None
         else:
-            r["interval_low"] = _round1(r["predicted"] - hw)
+            # The low bound floors at zero: every graded stat is a count,
+            # and a range that starts below zero claims a line can land
+            # where it cannot. The floor cannot flip the inside verdict --
+            # it binds only where the projection's own floor already puts
+            # every possible actual inside.
+            r["interval_low"] = _round1(max(0.0, r["predicted"] - hw))
             r["interval_high"] = _round1(r["predicted"] + hw)
             r["inside_interval"] = bool(r["_abs_delta"] <= hw + _EPSILON)
     return infos

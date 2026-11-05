@@ -37,7 +37,25 @@ function statCell(
   // A prop rebuilt after tip-off is shown, never judged -- so no delta, which
   // would be a score against a projection made with the result already known.
   const showDelta = actual !== undefined && predicted !== undefined && !row.rebuilt;
-  if (actual === undefined) return predicted === undefined ? null : stat(predicted);
+  if (actual === undefined) {
+    if (predicted === undefined) return null;
+    // Before the game, the projection carries its 80% range: the model's
+    // own measured spread for a line this size, calibrated on the counted
+    // record before this game day. No range was served, no range is drawn.
+    const range = row.intervals[key];
+    if (!range) return stat(predicted);
+    return (
+      <>
+        {stat(predicted)}
+        <span
+          className="block text-[0.6875rem] text-pr-text-dim"
+          title="The model's 80% range for this line, calibrated on the counted record before this game"
+        >
+          {stat(range.low)}{"\u2013"}{stat(range.high)}
+        </span>
+      </>
+    );
+  }
   const gap = actual - predicted!;
   const band = bands?.[key];
   // The colour says whether the model was wrong by more than it says it can

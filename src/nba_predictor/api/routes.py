@@ -658,7 +658,10 @@ def get_game_players(
                 calibrator, stat, pick["predicted_value"], game["game_date"]
             )
             if low is not None:
-                interval_low = round(low, 1)
+                # Floored at zero, as in the grading payload: the stats
+                # are counts, and the floor can only bind where every
+                # possible actual is already inside.
+                interval_low = round(max(0.0, low), 1)
                 interval_high = round(high, 1)
         props.append(
             PlayerPropOut(

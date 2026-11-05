@@ -22,6 +22,7 @@ const GRADING = {
     from_date: "2026-10-21", to_date: "2026-11-01", n_days: 3, total: 120,
     per_stat: [
       { stat: "points", n: 60, mae: 4.3, bias: -0.31, holdout_mae: 4.6, band_n: 60,
+        interval_coverage: 78.3, interval_n: 60,
         bands: [
           { grade: "On the number", n: 15, pct: 25 },
           { grade: "Close", n: 21, pct: 35 },
@@ -41,6 +42,9 @@ const GRADING = {
       { date: "2026-10-28", stats: { points: { n: 20, mae: 4.4 }, rebounds: { n: 20, mae: 1.8 } } },
       { date: "2026-11-01", stats: { points: { n: 20, mae: 3.9 }, rebounds: { n: 20, mae: 1.9 } } },
     ],
+    interval_method: "scaled",
+    interval_level: 0.8,
+    interval_calibration: "80% ranges: scaled conformal, rolling 14 game days (n=1,240 counted lines before Nov 1).",
   },
 } as unknown as PropGrading;
 
@@ -172,6 +176,19 @@ describe("TrackRecordPanel", () => {
     expect(screen.queryByText(/no results rule yet/i)).toBeNull();
   });
 
+  it("shows the live coverage of the shipped 80% ranges beside the bands", async () => {
+    render(<TrackRecordPanel />);
+    // Points carries a coverage figure over its ranged lines; rebounds was
+    // served without one and shows nothing rather than a placeholder.
+    const coverage = await screen.findByTestId("prop-coverage-points");
+    expect(coverage).toHaveTextContent("78.3%");
+    expect(coverage).toHaveTextContent("landed inside their 80% range");
+    expect(coverage).toHaveTextContent("60 ranged");
+    expect(screen.queryByTestId("prop-coverage-rebounds")).toBeNull();
+    // The calibration basis is captioned under the tiles, in the backend's words.
+    expect(screen.getByTestId("prop-interval-calibration")).toHaveTextContent("scaled conformal, rolling 14 game days");
+  });
+
   it("keeps a broken grading read from taking the record down", async () => {
     vi.mocked(api.getPropGrading).mockRejectedValue(new Error("x"));
     render(<TrackRecordPanel />);
@@ -296,10 +313,13 @@ describe("parity with the page before the kit", () => {
     // counted pre-tip record only -- the share within the model's own error
     // leading, the average miss against the holdout reference, the grade
     // distribution and the daily trend. The fixture above (GRADING) is what
-    // renders the new text.
+    // renders the new text. The conformal ship (2026-11-04) added two
+    // things to it, both inside the replacement below: the points tile's
+    // live-coverage line for the shipped 80% ranges, and the calibration
+    // caption under the tiles.
     [
       "Player projections: how far offProps have no win/lose result, so they are judged by the average miss between the projection and what the player did, over 121,148 projections that have since been played.Pointsoff by 4.8 on averageruns high by 0.3 · 20,000 gamesReboundsoff by 1.9 on averageno lean · 20,000 games",
-      "Player projections: how the model is trackingProp-model tracking over the whole counted record.120 counted lines, Oct 21, 2026 – Nov 1, 2026, over 3 game days.Points60% within its own erroroff by 4.3 on average · holdout error 4.6, tracking inside itruns high by 0.3 · 60 countedOn the number 25% · Close 35% · Off 25% · Way off 15%Daily miss, last 3 game days · dashed line is the holdout errorRebounds60% within its own erroroff by 1.9 on average · holdout error 1.9, tracking inside itno lean · 60 countedOn the number 30% · Close 30% · Off 25% · Way off 15%Daily miss, last 3 game days · dashed line is the holdout error",
+      "Player projections: how the model is trackingProp-model tracking over the whole counted record.120 counted lines, Oct 21, 2026 – Nov 1, 2026, over 3 game days.Points60% within its own erroroff by 4.3 on average · holdout error 4.6, tracking inside itruns high by 0.3 · 60 counted78.3% landed inside their 80% range · 60 rangedOn the number 25% · Close 35% · Off 25% · Way off 15%Daily miss, last 3 game days · dashed line is the holdout errorRebounds60% within its own erroroff by 1.9 on average · holdout error 1.9, tracking inside itno lean · 60 countedOn the number 30% · Close 30% · Off 25% · Way off 15%Daily miss, last 3 game days · dashed line is the holdout error80% ranges: scaled conformal, rolling 14 game days (n=1,240 counted lines before Nov 1).",
     ],
   ];
 

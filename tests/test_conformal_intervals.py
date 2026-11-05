@@ -273,7 +273,9 @@ def test_game_payload_rows_carry_the_range_and_the_verdict(tmp_path):
         projected_raw, actual_raw = raw[(last["game_id"], row["player_id"], row["stat"])]
         hw, _info = calibrator.half_width(row["stat"], row["predicted"], last["game_date"])
         assert hw is not None
-        assert row["interval_low"] == round(row["predicted"] - hw, 1)
+        # The served low bound floors at zero (the stats are counts); the
+        # verdict is computed against the unfloored half-width.
+        assert row["interval_low"] == round(max(0.0, row["predicted"] - hw), 1)
         assert row["interval_high"] == round(row["predicted"] + hw, 1)
         assert row["inside_interval"] == (abs(actual_raw - projected_raw) <= hw + 1e-9)
 
