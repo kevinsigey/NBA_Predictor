@@ -1,0 +1,5884 @@
+{
+  "population": {
+    "history_rows_minutes_gt_0": 184279,
+    "holdout_rows": 36551,
+    "holdout_days": 226,
+    "holdout_span": [
+      "2024-02-05",
+      "2025-04-13"
+    ],
+    "calibration_days": [
+      "2024-02-05",
+      "2024-04-06"
+    ],
+    "evaluation_days": [
+      "2024-04-07",
+      "2025-04-13"
+    ],
+    "manifest_mae_bands": {
+      "points": 4.628637165819442,
+      "rebounds": 1.9314725223717748,
+      "assists": 1.3548234356129145,
+      "threes": 0.8985893216127747
+    }
+  },
+  "anchors": {
+    "points": {
+      "holdout_mae": 4.60640337518007,
+      "naive_mae": 4.695683710909696,
+      "anchor_holdout_mae": 4.606,
+      "anchor_naive_mae": 4.696,
+      "reproduced": true
+    },
+    "rebounds": {
+      "holdout_mae": 1.9262028101325437,
+      "naive_mae": 1.9559884796759301,
+      "anchor_holdout_mae": 1.926,
+      "anchor_naive_mae": 1.956,
+      "reproduced": true
+    },
+    "assists": {
+      "holdout_mae": 1.3554083263421364,
+      "naive_mae": 1.3740356918122234,
+      "anchor_holdout_mae": 1.355,
+      "anchor_naive_mae": 1.374,
+      "reproduced": true
+    },
+    "threes": {
+      "holdout_mae": 0.8929057254721338,
+      "naive_mae": 0.8959328301008419,
+      "anchor_holdout_mae": 0.893,
+      "anchor_naive_mae": 0.896,
+      "reproduced": true
+    }
+  },
+  "per_stat": {
+    "points": {
+      "n_calibration": 8896,
+      "n_eval": 27655,
+      "calibration_days": [
+        "2024-02-05",
+        "2024-04-06"
+      ],
+      "evaluation_days": [
+        "2024-04-07",
+        "2025-04-13"
+      ],
+      "sigma_model": {
+        "edges": [
+          3.3934502601623535,
+          4.758364677429199,
+          5.969316244125366,
+          7.223053455352783,
+          8.924584865570068,
+          10.797072410583496,
+          12.955863952636719,
+          16.342695236206055,
+          20.881946563720703
+        ],
+        "scales": [
+          2.467704541093848,
+          3.3085458383249082,
+          3.69006856264693,
+          3.9929127500081356,
+          4.339709867520279,
+          4.703807579787161,
+          4.884920707445466,
+          5.6109474297985855,
+          5.732682856013266,
+          6.469460240910562
+        ],
+        "raw_scales": [
+          2.467704541093848,
+          3.3085458383249082,
+          3.69006856264693,
+          3.9929127500081356,
+          4.339709867520279,
+          4.703807579787161,
+          4.884920707445466,
+          5.6109474297985855,
+          5.732682856013266,
+          6.469460240910562
+        ],
+        "bin_counts": [
+          890,
+          889,
+          890,
+          889,
+          890,
+          889,
+          890,
+          889,
+          890,
+          890
+        ],
+        "floor": 0.4520128205807196,
+        "mean_abs_resid": 4.520128205807196,
+        "n": 8896
+      },
+      "mondrian_edges": [
+        6.372792720794678,
+        12.151859283447266
+      ],
+      "mondrian_fallback_bin_days": 0,
+      "mondrian_bin_days": 510,
+      "mondrian_min_window_bin": 439,
+      "methods": {
+        "champion_0.5": {
+          "coverage": 0.49831856807087327,
+          "mean_width": 7.304274552244753,
+          "n": 27655
+        },
+        "champion_0.8": {
+          "coverage": 0.798264328331224,
+          "mean_width": 14.367161781071022,
+          "n": 27655
+        },
+        "champion_0.9": {
+          "coverage": 0.8979569698065449,
+          "mean_width": 19.210816347170127,
+          "n": 27655
+        },
+        "scaled_0.5": {
+          "coverage": 0.49810160911227624,
+          "mean_width": 8.012788689098223,
+          "n": 27655
+        },
+        "scaled_0.8": {
+          "coverage": 0.7974326523232689,
+          "mean_width": 13.831701456170498,
+          "n": 27655
+        },
+        "scaled_0.9": {
+          "coverage": 0.8984270475501718,
+          "mean_width": 17.74728673874998,
+          "n": 27655
+        },
+        "mondrian_0.5": {
+          "coverage": 0.49734225275718674,
+          "mean_width": 7.7803917986384095,
+          "n": 27655
+        },
+        "mondrian_0.8": {
+          "coverage": 0.7975772916290002,
+          "mean_width": 14.234539749177923,
+          "n": 27655
+        },
+        "mondrian_0.9": {
+          "coverage": 0.8980654492858434,
+          "mean_width": 18.11605430902872,
+          "n": 27655
+        }
+      },
+      "daily": [
+        {
+          "date": "2024-04-07",
+          "n": 271,
+          "champion_coverage_80": 0.7490774907749077,
+          "scaled_coverage_80": 0.7712177121771218,
+          "mondrian_coverage_80": 0.7970479704797048
+        },
+        {
+          "date": "2024-04-09",
+          "n": 312,
+          "champion_coverage_80": 0.8044871794871795,
+          "scaled_coverage_80": 0.8365384615384616,
+          "mondrian_coverage_80": 0.8365384615384616
+        },
+        {
+          "date": "2024-04-10",
+          "n": 187,
+          "champion_coverage_80": 0.8342245989304813,
+          "scaled_coverage_80": 0.8128342245989305,
+          "mondrian_coverage_80": 0.8235294117647058
+        },
+        {
+          "date": "2024-04-11",
+          "n": 103,
+          "champion_coverage_80": 0.8058252427184466,
+          "scaled_coverage_80": 0.8349514563106796,
+          "mondrian_coverage_80": 0.8349514563106796
+        },
+        {
+          "date": "2024-04-12",
+          "n": 308,
+          "champion_coverage_80": 0.7662337662337663,
+          "scaled_coverage_80": 0.7207792207792207,
+          "mondrian_coverage_80": 0.7142857142857143
+        },
+        {
+          "date": "2024-04-14",
+          "n": 344,
+          "champion_coverage_80": 0.7790697674418605,
+          "scaled_coverage_80": 0.7645348837209303,
+          "mondrian_coverage_80": 0.75
+        },
+        {
+          "date": "2024-10-22",
+          "n": 37,
+          "champion_coverage_80": 0.7837837837837838,
+          "scaled_coverage_80": 0.7837837837837838,
+          "mondrian_coverage_80": 0.7567567567567568
+        },
+        {
+          "date": "2024-10-23",
+          "n": 208,
+          "champion_coverage_80": 0.7403846153846154,
+          "scaled_coverage_80": 0.7548076923076923,
+          "mondrian_coverage_80": 0.7307692307692307
+        },
+        {
+          "date": "2024-10-24",
+          "n": 91,
+          "champion_coverage_80": 0.8131868131868132,
+          "scaled_coverage_80": 0.7912087912087912,
+          "mondrian_coverage_80": 0.7692307692307693
+        },
+        {
+          "date": "2024-10-25",
+          "n": 225,
+          "champion_coverage_80": 0.7955555555555556,
+          "scaled_coverage_80": 0.8088888888888889,
+          "mondrian_coverage_80": 0.8311111111111111
+        },
+        {
+          "date": "2024-10-26",
+          "n": 215,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.8186046511627907,
+          "mondrian_coverage_80": 0.8093023255813954
+        },
+        {
+          "date": "2024-10-27",
+          "n": 115,
+          "champion_coverage_80": 0.8521739130434782,
+          "scaled_coverage_80": 0.8695652173913043,
+          "mondrian_coverage_80": 0.808695652173913
+        },
+        {
+          "date": "2024-10-28",
+          "n": 233,
+          "champion_coverage_80": 0.8240343347639485,
+          "scaled_coverage_80": 0.8240343347639485,
+          "mondrian_coverage_80": 0.8068669527896996
+        },
+        {
+          "date": "2024-10-29",
+          "n": 87,
+          "champion_coverage_80": 0.7471264367816092,
+          "scaled_coverage_80": 0.7471264367816092,
+          "mondrian_coverage_80": 0.7471264367816092
+        },
+        {
+          "date": "2024-10-30",
+          "n": 237,
+          "champion_coverage_80": 0.7890295358649789,
+          "scaled_coverage_80": 0.7637130801687764,
+          "mondrian_coverage_80": 0.7721518987341772
+        },
+        {
+          "date": "2024-10-31",
+          "n": 87,
+          "champion_coverage_80": 0.8390804597701149,
+          "scaled_coverage_80": 0.8505747126436781,
+          "mondrian_coverage_80": 0.8505747126436781
+        },
+        {
+          "date": "2024-11-01",
+          "n": 186,
+          "champion_coverage_80": 0.8602150537634409,
+          "scaled_coverage_80": 0.8709677419354839,
+          "mondrian_coverage_80": 0.8763440860215054
+        },
+        {
+          "date": "2024-11-02",
+          "n": 224,
+          "champion_coverage_80": 0.8303571428571429,
+          "scaled_coverage_80": 0.8169642857142857,
+          "mondrian_coverage_80": 0.8125
+        },
+        {
+          "date": "2024-11-03",
+          "n": 71,
+          "champion_coverage_80": 0.8450704225352113,
+          "scaled_coverage_80": 0.8450704225352113,
+          "mondrian_coverage_80": 0.8450704225352113
+        },
+        {
+          "date": "2024-11-04",
+          "n": 311,
+          "champion_coverage_80": 0.8070739549839229,
+          "scaled_coverage_80": 0.8231511254019293,
+          "mondrian_coverage_80": 0.8167202572347267
+        },
+        {
+          "date": "2024-11-06",
+          "n": 258,
+          "champion_coverage_80": 0.8527131782945736,
+          "scaled_coverage_80": 0.8294573643410853,
+          "mondrian_coverage_80": 0.8488372093023255
+        },
+        {
+          "date": "2024-11-07",
+          "n": 74,
+          "champion_coverage_80": 0.8513513513513513,
+          "scaled_coverage_80": 0.8513513513513513,
+          "mondrian_coverage_80": 0.8513513513513513
+        },
+        {
+          "date": "2024-11-08",
+          "n": 296,
+          "champion_coverage_80": 0.831081081081081,
+          "scaled_coverage_80": 0.831081081081081,
+          "mondrian_coverage_80": 0.793918918918919
+        },
+        {
+          "date": "2024-11-09",
+          "n": 82,
+          "champion_coverage_80": 0.8536585365853658,
+          "scaled_coverage_80": 0.8048780487804879,
+          "mondrian_coverage_80": 0.7804878048780488
+        },
+        {
+          "date": "2024-11-10",
+          "n": 225,
+          "champion_coverage_80": 0.76,
+          "scaled_coverage_80": 0.7777777777777778,
+          "mondrian_coverage_80": 0.7822222222222223
+        },
+        {
+          "date": "2024-11-11",
+          "n": 110,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.8090909090909091
+        },
+        {
+          "date": "2024-11-12",
+          "n": 171,
+          "champion_coverage_80": 0.7719298245614035,
+          "scaled_coverage_80": 0.783625730994152,
+          "mondrian_coverage_80": 0.7719298245614035
+        },
+        {
+          "date": "2024-11-13",
+          "n": 224,
+          "champion_coverage_80": 0.7723214285714286,
+          "scaled_coverage_80": 0.7723214285714286,
+          "mondrian_coverage_80": 0.78125
+        },
+        {
+          "date": "2024-11-14",
+          "n": 20,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.75,
+          "mondrian_coverage_80": 0.75
+        },
+        {
+          "date": "2024-11-15",
+          "n": 259,
+          "champion_coverage_80": 0.7837837837837838,
+          "scaled_coverage_80": 0.803088803088803,
+          "mondrian_coverage_80": 0.803088803088803
+        },
+        {
+          "date": "2024-11-16",
+          "n": 102,
+          "champion_coverage_80": 0.7745098039215687,
+          "scaled_coverage_80": 0.7843137254901961,
+          "mondrian_coverage_80": 0.7843137254901961
+        },
+        {
+          "date": "2024-11-17",
+          "n": 218,
+          "champion_coverage_80": 0.8165137614678899,
+          "scaled_coverage_80": 0.7981651376146789,
+          "mondrian_coverage_80": 0.8211009174311926
+        },
+        {
+          "date": "2024-11-18",
+          "n": 170,
+          "champion_coverage_80": 0.7705882352941177,
+          "scaled_coverage_80": 0.7941176470588235,
+          "mondrian_coverage_80": 0.8117647058823529
+        },
+        {
+          "date": "2024-11-19",
+          "n": 122,
+          "champion_coverage_80": 0.8114754098360656,
+          "scaled_coverage_80": 0.8524590163934426,
+          "mondrian_coverage_80": 0.819672131147541
+        },
+        {
+          "date": "2024-11-20",
+          "n": 186,
+          "champion_coverage_80": 0.7849462365591398,
+          "scaled_coverage_80": 0.7795698924731183,
+          "mondrian_coverage_80": 0.7634408602150538
+        },
+        {
+          "date": "2024-11-21",
+          "n": 78,
+          "champion_coverage_80": 0.7435897435897436,
+          "scaled_coverage_80": 0.7435897435897436,
+          "mondrian_coverage_80": 0.7564102564102564
+        },
+        {
+          "date": "2024-11-22",
+          "n": 174,
+          "champion_coverage_80": 0.8275862068965517,
+          "scaled_coverage_80": 0.8333333333333334,
+          "mondrian_coverage_80": 0.8160919540229885
+        },
+        {
+          "date": "2024-11-23",
+          "n": 152,
+          "champion_coverage_80": 0.8026315789473685,
+          "scaled_coverage_80": 0.7763157894736842,
+          "mondrian_coverage_80": 0.7763157894736842
+        },
+        {
+          "date": "2024-11-24",
+          "n": 123,
+          "champion_coverage_80": 0.8455284552845529,
+          "scaled_coverage_80": 0.8048780487804879,
+          "mondrian_coverage_80": 0.8211382113821138
+        },
+        {
+          "date": "2024-11-25",
+          "n": 194,
+          "champion_coverage_80": 0.8144329896907216,
+          "scaled_coverage_80": 0.8144329896907216,
+          "mondrian_coverage_80": 0.8092783505154639
+        },
+        {
+          "date": "2024-11-26",
+          "n": 107,
+          "champion_coverage_80": 0.8691588785046729,
+          "scaled_coverage_80": 0.8785046728971962,
+          "mondrian_coverage_80": 0.8411214953271028
+        },
+        {
+          "date": "2024-11-27",
+          "n": 306,
+          "champion_coverage_80": 0.7679738562091504,
+          "scaled_coverage_80": 0.7352941176470589,
+          "mondrian_coverage_80": 0.7450980392156863
+        },
+        {
+          "date": "2024-11-29",
+          "n": 205,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.8390243902439024,
+          "mondrian_coverage_80": 0.8390243902439024
+        },
+        {
+          "date": "2024-11-30",
+          "n": 108,
+          "champion_coverage_80": 0.8333333333333334,
+          "scaled_coverage_80": 0.7962962962962963,
+          "mondrian_coverage_80": 0.7962962962962963
+        },
+        {
+          "date": "2024-12-01",
+          "n": 204,
+          "champion_coverage_80": 0.8186274509803921,
+          "scaled_coverage_80": 0.8137254901960784,
+          "mondrian_coverage_80": 0.8137254901960784
+        },
+        {
+          "date": "2024-12-02",
+          "n": 87,
+          "champion_coverage_80": 0.7586206896551724,
+          "scaled_coverage_80": 0.7701149425287356,
+          "mondrian_coverage_80": 0.8045977011494253
+        },
+        {
+          "date": "2024-12-03",
+          "n": 242,
+          "champion_coverage_80": 0.8016528925619835,
+          "scaled_coverage_80": 0.8140495867768595,
+          "mondrian_coverage_80": 0.8140495867768595
+        },
+        {
+          "date": "2024-12-04",
+          "n": 125,
+          "champion_coverage_80": 0.808,
+          "scaled_coverage_80": 0.84,
+          "mondrian_coverage_80": 0.848
+        },
+        {
+          "date": "2024-12-05",
+          "n": 173,
+          "champion_coverage_80": 0.861271676300578,
+          "scaled_coverage_80": 0.8554913294797688,
+          "mondrian_coverage_80": 0.8670520231213873
+        },
+        {
+          "date": "2024-12-06",
+          "n": 147,
+          "champion_coverage_80": 0.7482993197278912,
+          "scaled_coverage_80": 0.7891156462585034,
+          "mondrian_coverage_80": 0.7687074829931972
+        },
+        {
+          "date": "2024-12-07",
+          "n": 133,
+          "champion_coverage_80": 0.7518796992481203,
+          "scaled_coverage_80": 0.7518796992481203,
+          "mondrian_coverage_80": 0.7744360902255639
+        },
+        {
+          "date": "2024-12-08",
+          "n": 252,
+          "champion_coverage_80": 0.7698412698412699,
+          "scaled_coverage_80": 0.75,
+          "mondrian_coverage_80": 0.75
+        },
+        {
+          "date": "2024-12-09",
+          "n": 17,
+          "champion_coverage_80": 0.7647058823529411,
+          "scaled_coverage_80": 0.8823529411764706,
+          "mondrian_coverage_80": 0.8823529411764706
+        },
+        {
+          "date": "2024-12-10",
+          "n": 43,
+          "champion_coverage_80": 0.8604651162790697,
+          "scaled_coverage_80": 0.8604651162790697,
+          "mondrian_coverage_80": 0.8837209302325582
+        },
+        {
+          "date": "2024-12-11",
+          "n": 37,
+          "champion_coverage_80": 0.8648648648648649,
+          "scaled_coverage_80": 0.918918918918919,
+          "mondrian_coverage_80": 0.8918918918918919
+        },
+        {
+          "date": "2024-12-12",
+          "n": 66,
+          "champion_coverage_80": 0.7878787878787878,
+          "scaled_coverage_80": 0.803030303030303,
+          "mondrian_coverage_80": 0.7878787878787878
+        },
+        {
+          "date": "2024-12-13",
+          "n": 169,
+          "champion_coverage_80": 0.7988165680473372,
+          "scaled_coverage_80": 0.8165680473372781,
+          "mondrian_coverage_80": 0.7988165680473372
+        },
+        {
+          "date": "2024-12-14",
+          "n": 37,
+          "champion_coverage_80": 0.7837837837837838,
+          "scaled_coverage_80": 0.8108108108108109,
+          "mondrian_coverage_80": 0.8648648648648649
+        },
+        {
+          "date": "2024-12-15",
+          "n": 154,
+          "champion_coverage_80": 0.8376623376623377,
+          "scaled_coverage_80": 0.8441558441558441,
+          "mondrian_coverage_80": 0.8181818181818182
+        },
+        {
+          "date": "2024-12-16",
+          "n": 123,
+          "champion_coverage_80": 0.7642276422764228,
+          "scaled_coverage_80": 0.7560975609756098,
+          "mondrian_coverage_80": 0.7642276422764228
+        },
+        {
+          "date": "2024-12-17",
+          "n": 25,
+          "champion_coverage_80": 0.92,
+          "scaled_coverage_80": 0.88,
+          "mondrian_coverage_80": 0.92
+        },
+        {
+          "date": "2024-12-19",
+          "n": 277,
+          "champion_coverage_80": 0.776173285198556,
+          "scaled_coverage_80": 0.7509025270758123,
+          "mondrian_coverage_80": 0.779783393501805
+        },
+        {
+          "date": "2024-12-20",
+          "n": 67,
+          "champion_coverage_80": 0.835820895522388,
+          "scaled_coverage_80": 0.8059701492537313,
+          "mondrian_coverage_80": 0.7611940298507462
+        },
+        {
+          "date": "2024-12-21",
+          "n": 258,
+          "champion_coverage_80": 0.8178294573643411,
+          "scaled_coverage_80": 0.8255813953488372,
+          "mondrian_coverage_80": 0.8410852713178295
+        },
+        {
+          "date": "2024-12-22",
+          "n": 62,
+          "champion_coverage_80": 0.8225806451612904,
+          "scaled_coverage_80": 0.7903225806451613,
+          "mondrian_coverage_80": 0.7903225806451613
+        },
+        {
+          "date": "2024-12-23",
+          "n": 316,
+          "champion_coverage_80": 0.7943037974683544,
+          "scaled_coverage_80": 0.7943037974683544,
+          "mondrian_coverage_80": 0.7911392405063291
+        },
+        {
+          "date": "2024-12-25",
+          "n": 92,
+          "champion_coverage_80": 0.7282608695652174,
+          "scaled_coverage_80": 0.7934782608695652,
+          "mondrian_coverage_80": 0.8260869565217391
+        },
+        {
+          "date": "2024-12-26",
+          "n": 187,
+          "champion_coverage_80": 0.7807486631016043,
+          "scaled_coverage_80": 0.7272727272727273,
+          "mondrian_coverage_80": 0.7433155080213903
+        },
+        {
+          "date": "2024-12-27",
+          "n": 172,
+          "champion_coverage_80": 0.8197674418604651,
+          "scaled_coverage_80": 0.7906976744186046,
+          "mondrian_coverage_80": 0.7965116279069767
+        },
+        {
+          "date": "2024-12-28",
+          "n": 174,
+          "champion_coverage_80": 0.7988505747126436,
+          "scaled_coverage_80": 0.8103448275862069,
+          "mondrian_coverage_80": 0.8045977011494253
+        },
+        {
+          "date": "2024-12-29",
+          "n": 130,
+          "champion_coverage_80": 0.7846153846153846,
+          "scaled_coverage_80": 0.7846153846153846,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2024-12-30",
+          "n": 160,
+          "champion_coverage_80": 0.8375,
+          "scaled_coverage_80": 0.84375,
+          "mondrian_coverage_80": 0.8125
+        },
+        {
+          "date": "2024-12-31",
+          "n": 132,
+          "champion_coverage_80": 0.7878787878787878,
+          "scaled_coverage_80": 0.803030303030303,
+          "mondrian_coverage_80": 0.7727272727272727
+        },
+        {
+          "date": "2025-01-01",
+          "n": 170,
+          "champion_coverage_80": 0.8294117647058824,
+          "scaled_coverage_80": 0.8588235294117647,
+          "mondrian_coverage_80": 0.8411764705882353
+        },
+        {
+          "date": "2025-01-02",
+          "n": 131,
+          "champion_coverage_80": 0.8244274809160306,
+          "scaled_coverage_80": 0.8473282442748091,
+          "mondrian_coverage_80": 0.8396946564885496
+        },
+        {
+          "date": "2025-01-03",
+          "n": 190,
+          "champion_coverage_80": 0.8263157894736842,
+          "scaled_coverage_80": 0.8157894736842105,
+          "mondrian_coverage_80": 0.8210526315789474
+        },
+        {
+          "date": "2025-01-04",
+          "n": 189,
+          "champion_coverage_80": 0.783068783068783,
+          "scaled_coverage_80": 0.798941798941799,
+          "mondrian_coverage_80": 0.8201058201058201
+        },
+        {
+          "date": "2025-01-05",
+          "n": 127,
+          "champion_coverage_80": 0.7874015748031497,
+          "scaled_coverage_80": 0.7559055118110236,
+          "mondrian_coverage_80": 0.7637795275590551
+        },
+        {
+          "date": "2025-01-06",
+          "n": 187,
+          "champion_coverage_80": 0.8663101604278075,
+          "scaled_coverage_80": 0.8449197860962567,
+          "mondrian_coverage_80": 0.8074866310160428
+        },
+        {
+          "date": "2025-01-07",
+          "n": 146,
+          "champion_coverage_80": 0.8082191780821918,
+          "scaled_coverage_80": 0.8287671232876712,
+          "mondrian_coverage_80": 0.8013698630136986
+        },
+        {
+          "date": "2025-01-08",
+          "n": 181,
+          "champion_coverage_80": 0.8066298342541437,
+          "scaled_coverage_80": 0.8011049723756906,
+          "mondrian_coverage_80": 0.8066298342541437
+        },
+        {
+          "date": "2025-01-09",
+          "n": 140,
+          "champion_coverage_80": 0.7928571428571428,
+          "scaled_coverage_80": 0.8142857142857143,
+          "mondrian_coverage_80": 0.8428571428571429
+        },
+        {
+          "date": "2025-01-10",
+          "n": 152,
+          "champion_coverage_80": 0.7368421052631579,
+          "scaled_coverage_80": 0.7236842105263158,
+          "mondrian_coverage_80": 0.7631578947368421
+        },
+        {
+          "date": "2025-01-11",
+          "n": 85,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.8117647058823529,
+          "mondrian_coverage_80": 0.8470588235294118
+        },
+        {
+          "date": "2025-01-12",
+          "n": 190,
+          "champion_coverage_80": 0.8157894736842105,
+          "scaled_coverage_80": 0.8315789473684211,
+          "mondrian_coverage_80": 0.8210526315789474
+        },
+        {
+          "date": "2025-01-13",
+          "n": 127,
+          "champion_coverage_80": 0.8110236220472441,
+          "scaled_coverage_80": 0.8267716535433071,
+          "mondrian_coverage_80": 0.8110236220472441
+        },
+        {
+          "date": "2025-01-14",
+          "n": 160,
+          "champion_coverage_80": 0.79375,
+          "scaled_coverage_80": 0.78125,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2025-01-15",
+          "n": 231,
+          "champion_coverage_80": 0.8095238095238095,
+          "scaled_coverage_80": 0.7748917748917749,
+          "mondrian_coverage_80": 0.7792207792207793
+        },
+        {
+          "date": "2025-01-16",
+          "n": 111,
+          "champion_coverage_80": 0.8018018018018018,
+          "scaled_coverage_80": 0.7927927927927928,
+          "mondrian_coverage_80": 0.7747747747747747
+        },
+        {
+          "date": "2025-01-17",
+          "n": 201,
+          "champion_coverage_80": 0.8258706467661692,
+          "scaled_coverage_80": 0.8159203980099502,
+          "mondrian_coverage_80": 0.835820895522388
+        },
+        {
+          "date": "2025-01-18",
+          "n": 121,
+          "champion_coverage_80": 0.743801652892562,
+          "scaled_coverage_80": 0.7355371900826446,
+          "mondrian_coverage_80": 0.71900826446281
+        },
+        {
+          "date": "2025-01-19",
+          "n": 157,
+          "champion_coverage_80": 0.821656050955414,
+          "scaled_coverage_80": 0.802547770700637,
+          "mondrian_coverage_80": 0.8343949044585988
+        },
+        {
+          "date": "2025-01-20",
+          "n": 172,
+          "champion_coverage_80": 0.7965116279069767,
+          "scaled_coverage_80": 0.7906976744186046,
+          "mondrian_coverage_80": 0.7848837209302325
+        },
+        {
+          "date": "2025-01-21",
+          "n": 109,
+          "champion_coverage_80": 0.8165137614678899,
+          "scaled_coverage_80": 0.8348623853211009,
+          "mondrian_coverage_80": 0.7889908256880734
+        },
+        {
+          "date": "2025-01-22",
+          "n": 162,
+          "champion_coverage_80": 0.7839506172839507,
+          "scaled_coverage_80": 0.7777777777777778,
+          "mondrian_coverage_80": 0.7530864197530864
+        },
+        {
+          "date": "2025-01-23",
+          "n": 212,
+          "champion_coverage_80": 0.8254716981132075,
+          "scaled_coverage_80": 0.7924528301886793,
+          "mondrian_coverage_80": 0.8113207547169812
+        },
+        {
+          "date": "2025-01-24",
+          "n": 58,
+          "champion_coverage_80": 0.7931034482758621,
+          "scaled_coverage_80": 0.7413793103448276,
+          "mondrian_coverage_80": 0.7758620689655172
+        },
+        {
+          "date": "2025-01-25",
+          "n": 306,
+          "champion_coverage_80": 0.7712418300653595,
+          "scaled_coverage_80": 0.7973856209150327,
+          "mondrian_coverage_80": 0.7712418300653595
+        },
+        {
+          "date": "2025-01-26",
+          "n": 20,
+          "champion_coverage_80": 0.75,
+          "scaled_coverage_80": 0.75,
+          "mondrian_coverage_80": 0.75
+        },
+        {
+          "date": "2025-01-27",
+          "n": 249,
+          "champion_coverage_80": 0.7911646586345381,
+          "scaled_coverage_80": 0.8192771084337349,
+          "mondrian_coverage_80": 0.8112449799196787
+        },
+        {
+          "date": "2025-01-28",
+          "n": 87,
+          "champion_coverage_80": 0.7931034482758621,
+          "scaled_coverage_80": 0.8045977011494253,
+          "mondrian_coverage_80": 0.7701149425287356
+        },
+        {
+          "date": "2025-01-29",
+          "n": 229,
+          "champion_coverage_80": 0.7816593886462883,
+          "scaled_coverage_80": 0.8034934497816594,
+          "mondrian_coverage_80": 0.7947598253275109
+        },
+        {
+          "date": "2025-01-30",
+          "n": 117,
+          "champion_coverage_80": 0.7606837606837606,
+          "scaled_coverage_80": 0.7863247863247863,
+          "mondrian_coverage_80": 0.7521367521367521
+        },
+        {
+          "date": "2025-01-31",
+          "n": 154,
+          "champion_coverage_80": 0.8051948051948052,
+          "scaled_coverage_80": 0.7922077922077922,
+          "mondrian_coverage_80": 0.8181818181818182
+        },
+        {
+          "date": "2025-02-01",
+          "n": 194,
+          "champion_coverage_80": 0.7731958762886598,
+          "scaled_coverage_80": 0.7371134020618557,
+          "mondrian_coverage_80": 0.7783505154639175
+        },
+        {
+          "date": "2025-02-02",
+          "n": 97,
+          "champion_coverage_80": 0.8041237113402062,
+          "scaled_coverage_80": 0.8144329896907216,
+          "mondrian_coverage_80": 0.8247422680412371
+        },
+        {
+          "date": "2025-02-03",
+          "n": 202,
+          "champion_coverage_80": 0.7772277227722773,
+          "scaled_coverage_80": 0.7821782178217822,
+          "mondrian_coverage_80": 0.8118811881188119
+        },
+        {
+          "date": "2025-02-04",
+          "n": 147,
+          "champion_coverage_80": 0.8163265306122449,
+          "scaled_coverage_80": 0.8299319727891157,
+          "mondrian_coverage_80": 0.8435374149659864
+        },
+        {
+          "date": "2025-02-05",
+          "n": 246,
+          "champion_coverage_80": 0.8130081300813008,
+          "scaled_coverage_80": 0.8048780487804879,
+          "mondrian_coverage_80": 0.7926829268292683
+        },
+        {
+          "date": "2025-02-06",
+          "n": 121,
+          "champion_coverage_80": 0.7851239669421488,
+          "scaled_coverage_80": 0.768595041322314,
+          "mondrian_coverage_80": 0.7768595041322314
+        },
+        {
+          "date": "2025-02-07",
+          "n": 140,
+          "champion_coverage_80": 0.8857142857142857,
+          "scaled_coverage_80": 0.8714285714285714,
+          "mondrian_coverage_80": 0.8214285714285714
+        },
+        {
+          "date": "2025-02-08",
+          "n": 235,
+          "champion_coverage_80": 0.7829787234042553,
+          "scaled_coverage_80": 0.7574468085106383,
+          "mondrian_coverage_80": 0.7617021276595745
+        },
+        {
+          "date": "2025-02-09",
+          "n": 59,
+          "champion_coverage_80": 0.8305084745762712,
+          "scaled_coverage_80": 0.7627118644067796,
+          "mondrian_coverage_80": 0.7288135593220338
+        },
+        {
+          "date": "2025-02-10",
+          "n": 218,
+          "champion_coverage_80": 0.8211009174311926,
+          "scaled_coverage_80": 0.8165137614678899,
+          "mondrian_coverage_80": 0.8302752293577982
+        },
+        {
+          "date": "2025-02-11",
+          "n": 91,
+          "champion_coverage_80": 0.7582417582417582,
+          "scaled_coverage_80": 0.7692307692307693,
+          "mondrian_coverage_80": 0.7582417582417582
+        },
+        {
+          "date": "2025-02-12",
+          "n": 303,
+          "champion_coverage_80": 0.7821782178217822,
+          "scaled_coverage_80": 0.7887788778877888,
+          "mondrian_coverage_80": 0.7887788778877888
+        },
+        {
+          "date": "2025-02-13",
+          "n": 102,
+          "champion_coverage_80": 0.7549019607843137,
+          "scaled_coverage_80": 0.7156862745098039,
+          "mondrian_coverage_80": 0.7450980392156863
+        },
+        {
+          "date": "2025-02-19",
+          "n": 20,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.9,
+          "mondrian_coverage_80": 0.85
+        },
+        {
+          "date": "2025-02-20",
+          "n": 190,
+          "champion_coverage_80": 0.7947368421052632,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.8052631578947368
+        },
+        {
+          "date": "2025-02-21",
+          "n": 203,
+          "champion_coverage_80": 0.8472906403940886,
+          "scaled_coverage_80": 0.8522167487684729,
+          "mondrian_coverage_80": 0.8571428571428571
+        },
+        {
+          "date": "2025-02-22",
+          "n": 108,
+          "champion_coverage_80": 0.7777777777777778,
+          "scaled_coverage_80": 0.7777777777777778,
+          "mondrian_coverage_80": 0.7870370370370371
+        },
+        {
+          "date": "2025-02-23",
+          "n": 221,
+          "champion_coverage_80": 0.8009049773755657,
+          "scaled_coverage_80": 0.8190045248868778,
+          "mondrian_coverage_80": 0.8190045248868778
+        },
+        {
+          "date": "2025-02-24",
+          "n": 161,
+          "champion_coverage_80": 0.7763975155279503,
+          "scaled_coverage_80": 0.7950310559006211,
+          "mondrian_coverage_80": 0.8136645962732919
+        },
+        {
+          "date": "2025-02-25",
+          "n": 149,
+          "champion_coverage_80": 0.8389261744966443,
+          "scaled_coverage_80": 0.825503355704698,
+          "mondrian_coverage_80": 0.87248322147651
+        },
+        {
+          "date": "2025-02-26",
+          "n": 190,
+          "champion_coverage_80": 0.7473684210526316,
+          "scaled_coverage_80": 0.7315789473684211,
+          "mondrian_coverage_80": 0.7526315789473684
+        },
+        {
+          "date": "2025-02-27",
+          "n": 100,
+          "champion_coverage_80": 0.82,
+          "scaled_coverage_80": 0.81,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2025-02-28",
+          "n": 211,
+          "champion_coverage_80": 0.7677725118483413,
+          "scaled_coverage_80": 0.8009478672985783,
+          "mondrian_coverage_80": 0.7962085308056872
+        },
+        {
+          "date": "2025-03-01",
+          "n": 123,
+          "champion_coverage_80": 0.7886178861788617,
+          "scaled_coverage_80": 0.7804878048780488,
+          "mondrian_coverage_80": 0.7723577235772358
+        },
+        {
+          "date": "2025-03-02",
+          "n": 192,
+          "champion_coverage_80": 0.8125,
+          "scaled_coverage_80": 0.8177083333333334,
+          "mondrian_coverage_80": 0.8177083333333334
+        },
+        {
+          "date": "2025-03-03",
+          "n": 156,
+          "champion_coverage_80": 0.7948717948717948,
+          "scaled_coverage_80": 0.75,
+          "mondrian_coverage_80": 0.7371794871794872
+        },
+        {
+          "date": "2025-03-04",
+          "n": 194,
+          "champion_coverage_80": 0.7989690721649485,
+          "scaled_coverage_80": 0.8041237113402062,
+          "mondrian_coverage_80": 0.8041237113402062
+        },
+        {
+          "date": "2025-03-05",
+          "n": 154,
+          "champion_coverage_80": 0.7727272727272727,
+          "scaled_coverage_80": 0.7467532467532467,
+          "mondrian_coverage_80": 0.7467532467532467
+        },
+        {
+          "date": "2025-03-06",
+          "n": 118,
+          "champion_coverage_80": 0.711864406779661,
+          "scaled_coverage_80": 0.7627118644067796,
+          "mondrian_coverage_80": 0.788135593220339
+        },
+        {
+          "date": "2025-03-07",
+          "n": 162,
+          "champion_coverage_80": 0.845679012345679,
+          "scaled_coverage_80": 0.845679012345679,
+          "mondrian_coverage_80": 0.8148148148148148
+        },
+        {
+          "date": "2025-03-08",
+          "n": 158,
+          "champion_coverage_80": 0.8291139240506329,
+          "scaled_coverage_80": 0.8227848101265823,
+          "mondrian_coverage_80": 0.810126582278481
+        },
+        {
+          "date": "2025-03-09",
+          "n": 175,
+          "champion_coverage_80": 0.84,
+          "scaled_coverage_80": 0.8342857142857143,
+          "mondrian_coverage_80": 0.8571428571428571
+        },
+        {
+          "date": "2025-03-10",
+          "n": 252,
+          "champion_coverage_80": 0.7579365079365079,
+          "scaled_coverage_80": 0.7817460317460317,
+          "mondrian_coverage_80": 0.7658730158730159
+        },
+        {
+          "date": "2025-03-11",
+          "n": 81,
+          "champion_coverage_80": 0.8888888888888888,
+          "scaled_coverage_80": 0.8888888888888888,
+          "mondrian_coverage_80": 0.9135802469135802
+        },
+        {
+          "date": "2025-03-12",
+          "n": 186,
+          "champion_coverage_80": 0.8333333333333334,
+          "scaled_coverage_80": 0.7849462365591398,
+          "mondrian_coverage_80": 0.7903225806451613
+        },
+        {
+          "date": "2025-03-13",
+          "n": 111,
+          "champion_coverage_80": 0.7927927927927928,
+          "scaled_coverage_80": 0.7927927927927928,
+          "mondrian_coverage_80": 0.8018018018018018
+        },
+        {
+          "date": "2025-03-14",
+          "n": 216,
+          "champion_coverage_80": 0.8425925925925926,
+          "scaled_coverage_80": 0.8148148148148148,
+          "mondrian_coverage_80": 0.8101851851851852
+        },
+        {
+          "date": "2025-03-15",
+          "n": 155,
+          "champion_coverage_80": 0.7806451612903226,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.7806451612903226
+        },
+        {
+          "date": "2025-03-16",
+          "n": 168,
+          "champion_coverage_80": 0.8571428571428571,
+          "scaled_coverage_80": 0.8154761904761905,
+          "mondrian_coverage_80": 0.8392857142857143
+        },
+        {
+          "date": "2025-03-17",
+          "n": 210,
+          "champion_coverage_80": 0.7857142857142857,
+          "scaled_coverage_80": 0.7619047619047619,
+          "mondrian_coverage_80": 0.7761904761904762
+        },
+        {
+          "date": "2025-03-18",
+          "n": 85,
+          "champion_coverage_80": 0.7529411764705882,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.7529411764705882
+        },
+        {
+          "date": "2025-03-19",
+          "n": 225,
+          "champion_coverage_80": 0.8177777777777778,
+          "scaled_coverage_80": 0.7733333333333333,
+          "mondrian_coverage_80": 0.7733333333333333
+        },
+        {
+          "date": "2025-03-20",
+          "n": 104,
+          "champion_coverage_80": 0.7788461538461539,
+          "scaled_coverage_80": 0.7884615384615384,
+          "mondrian_coverage_80": 0.7884615384615384
+        },
+        {
+          "date": "2025-03-21",
+          "n": 218,
+          "champion_coverage_80": 0.8302752293577982,
+          "scaled_coverage_80": 0.8348623853211009,
+          "mondrian_coverage_80": 0.8348623853211009
+        },
+        {
+          "date": "2025-03-22",
+          "n": 108,
+          "champion_coverage_80": 0.7962962962962963,
+          "scaled_coverage_80": 0.7962962962962963,
+          "mondrian_coverage_80": 0.8148148148148148
+        },
+        {
+          "date": "2025-03-23",
+          "n": 159,
+          "champion_coverage_80": 0.779874213836478,
+          "scaled_coverage_80": 0.8176100628930818,
+          "mondrian_coverage_80": 0.8113207547169812
+        },
+        {
+          "date": "2025-03-24",
+          "n": 172,
+          "champion_coverage_80": 0.813953488372093,
+          "scaled_coverage_80": 0.8546511627906976,
+          "mondrian_coverage_80": 0.8604651162790697
+        },
+        {
+          "date": "2025-03-25",
+          "n": 171,
+          "champion_coverage_80": 0.7894736842105263,
+          "scaled_coverage_80": 0.7719298245614035,
+          "mondrian_coverage_80": 0.7719298245614035
+        },
+        {
+          "date": "2025-03-26",
+          "n": 125,
+          "champion_coverage_80": 0.832,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.808
+        },
+        {
+          "date": "2025-03-27",
+          "n": 172,
+          "champion_coverage_80": 0.8023255813953488,
+          "scaled_coverage_80": 0.8081395348837209,
+          "mondrian_coverage_80": 0.8197674418604651
+        },
+        {
+          "date": "2025-03-28",
+          "n": 148,
+          "champion_coverage_80": 0.7905405405405406,
+          "scaled_coverage_80": 0.8040540540540541,
+          "mondrian_coverage_80": 0.7905405405405406
+        },
+        {
+          "date": "2025-03-29",
+          "n": 151,
+          "champion_coverage_80": 0.7417218543046358,
+          "scaled_coverage_80": 0.7549668874172185,
+          "mondrian_coverage_80": 0.7483443708609272
+        },
+        {
+          "date": "2025-03-30",
+          "n": 183,
+          "champion_coverage_80": 0.7868852459016393,
+          "scaled_coverage_80": 0.7650273224043715,
+          "mondrian_coverage_80": 0.7540983606557377
+        },
+        {
+          "date": "2025-03-31",
+          "n": 164,
+          "champion_coverage_80": 0.7682926829268293,
+          "scaled_coverage_80": 0.823170731707317,
+          "mondrian_coverage_80": 0.7682926829268293
+        },
+        {
+          "date": "2025-04-01",
+          "n": 138,
+          "champion_coverage_80": 0.7681159420289855,
+          "scaled_coverage_80": 0.8188405797101449,
+          "mondrian_coverage_80": 0.8115942028985508
+        },
+        {
+          "date": "2025-04-02",
+          "n": 192,
+          "champion_coverage_80": 0.8645833333333334,
+          "scaled_coverage_80": 0.8333333333333334,
+          "mondrian_coverage_80": 0.8489583333333334
+        },
+        {
+          "date": "2025-04-03",
+          "n": 126,
+          "champion_coverage_80": 0.8095238095238095,
+          "scaled_coverage_80": 0.8174603174603174,
+          "mondrian_coverage_80": 0.8333333333333334
+        },
+        {
+          "date": "2025-04-04",
+          "n": 229,
+          "champion_coverage_80": 0.8122270742358079,
+          "scaled_coverage_80": 0.8384279475982532,
+          "mondrian_coverage_80": 0.7991266375545851
+        },
+        {
+          "date": "2025-04-05",
+          "n": 103,
+          "champion_coverage_80": 0.7864077669902912,
+          "scaled_coverage_80": 0.8349514563106796,
+          "mondrian_coverage_80": 0.8446601941747572
+        },
+        {
+          "date": "2025-04-06",
+          "n": 229,
+          "champion_coverage_80": 0.7685589519650655,
+          "scaled_coverage_80": 0.7729257641921398,
+          "mondrian_coverage_80": 0.7729257641921398
+        },
+        {
+          "date": "2025-04-07",
+          "n": 41,
+          "champion_coverage_80": 0.7560975609756098,
+          "scaled_coverage_80": 0.8048780487804879,
+          "mondrian_coverage_80": 0.8292682926829268
+        },
+        {
+          "date": "2025-04-08",
+          "n": 225,
+          "champion_coverage_80": 0.8622222222222222,
+          "scaled_coverage_80": 0.84,
+          "mondrian_coverage_80": 0.8488888888888889
+        },
+        {
+          "date": "2025-04-09",
+          "n": 203,
+          "champion_coverage_80": 0.7438423645320197,
+          "scaled_coverage_80": 0.7142857142857143,
+          "mondrian_coverage_80": 0.7389162561576355
+        },
+        {
+          "date": "2025-04-10",
+          "n": 111,
+          "champion_coverage_80": 0.7387387387387387,
+          "scaled_coverage_80": 0.7297297297297297,
+          "mondrian_coverage_80": 0.7477477477477478
+        },
+        {
+          "date": "2025-04-11",
+          "n": 309,
+          "champion_coverage_80": 0.7411003236245954,
+          "scaled_coverage_80": 0.7508090614886731,
+          "mondrian_coverage_80": 0.7378640776699029
+        },
+        {
+          "date": "2025-04-13",
+          "n": 297,
+          "champion_coverage_80": 0.7104377104377104,
+          "scaled_coverage_80": 0.6666666666666666,
+          "mondrian_coverage_80": 0.7003367003367004
+        }
+      ],
+      "terciles": [
+        {
+          "tercile": "low",
+          "n": 9219,
+          "projection_range": [
+            1.4310098886489868,
+            6.706977367401123
+          ],
+          "coverage_80": {
+            "champion": 0.9250461004447337,
+            "scaled": 0.8431500162707452,
+            "mondrian": 0.8041002277904328
+          }
+        },
+        {
+          "tercile": "mid",
+          "n": 9218,
+          "projection_range": [
+            6.707220077514648,
+            11.925491333007812
+          ],
+          "coverage_80": {
+            "champion": 0.8028856584942504,
+            "scaled": 0.7811889780863528,
+            "mondrian": 0.7931221523106965
+          }
+        },
+        {
+          "tercile": "high",
+          "n": 9218,
+          "projection_range": [
+            11.925498962402344,
+            36.88888168334961
+          ],
+          "coverage_80": {
+            "champion": 0.6668474723367325,
+            "scaled": 0.7679540030375352,
+            "mondrian": 0.7955087871555652
+          }
+        }
+      ],
+      "time_thirds": [
+        {
+          "third": "early",
+          "days": [
+            "2024-04-07",
+            "2024-12-12"
+          ],
+          "n": 9342,
+          "coverage_80": {
+            "champion": 0.8001498608435025,
+            "scaled": 0.801113251980304,
+            "mondrian": 0.7994005566259902
+          }
+        },
+        {
+          "third": "middle",
+          "days": [
+            "2024-12-13",
+            "2025-02-09"
+          ],
+          "n": 8847,
+          "coverage_80": {
+            "champion": 0.8007234090652199,
+            "scaled": 0.7980106250706455,
+            "mondrian": 0.7982366904035266
+          }
+        },
+        {
+          "third": "late",
+          "days": [
+            "2025-02-10",
+            "2025-04-13"
+          ],
+          "n": 9466,
+          "coverage_80": {
+            "champion": 0.7941052186773716,
+            "scaled": 0.7932600887386436,
+            "mondrian": 0.7951616311007818
+          }
+        }
+      ]
+    },
+    "rebounds": {
+      "n_calibration": 8896,
+      "n_eval": 27655,
+      "calibration_days": [
+        "2024-02-05",
+        "2024-04-06"
+      ],
+      "evaluation_days": [
+        "2024-04-07",
+        "2025-04-13"
+      ],
+      "sigma_model": {
+        "edges": [
+          1.5767382979393005,
+          2.1237528324127197,
+          2.6196166276931763,
+          3.087183713912964,
+          3.5520416498184204,
+          4.038976192474365,
+          4.639506578445435,
+          5.545175552368164,
+          7.450005054473877
+        ],
+        "scales": [
+          1.0676199619019968,
+          1.3974532327448155,
+          1.5090167404560562,
+          1.6793594553446474,
+          1.696898585758852,
+          1.8768204274944567,
+          1.9755752745639072,
+          2.1280101142128087,
+          2.448758954680368,
+          3.0933557312140305
+        ],
+        "raw_scales": [
+          1.0676199619019968,
+          1.3974532327448155,
+          1.5090167404560562,
+          1.6793594553446474,
+          1.696898585758852,
+          1.8768204274944567,
+          1.9755752745639072,
+          2.1280101142128087,
+          2.448758954680368,
+          3.0933557312140305
+        ],
+        "bin_counts": [
+          890,
+          889,
+          890,
+          889,
+          890,
+          889,
+          890,
+          889,
+          890,
+          890
+        ],
+        "floor": 0.18873394000136276,
+        "mean_abs_resid": 1.8873394000136274,
+        "n": 8896
+      },
+      "mondrian_edges": [
+        2.794541120529175,
+        4.395777225494385
+      ],
+      "mondrian_fallback_bin_days": 0,
+      "mondrian_bin_days": 510,
+      "mondrian_min_window_bin": 447,
+      "methods": {
+        "champion_0.5": {
+          "coverage": 0.4995480021695896,
+          "mean_width": 3.054087729429039,
+          "n": 27655
+        },
+        "champion_0.8": {
+          "coverage": 0.7982281685047912,
+          "mean_width": 5.914145385527175,
+          "n": 27655
+        },
+        "champion_0.9": {
+          "coverage": 0.8987163261616344,
+          "mean_width": 8.006893726258182,
+          "n": 27655
+        },
+        "scaled_0.5": {
+          "coverage": 0.49799312963297776,
+          "mean_width": 3.328220293107609,
+          "n": 27655
+        },
+        "scaled_0.8": {
+          "coverage": 0.7973241728439704,
+          "mean_width": 5.8073029463531824,
+          "n": 27655
+        },
+        "scaled_0.9": {
+          "coverage": 0.8975592117157838,
+          "mean_width": 7.465110779026165,
+          "n": 27655
+        },
+        "mondrian_0.5": {
+          "coverage": 0.4982100885915748,
+          "mean_width": 3.243824299889218,
+          "n": 27655
+        },
+        "mondrian_0.8": {
+          "coverage": 0.7986259265955523,
+          "mean_width": 5.942145253611482,
+          "n": 27655
+        },
+        "mondrian_0.9": {
+          "coverage": 0.8983908877237389,
+          "mean_width": 7.63612512380472,
+          "n": 27655
+        }
+      },
+      "daily": [
+        {
+          "date": "2024-04-07",
+          "n": 271,
+          "champion_coverage_80": 0.8007380073800738,
+          "scaled_coverage_80": 0.7970479704797048,
+          "mondrian_coverage_80": 0.7896678966789668
+        },
+        {
+          "date": "2024-04-09",
+          "n": 312,
+          "champion_coverage_80": 0.8108974358974359,
+          "scaled_coverage_80": 0.8012820512820513,
+          "mondrian_coverage_80": 0.8076923076923077
+        },
+        {
+          "date": "2024-04-10",
+          "n": 187,
+          "champion_coverage_80": 0.8502673796791443,
+          "scaled_coverage_80": 0.8181818181818182,
+          "mondrian_coverage_80": 0.8235294117647058
+        },
+        {
+          "date": "2024-04-11",
+          "n": 103,
+          "champion_coverage_80": 0.8058252427184466,
+          "scaled_coverage_80": 0.8252427184466019,
+          "mondrian_coverage_80": 0.8543689320388349
+        },
+        {
+          "date": "2024-04-12",
+          "n": 308,
+          "champion_coverage_80": 0.7337662337662337,
+          "scaled_coverage_80": 0.724025974025974,
+          "mondrian_coverage_80": 0.7564935064935064
+        },
+        {
+          "date": "2024-04-14",
+          "n": 344,
+          "champion_coverage_80": 0.747093023255814,
+          "scaled_coverage_80": 0.7325581395348837,
+          "mondrian_coverage_80": 0.7383720930232558
+        },
+        {
+          "date": "2024-10-22",
+          "n": 37,
+          "champion_coverage_80": 0.8108108108108109,
+          "scaled_coverage_80": 0.8108108108108109,
+          "mondrian_coverage_80": 0.7567567567567568
+        },
+        {
+          "date": "2024-10-23",
+          "n": 208,
+          "champion_coverage_80": 0.7980769230769231,
+          "scaled_coverage_80": 0.8028846153846154,
+          "mondrian_coverage_80": 0.8028846153846154
+        },
+        {
+          "date": "2024-10-24",
+          "n": 91,
+          "champion_coverage_80": 0.7912087912087912,
+          "scaled_coverage_80": 0.8241758241758241,
+          "mondrian_coverage_80": 0.7802197802197802
+        },
+        {
+          "date": "2024-10-25",
+          "n": 225,
+          "champion_coverage_80": 0.8177777777777778,
+          "scaled_coverage_80": 0.8488888888888889,
+          "mondrian_coverage_80": 0.8533333333333334
+        },
+        {
+          "date": "2024-10-26",
+          "n": 215,
+          "champion_coverage_80": 0.7906976744186046,
+          "scaled_coverage_80": 0.8232558139534883,
+          "mondrian_coverage_80": 0.8232558139534883
+        },
+        {
+          "date": "2024-10-27",
+          "n": 115,
+          "champion_coverage_80": 0.7565217391304347,
+          "scaled_coverage_80": 0.782608695652174,
+          "mondrian_coverage_80": 0.782608695652174
+        },
+        {
+          "date": "2024-10-28",
+          "n": 233,
+          "champion_coverage_80": 0.776824034334764,
+          "scaled_coverage_80": 0.7725321888412017,
+          "mondrian_coverage_80": 0.7896995708154506
+        },
+        {
+          "date": "2024-10-29",
+          "n": 87,
+          "champion_coverage_80": 0.8390804597701149,
+          "scaled_coverage_80": 0.8735632183908046,
+          "mondrian_coverage_80": 0.8505747126436781
+        },
+        {
+          "date": "2024-10-30",
+          "n": 237,
+          "champion_coverage_80": 0.7721518987341772,
+          "scaled_coverage_80": 0.7932489451476793,
+          "mondrian_coverage_80": 0.7932489451476793
+        },
+        {
+          "date": "2024-10-31",
+          "n": 87,
+          "champion_coverage_80": 0.8045977011494253,
+          "scaled_coverage_80": 0.8620689655172413,
+          "mondrian_coverage_80": 0.8390804597701149
+        },
+        {
+          "date": "2024-11-01",
+          "n": 186,
+          "champion_coverage_80": 0.8279569892473119,
+          "scaled_coverage_80": 0.8118279569892473,
+          "mondrian_coverage_80": 0.8118279569892473
+        },
+        {
+          "date": "2024-11-02",
+          "n": 224,
+          "champion_coverage_80": 0.8169642857142857,
+          "scaled_coverage_80": 0.8035714285714286,
+          "mondrian_coverage_80": 0.8035714285714286
+        },
+        {
+          "date": "2024-11-03",
+          "n": 71,
+          "champion_coverage_80": 0.8450704225352113,
+          "scaled_coverage_80": 0.8450704225352113,
+          "mondrian_coverage_80": 0.8309859154929577
+        },
+        {
+          "date": "2024-11-04",
+          "n": 311,
+          "champion_coverage_80": 0.8231511254019293,
+          "scaled_coverage_80": 0.8135048231511254,
+          "mondrian_coverage_80": 0.8295819935691319
+        },
+        {
+          "date": "2024-11-06",
+          "n": 258,
+          "champion_coverage_80": 0.813953488372093,
+          "scaled_coverage_80": 0.7906976744186046,
+          "mondrian_coverage_80": 0.7906976744186046
+        },
+        {
+          "date": "2024-11-07",
+          "n": 74,
+          "champion_coverage_80": 0.7837837837837838,
+          "scaled_coverage_80": 0.7837837837837838,
+          "mondrian_coverage_80": 0.7567567567567568
+        },
+        {
+          "date": "2024-11-08",
+          "n": 296,
+          "champion_coverage_80": 0.8412162162162162,
+          "scaled_coverage_80": 0.8378378378378378,
+          "mondrian_coverage_80": 0.831081081081081
+        },
+        {
+          "date": "2024-11-09",
+          "n": 82,
+          "champion_coverage_80": 0.8780487804878049,
+          "scaled_coverage_80": 0.8780487804878049,
+          "mondrian_coverage_80": 0.8658536585365854
+        },
+        {
+          "date": "2024-11-10",
+          "n": 225,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.7866666666666666,
+          "mondrian_coverage_80": 0.8177777777777778
+        },
+        {
+          "date": "2024-11-11",
+          "n": 110,
+          "champion_coverage_80": 0.8454545454545455,
+          "scaled_coverage_80": 0.8181818181818182,
+          "mondrian_coverage_80": 0.7818181818181819
+        },
+        {
+          "date": "2024-11-12",
+          "n": 171,
+          "champion_coverage_80": 0.8421052631578947,
+          "scaled_coverage_80": 0.8011695906432749,
+          "mondrian_coverage_80": 0.8304093567251462
+        },
+        {
+          "date": "2024-11-13",
+          "n": 224,
+          "champion_coverage_80": 0.7857142857142857,
+          "scaled_coverage_80": 0.78125,
+          "mondrian_coverage_80": 0.7946428571428571
+        },
+        {
+          "date": "2024-11-14",
+          "n": 20,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2024-11-15",
+          "n": 259,
+          "champion_coverage_80": 0.8146718146718147,
+          "scaled_coverage_80": 0.8185328185328186,
+          "mondrian_coverage_80": 0.8185328185328186
+        },
+        {
+          "date": "2024-11-16",
+          "n": 102,
+          "champion_coverage_80": 0.7745098039215687,
+          "scaled_coverage_80": 0.7647058823529411,
+          "mondrian_coverage_80": 0.7450980392156863
+        },
+        {
+          "date": "2024-11-17",
+          "n": 218,
+          "champion_coverage_80": 0.8165137614678899,
+          "scaled_coverage_80": 0.8302752293577982,
+          "mondrian_coverage_80": 0.8440366972477065
+        },
+        {
+          "date": "2024-11-18",
+          "n": 170,
+          "champion_coverage_80": 0.7647058823529411,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.8058823529411765
+        },
+        {
+          "date": "2024-11-19",
+          "n": 122,
+          "champion_coverage_80": 0.7377049180327869,
+          "scaled_coverage_80": 0.7786885245901639,
+          "mondrian_coverage_80": 0.7786885245901639
+        },
+        {
+          "date": "2024-11-20",
+          "n": 186,
+          "champion_coverage_80": 0.8494623655913979,
+          "scaled_coverage_80": 0.8387096774193549,
+          "mondrian_coverage_80": 0.8333333333333334
+        },
+        {
+          "date": "2024-11-21",
+          "n": 78,
+          "champion_coverage_80": 0.7948717948717948,
+          "scaled_coverage_80": 0.8461538461538461,
+          "mondrian_coverage_80": 0.8205128205128205
+        },
+        {
+          "date": "2024-11-22",
+          "n": 174,
+          "champion_coverage_80": 0.8103448275862069,
+          "scaled_coverage_80": 0.8160919540229885,
+          "mondrian_coverage_80": 0.8275862068965517
+        },
+        {
+          "date": "2024-11-23",
+          "n": 152,
+          "champion_coverage_80": 0.7763157894736842,
+          "scaled_coverage_80": 0.8092105263157895,
+          "mondrian_coverage_80": 0.7763157894736842
+        },
+        {
+          "date": "2024-11-24",
+          "n": 123,
+          "champion_coverage_80": 0.8211382113821138,
+          "scaled_coverage_80": 0.8048780487804879,
+          "mondrian_coverage_80": 0.7967479674796748
+        },
+        {
+          "date": "2024-11-25",
+          "n": 194,
+          "champion_coverage_80": 0.788659793814433,
+          "scaled_coverage_80": 0.8041237113402062,
+          "mondrian_coverage_80": 0.7938144329896907
+        },
+        {
+          "date": "2024-11-26",
+          "n": 107,
+          "champion_coverage_80": 0.7663551401869159,
+          "scaled_coverage_80": 0.7757009345794392,
+          "mondrian_coverage_80": 0.794392523364486
+        },
+        {
+          "date": "2024-11-27",
+          "n": 306,
+          "champion_coverage_80": 0.7908496732026143,
+          "scaled_coverage_80": 0.8071895424836601,
+          "mondrian_coverage_80": 0.8169934640522876
+        },
+        {
+          "date": "2024-11-29",
+          "n": 205,
+          "champion_coverage_80": 0.7853658536585366,
+          "scaled_coverage_80": 0.7804878048780488,
+          "mondrian_coverage_80": 0.7853658536585366
+        },
+        {
+          "date": "2024-11-30",
+          "n": 108,
+          "champion_coverage_80": 0.7407407407407407,
+          "scaled_coverage_80": 0.7037037037037037,
+          "mondrian_coverage_80": 0.7037037037037037
+        },
+        {
+          "date": "2024-12-01",
+          "n": 204,
+          "champion_coverage_80": 0.8088235294117647,
+          "scaled_coverage_80": 0.8284313725490197,
+          "mondrian_coverage_80": 0.7990196078431373
+        },
+        {
+          "date": "2024-12-02",
+          "n": 87,
+          "champion_coverage_80": 0.8275862068965517,
+          "scaled_coverage_80": 0.7701149425287356,
+          "mondrian_coverage_80": 0.7816091954022989
+        },
+        {
+          "date": "2024-12-03",
+          "n": 242,
+          "champion_coverage_80": 0.78099173553719,
+          "scaled_coverage_80": 0.8099173553719008,
+          "mondrian_coverage_80": 0.8057851239669421
+        },
+        {
+          "date": "2024-12-04",
+          "n": 125,
+          "champion_coverage_80": 0.888,
+          "scaled_coverage_80": 0.872,
+          "mondrian_coverage_80": 0.88
+        },
+        {
+          "date": "2024-12-05",
+          "n": 173,
+          "champion_coverage_80": 0.7456647398843931,
+          "scaled_coverage_80": 0.7398843930635838,
+          "mondrian_coverage_80": 0.7687861271676301
+        },
+        {
+          "date": "2024-12-06",
+          "n": 147,
+          "champion_coverage_80": 0.782312925170068,
+          "scaled_coverage_80": 0.8163265306122449,
+          "mondrian_coverage_80": 0.7891156462585034
+        },
+        {
+          "date": "2024-12-07",
+          "n": 133,
+          "champion_coverage_80": 0.7669172932330827,
+          "scaled_coverage_80": 0.7969924812030075,
+          "mondrian_coverage_80": 0.8120300751879699
+        },
+        {
+          "date": "2024-12-08",
+          "n": 252,
+          "champion_coverage_80": 0.8134920634920635,
+          "scaled_coverage_80": 0.7896825396825397,
+          "mondrian_coverage_80": 0.8055555555555556
+        },
+        {
+          "date": "2024-12-09",
+          "n": 17,
+          "champion_coverage_80": 0.8823529411764706,
+          "scaled_coverage_80": 1.0,
+          "mondrian_coverage_80": 0.9411764705882353
+        },
+        {
+          "date": "2024-12-10",
+          "n": 43,
+          "champion_coverage_80": 0.6976744186046512,
+          "scaled_coverage_80": 0.7209302325581395,
+          "mondrian_coverage_80": 0.6744186046511628
+        },
+        {
+          "date": "2024-12-11",
+          "n": 37,
+          "champion_coverage_80": 0.8108108108108109,
+          "scaled_coverage_80": 0.7837837837837838,
+          "mondrian_coverage_80": 0.7837837837837838
+        },
+        {
+          "date": "2024-12-12",
+          "n": 66,
+          "champion_coverage_80": 0.8181818181818182,
+          "scaled_coverage_80": 0.7878787878787878,
+          "mondrian_coverage_80": 0.7727272727272727
+        },
+        {
+          "date": "2024-12-13",
+          "n": 169,
+          "champion_coverage_80": 0.8047337278106509,
+          "scaled_coverage_80": 0.8106508875739645,
+          "mondrian_coverage_80": 0.7810650887573964
+        },
+        {
+          "date": "2024-12-14",
+          "n": 37,
+          "champion_coverage_80": 0.7027027027027027,
+          "scaled_coverage_80": 0.7027027027027027,
+          "mondrian_coverage_80": 0.7027027027027027
+        },
+        {
+          "date": "2024-12-15",
+          "n": 154,
+          "champion_coverage_80": 0.8116883116883117,
+          "scaled_coverage_80": 0.8376623376623377,
+          "mondrian_coverage_80": 0.8376623376623377
+        },
+        {
+          "date": "2024-12-16",
+          "n": 123,
+          "champion_coverage_80": 0.7723577235772358,
+          "scaled_coverage_80": 0.7723577235772358,
+          "mondrian_coverage_80": 0.7317073170731707
+        },
+        {
+          "date": "2024-12-17",
+          "n": 25,
+          "champion_coverage_80": 0.88,
+          "scaled_coverage_80": 0.88,
+          "mondrian_coverage_80": 0.92
+        },
+        {
+          "date": "2024-12-19",
+          "n": 277,
+          "champion_coverage_80": 0.7833935018050542,
+          "scaled_coverage_80": 0.7545126353790613,
+          "mondrian_coverage_80": 0.7509025270758123
+        },
+        {
+          "date": "2024-12-20",
+          "n": 67,
+          "champion_coverage_80": 0.7761194029850746,
+          "scaled_coverage_80": 0.7910447761194029,
+          "mondrian_coverage_80": 0.8208955223880597
+        },
+        {
+          "date": "2024-12-21",
+          "n": 258,
+          "champion_coverage_80": 0.8372093023255814,
+          "scaled_coverage_80": 0.8178294573643411,
+          "mondrian_coverage_80": 0.8178294573643411
+        },
+        {
+          "date": "2024-12-22",
+          "n": 62,
+          "champion_coverage_80": 0.8548387096774194,
+          "scaled_coverage_80": 0.8064516129032258,
+          "mondrian_coverage_80": 0.7903225806451613
+        },
+        {
+          "date": "2024-12-23",
+          "n": 316,
+          "champion_coverage_80": 0.7911392405063291,
+          "scaled_coverage_80": 0.7879746835443038,
+          "mondrian_coverage_80": 0.8006329113924051
+        },
+        {
+          "date": "2024-12-25",
+          "n": 92,
+          "champion_coverage_80": 0.7065217391304348,
+          "scaled_coverage_80": 0.75,
+          "mondrian_coverage_80": 0.782608695652174
+        },
+        {
+          "date": "2024-12-26",
+          "n": 187,
+          "champion_coverage_80": 0.8342245989304813,
+          "scaled_coverage_80": 0.8235294117647058,
+          "mondrian_coverage_80": 0.7914438502673797
+        },
+        {
+          "date": "2024-12-27",
+          "n": 172,
+          "champion_coverage_80": 0.813953488372093,
+          "scaled_coverage_80": 0.8488372093023255,
+          "mondrian_coverage_80": 0.8313953488372093
+        },
+        {
+          "date": "2024-12-28",
+          "n": 174,
+          "champion_coverage_80": 0.8160919540229885,
+          "scaled_coverage_80": 0.8045977011494253,
+          "mondrian_coverage_80": 0.7988505747126436
+        },
+        {
+          "date": "2024-12-29",
+          "n": 130,
+          "champion_coverage_80": 0.8153846153846154,
+          "scaled_coverage_80": 0.7538461538461538,
+          "mondrian_coverage_80": 0.7615384615384615
+        },
+        {
+          "date": "2024-12-30",
+          "n": 160,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.80625,
+          "mondrian_coverage_80": 0.8375
+        },
+        {
+          "date": "2024-12-31",
+          "n": 132,
+          "champion_coverage_80": 0.7954545454545454,
+          "scaled_coverage_80": 0.7878787878787878,
+          "mondrian_coverage_80": 0.8106060606060606
+        },
+        {
+          "date": "2025-01-01",
+          "n": 170,
+          "champion_coverage_80": 0.788235294117647,
+          "scaled_coverage_80": 0.8058823529411765,
+          "mondrian_coverage_80": 0.8117647058823529
+        },
+        {
+          "date": "2025-01-02",
+          "n": 131,
+          "champion_coverage_80": 0.816793893129771,
+          "scaled_coverage_80": 0.8396946564885496,
+          "mondrian_coverage_80": 0.8625954198473282
+        },
+        {
+          "date": "2025-01-03",
+          "n": 190,
+          "champion_coverage_80": 0.8421052631578947,
+          "scaled_coverage_80": 0.8578947368421053,
+          "mondrian_coverage_80": 0.8789473684210526
+        },
+        {
+          "date": "2025-01-04",
+          "n": 189,
+          "champion_coverage_80": 0.8359788359788359,
+          "scaled_coverage_80": 0.8148148148148148,
+          "mondrian_coverage_80": 0.7936507936507936
+        },
+        {
+          "date": "2025-01-05",
+          "n": 127,
+          "champion_coverage_80": 0.8031496062992126,
+          "scaled_coverage_80": 0.7952755905511811,
+          "mondrian_coverage_80": 0.7480314960629921
+        },
+        {
+          "date": "2025-01-06",
+          "n": 187,
+          "champion_coverage_80": 0.7593582887700535,
+          "scaled_coverage_80": 0.7647058823529411,
+          "mondrian_coverage_80": 0.7433155080213903
+        },
+        {
+          "date": "2025-01-07",
+          "n": 146,
+          "champion_coverage_80": 0.7534246575342466,
+          "scaled_coverage_80": 0.7465753424657534,
+          "mondrian_coverage_80": 0.7945205479452054
+        },
+        {
+          "date": "2025-01-08",
+          "n": 181,
+          "champion_coverage_80": 0.8397790055248618,
+          "scaled_coverage_80": 0.8176795580110497,
+          "mondrian_coverage_80": 0.8287292817679558
+        },
+        {
+          "date": "2025-01-09",
+          "n": 140,
+          "champion_coverage_80": 0.7071428571428572,
+          "scaled_coverage_80": 0.7285714285714285,
+          "mondrian_coverage_80": 0.7
+        },
+        {
+          "date": "2025-01-10",
+          "n": 152,
+          "champion_coverage_80": 0.8092105263157895,
+          "scaled_coverage_80": 0.7960526315789473,
+          "mondrian_coverage_80": 0.8026315789473685
+        },
+        {
+          "date": "2025-01-11",
+          "n": 85,
+          "champion_coverage_80": 0.8588235294117647,
+          "scaled_coverage_80": 0.8588235294117647,
+          "mondrian_coverage_80": 0.8470588235294118
+        },
+        {
+          "date": "2025-01-12",
+          "n": 190,
+          "champion_coverage_80": 0.7789473684210526,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.7894736842105263
+        },
+        {
+          "date": "2025-01-13",
+          "n": 127,
+          "champion_coverage_80": 0.7952755905511811,
+          "scaled_coverage_80": 0.8188976377952756,
+          "mondrian_coverage_80": 0.8031496062992126
+        },
+        {
+          "date": "2025-01-14",
+          "n": 160,
+          "champion_coverage_80": 0.875,
+          "scaled_coverage_80": 0.88125,
+          "mondrian_coverage_80": 0.8375
+        },
+        {
+          "date": "2025-01-15",
+          "n": 231,
+          "champion_coverage_80": 0.7922077922077922,
+          "scaled_coverage_80": 0.7748917748917749,
+          "mondrian_coverage_80": 0.7705627705627706
+        },
+        {
+          "date": "2025-01-16",
+          "n": 111,
+          "champion_coverage_80": 0.8558558558558559,
+          "scaled_coverage_80": 0.8378378378378378,
+          "mondrian_coverage_80": 0.8378378378378378
+        },
+        {
+          "date": "2025-01-17",
+          "n": 201,
+          "champion_coverage_80": 0.8009950248756219,
+          "scaled_coverage_80": 0.8059701492537313,
+          "mondrian_coverage_80": 0.7960199004975125
+        },
+        {
+          "date": "2025-01-18",
+          "n": 121,
+          "champion_coverage_80": 0.7933884297520661,
+          "scaled_coverage_80": 0.7933884297520661,
+          "mondrian_coverage_80": 0.8099173553719008
+        },
+        {
+          "date": "2025-01-19",
+          "n": 157,
+          "champion_coverage_80": 0.8789808917197452,
+          "scaled_coverage_80": 0.8726114649681529,
+          "mondrian_coverage_80": 0.8853503184713376
+        },
+        {
+          "date": "2025-01-20",
+          "n": 172,
+          "champion_coverage_80": 0.7906976744186046,
+          "scaled_coverage_80": 0.8197674418604651,
+          "mondrian_coverage_80": 0.813953488372093
+        },
+        {
+          "date": "2025-01-21",
+          "n": 109,
+          "champion_coverage_80": 0.8256880733944955,
+          "scaled_coverage_80": 0.8348623853211009,
+          "mondrian_coverage_80": 0.8165137614678899
+        },
+        {
+          "date": "2025-01-22",
+          "n": 162,
+          "champion_coverage_80": 0.7345679012345679,
+          "scaled_coverage_80": 0.7716049382716049,
+          "mondrian_coverage_80": 0.8148148148148148
+        },
+        {
+          "date": "2025-01-23",
+          "n": 212,
+          "champion_coverage_80": 0.8207547169811321,
+          "scaled_coverage_80": 0.8018867924528302,
+          "mondrian_coverage_80": 0.7924528301886793
+        },
+        {
+          "date": "2025-01-24",
+          "n": 58,
+          "champion_coverage_80": 0.7586206896551724,
+          "scaled_coverage_80": 0.7413793103448276,
+          "mondrian_coverage_80": 0.7413793103448276
+        },
+        {
+          "date": "2025-01-25",
+          "n": 306,
+          "champion_coverage_80": 0.7712418300653595,
+          "scaled_coverage_80": 0.7810457516339869,
+          "mondrian_coverage_80": 0.7581699346405228
+        },
+        {
+          "date": "2025-01-26",
+          "n": 20,
+          "champion_coverage_80": 0.85,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.75
+        },
+        {
+          "date": "2025-01-27",
+          "n": 249,
+          "champion_coverage_80": 0.8393574297188755,
+          "scaled_coverage_80": 0.8273092369477911,
+          "mondrian_coverage_80": 0.8273092369477911
+        },
+        {
+          "date": "2025-01-28",
+          "n": 87,
+          "champion_coverage_80": 0.735632183908046,
+          "scaled_coverage_80": 0.7126436781609196,
+          "mondrian_coverage_80": 0.7011494252873564
+        },
+        {
+          "date": "2025-01-29",
+          "n": 229,
+          "champion_coverage_80": 0.7685589519650655,
+          "scaled_coverage_80": 0.759825327510917,
+          "mondrian_coverage_80": 0.759825327510917
+        },
+        {
+          "date": "2025-01-30",
+          "n": 117,
+          "champion_coverage_80": 0.7777777777777778,
+          "scaled_coverage_80": 0.7692307692307693,
+          "mondrian_coverage_80": 0.7777777777777778
+        },
+        {
+          "date": "2025-01-31",
+          "n": 154,
+          "champion_coverage_80": 0.8506493506493507,
+          "scaled_coverage_80": 0.8571428571428571,
+          "mondrian_coverage_80": 0.8441558441558441
+        },
+        {
+          "date": "2025-02-01",
+          "n": 194,
+          "champion_coverage_80": 0.7628865979381443,
+          "scaled_coverage_80": 0.7525773195876289,
+          "mondrian_coverage_80": 0.7628865979381443
+        },
+        {
+          "date": "2025-02-02",
+          "n": 97,
+          "champion_coverage_80": 0.8247422680412371,
+          "scaled_coverage_80": 0.7628865979381443,
+          "mondrian_coverage_80": 0.7835051546391752
+        },
+        {
+          "date": "2025-02-03",
+          "n": 202,
+          "champion_coverage_80": 0.7920792079207921,
+          "scaled_coverage_80": 0.7673267326732673,
+          "mondrian_coverage_80": 0.7821782178217822
+        },
+        {
+          "date": "2025-02-04",
+          "n": 147,
+          "champion_coverage_80": 0.782312925170068,
+          "scaled_coverage_80": 0.8231292517006803,
+          "mondrian_coverage_80": 0.8095238095238095
+        },
+        {
+          "date": "2025-02-05",
+          "n": 246,
+          "champion_coverage_80": 0.7926829268292683,
+          "scaled_coverage_80": 0.7926829268292683,
+          "mondrian_coverage_80": 0.7886178861788617
+        },
+        {
+          "date": "2025-02-06",
+          "n": 121,
+          "champion_coverage_80": 0.8099173553719008,
+          "scaled_coverage_80": 0.8016528925619835,
+          "mondrian_coverage_80": 0.8181818181818182
+        },
+        {
+          "date": "2025-02-07",
+          "n": 140,
+          "champion_coverage_80": 0.7785714285714286,
+          "scaled_coverage_80": 0.7428571428571429,
+          "mondrian_coverage_80": 0.7642857142857142
+        },
+        {
+          "date": "2025-02-08",
+          "n": 235,
+          "champion_coverage_80": 0.774468085106383,
+          "scaled_coverage_80": 0.8042553191489362,
+          "mondrian_coverage_80": 0.8297872340425532
+        },
+        {
+          "date": "2025-02-09",
+          "n": 59,
+          "champion_coverage_80": 0.6949152542372882,
+          "scaled_coverage_80": 0.7288135593220338,
+          "mondrian_coverage_80": 0.6949152542372882
+        },
+        {
+          "date": "2025-02-10",
+          "n": 218,
+          "champion_coverage_80": 0.7798165137614679,
+          "scaled_coverage_80": 0.7568807339449541,
+          "mondrian_coverage_80": 0.7889908256880734
+        },
+        {
+          "date": "2025-02-11",
+          "n": 91,
+          "champion_coverage_80": 0.8131868131868132,
+          "scaled_coverage_80": 0.8131868131868132,
+          "mondrian_coverage_80": 0.8131868131868132
+        },
+        {
+          "date": "2025-02-12",
+          "n": 303,
+          "champion_coverage_80": 0.768976897689769,
+          "scaled_coverage_80": 0.8184818481848185,
+          "mondrian_coverage_80": 0.7953795379537953
+        },
+        {
+          "date": "2025-02-13",
+          "n": 102,
+          "champion_coverage_80": 0.7254901960784313,
+          "scaled_coverage_80": 0.7254901960784313,
+          "mondrian_coverage_80": 0.696078431372549
+        },
+        {
+          "date": "2025-02-19",
+          "n": 20,
+          "champion_coverage_80": 0.85,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.85
+        },
+        {
+          "date": "2025-02-20",
+          "n": 190,
+          "champion_coverage_80": 0.7631578947368421,
+          "scaled_coverage_80": 0.7631578947368421,
+          "mondrian_coverage_80": 0.7473684210526316
+        },
+        {
+          "date": "2025-02-21",
+          "n": 203,
+          "champion_coverage_80": 0.8177339901477833,
+          "scaled_coverage_80": 0.8177339901477833,
+          "mondrian_coverage_80": 0.7881773399014779
+        },
+        {
+          "date": "2025-02-22",
+          "n": 108,
+          "champion_coverage_80": 0.8148148148148148,
+          "scaled_coverage_80": 0.8425925925925926,
+          "mondrian_coverage_80": 0.8611111111111112
+        },
+        {
+          "date": "2025-02-23",
+          "n": 221,
+          "champion_coverage_80": 0.8099547511312217,
+          "scaled_coverage_80": 0.8280542986425339,
+          "mondrian_coverage_80": 0.8144796380090498
+        },
+        {
+          "date": "2025-02-24",
+          "n": 161,
+          "champion_coverage_80": 0.8198757763975155,
+          "scaled_coverage_80": 0.7763975155279503,
+          "mondrian_coverage_80": 0.7639751552795031
+        },
+        {
+          "date": "2025-02-25",
+          "n": 149,
+          "champion_coverage_80": 0.8389261744966443,
+          "scaled_coverage_80": 0.7919463087248322,
+          "mondrian_coverage_80": 0.8456375838926175
+        },
+        {
+          "date": "2025-02-26",
+          "n": 190,
+          "champion_coverage_80": 0.7947368421052632,
+          "scaled_coverage_80": 0.8157894736842105,
+          "mondrian_coverage_80": 0.8315789473684211
+        },
+        {
+          "date": "2025-02-27",
+          "n": 100,
+          "champion_coverage_80": 0.81,
+          "scaled_coverage_80": 0.81,
+          "mondrian_coverage_80": 0.81
+        },
+        {
+          "date": "2025-02-28",
+          "n": 211,
+          "champion_coverage_80": 0.8199052132701422,
+          "scaled_coverage_80": 0.8483412322274881,
+          "mondrian_coverage_80": 0.8199052132701422
+        },
+        {
+          "date": "2025-03-01",
+          "n": 123,
+          "champion_coverage_80": 0.8211382113821138,
+          "scaled_coverage_80": 0.8048780487804879,
+          "mondrian_coverage_80": 0.8048780487804879
+        },
+        {
+          "date": "2025-03-02",
+          "n": 192,
+          "champion_coverage_80": 0.84375,
+          "scaled_coverage_80": 0.8385416666666666,
+          "mondrian_coverage_80": 0.8385416666666666
+        },
+        {
+          "date": "2025-03-03",
+          "n": 156,
+          "champion_coverage_80": 0.8012820512820513,
+          "scaled_coverage_80": 0.8076923076923077,
+          "mondrian_coverage_80": 0.7884615384615384
+        },
+        {
+          "date": "2025-03-04",
+          "n": 194,
+          "champion_coverage_80": 0.8556701030927835,
+          "scaled_coverage_80": 0.8608247422680413,
+          "mondrian_coverage_80": 0.8608247422680413
+        },
+        {
+          "date": "2025-03-05",
+          "n": 154,
+          "champion_coverage_80": 0.7922077922077922,
+          "scaled_coverage_80": 0.7727272727272727,
+          "mondrian_coverage_80": 0.7792207792207793
+        },
+        {
+          "date": "2025-03-06",
+          "n": 118,
+          "champion_coverage_80": 0.8389830508474576,
+          "scaled_coverage_80": 0.8135593220338984,
+          "mondrian_coverage_80": 0.8220338983050848
+        },
+        {
+          "date": "2025-03-07",
+          "n": 162,
+          "champion_coverage_80": 0.7839506172839507,
+          "scaled_coverage_80": 0.7901234567901234,
+          "mondrian_coverage_80": 0.7839506172839507
+        },
+        {
+          "date": "2025-03-08",
+          "n": 158,
+          "champion_coverage_80": 0.759493670886076,
+          "scaled_coverage_80": 0.759493670886076,
+          "mondrian_coverage_80": 0.7658227848101266
+        },
+        {
+          "date": "2025-03-09",
+          "n": 175,
+          "champion_coverage_80": 0.7771428571428571,
+          "scaled_coverage_80": 0.8114285714285714,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2025-03-10",
+          "n": 252,
+          "champion_coverage_80": 0.7738095238095238,
+          "scaled_coverage_80": 0.7896825396825397,
+          "mondrian_coverage_80": 0.8015873015873016
+        },
+        {
+          "date": "2025-03-11",
+          "n": 81,
+          "champion_coverage_80": 0.8765432098765432,
+          "scaled_coverage_80": 0.8888888888888888,
+          "mondrian_coverage_80": 0.8641975308641975
+        },
+        {
+          "date": "2025-03-12",
+          "n": 186,
+          "champion_coverage_80": 0.8064516129032258,
+          "scaled_coverage_80": 0.8333333333333334,
+          "mondrian_coverage_80": 0.8440860215053764
+        },
+        {
+          "date": "2025-03-13",
+          "n": 111,
+          "champion_coverage_80": 0.8108108108108109,
+          "scaled_coverage_80": 0.8198198198198198,
+          "mondrian_coverage_80": 0.8198198198198198
+        },
+        {
+          "date": "2025-03-14",
+          "n": 216,
+          "champion_coverage_80": 0.8194444444444444,
+          "scaled_coverage_80": 0.8009259259259259,
+          "mondrian_coverage_80": 0.8101851851851852
+        },
+        {
+          "date": "2025-03-15",
+          "n": 155,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.7806451612903226,
+          "mondrian_coverage_80": 0.8258064516129032
+        },
+        {
+          "date": "2025-03-16",
+          "n": 168,
+          "champion_coverage_80": 0.7559523809523809,
+          "scaled_coverage_80": 0.7738095238095238,
+          "mondrian_coverage_80": 0.7797619047619048
+        },
+        {
+          "date": "2025-03-17",
+          "n": 210,
+          "champion_coverage_80": 0.7523809523809524,
+          "scaled_coverage_80": 0.7476190476190476,
+          "mondrian_coverage_80": 0.7619047619047619
+        },
+        {
+          "date": "2025-03-18",
+          "n": 85,
+          "champion_coverage_80": 0.7058823529411765,
+          "scaled_coverage_80": 0.7058823529411765,
+          "mondrian_coverage_80": 0.7058823529411765
+        },
+        {
+          "date": "2025-03-19",
+          "n": 225,
+          "champion_coverage_80": 0.8088888888888889,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.7911111111111111
+        },
+        {
+          "date": "2025-03-20",
+          "n": 104,
+          "champion_coverage_80": 0.7692307692307693,
+          "scaled_coverage_80": 0.7692307692307693,
+          "mondrian_coverage_80": 0.7692307692307693
+        },
+        {
+          "date": "2025-03-21",
+          "n": 218,
+          "champion_coverage_80": 0.8577981651376146,
+          "scaled_coverage_80": 0.8302752293577982,
+          "mondrian_coverage_80": 0.8532110091743119
+        },
+        {
+          "date": "2025-03-22",
+          "n": 108,
+          "champion_coverage_80": 0.7962962962962963,
+          "scaled_coverage_80": 0.7962962962962963,
+          "mondrian_coverage_80": 0.8240740740740741
+        },
+        {
+          "date": "2025-03-23",
+          "n": 159,
+          "champion_coverage_80": 0.7987421383647799,
+          "scaled_coverage_80": 0.7861635220125787,
+          "mondrian_coverage_80": 0.7861635220125787
+        },
+        {
+          "date": "2025-03-24",
+          "n": 172,
+          "champion_coverage_80": 0.813953488372093,
+          "scaled_coverage_80": 0.813953488372093,
+          "mondrian_coverage_80": 0.8313953488372093
+        },
+        {
+          "date": "2025-03-25",
+          "n": 171,
+          "champion_coverage_80": 0.8888888888888888,
+          "scaled_coverage_80": 0.8596491228070176,
+          "mondrian_coverage_80": 0.8421052631578947
+        },
+        {
+          "date": "2025-03-26",
+          "n": 125,
+          "champion_coverage_80": 0.76,
+          "scaled_coverage_80": 0.76,
+          "mondrian_coverage_80": 0.768
+        },
+        {
+          "date": "2025-03-27",
+          "n": 172,
+          "champion_coverage_80": 0.8197674418604651,
+          "scaled_coverage_80": 0.813953488372093,
+          "mondrian_coverage_80": 0.8081395348837209
+        },
+        {
+          "date": "2025-03-28",
+          "n": 148,
+          "champion_coverage_80": 0.8175675675675675,
+          "scaled_coverage_80": 0.8175675675675675,
+          "mondrian_coverage_80": 0.8243243243243243
+        },
+        {
+          "date": "2025-03-29",
+          "n": 151,
+          "champion_coverage_80": 0.8410596026490066,
+          "scaled_coverage_80": 0.7947019867549668,
+          "mondrian_coverage_80": 0.8145695364238411
+        },
+        {
+          "date": "2025-03-30",
+          "n": 183,
+          "champion_coverage_80": 0.8743169398907104,
+          "scaled_coverage_80": 0.8633879781420765,
+          "mondrian_coverage_80": 0.8688524590163934
+        },
+        {
+          "date": "2025-03-31",
+          "n": 164,
+          "champion_coverage_80": 0.75,
+          "scaled_coverage_80": 0.774390243902439,
+          "mondrian_coverage_80": 0.75
+        },
+        {
+          "date": "2025-04-01",
+          "n": 138,
+          "champion_coverage_80": 0.7391304347826086,
+          "scaled_coverage_80": 0.7391304347826086,
+          "mondrian_coverage_80": 0.7463768115942029
+        },
+        {
+          "date": "2025-04-02",
+          "n": 192,
+          "champion_coverage_80": 0.765625,
+          "scaled_coverage_80": 0.7916666666666666,
+          "mondrian_coverage_80": 0.78125
+        },
+        {
+          "date": "2025-04-03",
+          "n": 126,
+          "champion_coverage_80": 0.7857142857142857,
+          "scaled_coverage_80": 0.7936507936507936,
+          "mondrian_coverage_80": 0.7619047619047619
+        },
+        {
+          "date": "2025-04-04",
+          "n": 229,
+          "champion_coverage_80": 0.759825327510917,
+          "scaled_coverage_80": 0.7641921397379913,
+          "mondrian_coverage_80": 0.759825327510917
+        },
+        {
+          "date": "2025-04-05",
+          "n": 103,
+          "champion_coverage_80": 0.7766990291262136,
+          "scaled_coverage_80": 0.7864077669902912,
+          "mondrian_coverage_80": 0.7766990291262136
+        },
+        {
+          "date": "2025-04-06",
+          "n": 229,
+          "champion_coverage_80": 0.7947598253275109,
+          "scaled_coverage_80": 0.777292576419214,
+          "mondrian_coverage_80": 0.7860262008733624
+        },
+        {
+          "date": "2025-04-07",
+          "n": 41,
+          "champion_coverage_80": 0.8048780487804879,
+          "scaled_coverage_80": 0.7804878048780488,
+          "mondrian_coverage_80": 0.8048780487804879
+        },
+        {
+          "date": "2025-04-08",
+          "n": 225,
+          "champion_coverage_80": 0.8133333333333334,
+          "scaled_coverage_80": 0.8266666666666667,
+          "mondrian_coverage_80": 0.8311111111111111
+        },
+        {
+          "date": "2025-04-09",
+          "n": 203,
+          "champion_coverage_80": 0.7783251231527094,
+          "scaled_coverage_80": 0.7733990147783252,
+          "mondrian_coverage_80": 0.7931034482758621
+        },
+        {
+          "date": "2025-04-10",
+          "n": 111,
+          "champion_coverage_80": 0.7837837837837838,
+          "scaled_coverage_80": 0.7657657657657657,
+          "mondrian_coverage_80": 0.8018018018018018
+        },
+        {
+          "date": "2025-04-11",
+          "n": 309,
+          "champion_coverage_80": 0.8025889967637541,
+          "scaled_coverage_80": 0.7734627831715211,
+          "mondrian_coverage_80": 0.7831715210355987
+        },
+        {
+          "date": "2025-04-13",
+          "n": 297,
+          "champion_coverage_80": 0.696969696969697,
+          "scaled_coverage_80": 0.6262626262626263,
+          "mondrian_coverage_80": 0.6531986531986532
+        }
+      ],
+      "terciles": [
+        {
+          "tercile": "low",
+          "n": 9219,
+          "projection_range": [
+            0.657364547252655,
+            2.8753788471221924
+          ],
+          "coverage_80": {
+            "champion": 0.9178869725566764,
+            "scaled": 0.8238420652999241,
+            "mondrian": 0.8014969085584119
+          }
+        },
+        {
+          "tercile": "mid",
+          "n": 9218,
+          "projection_range": [
+            2.8758485317230225,
+            4.4298319816589355
+          ],
+          "coverage_80": {
+            "champion": 0.8144933825124756,
+            "scaled": 0.7894337166413539,
+            "mondrian": 0.7963766543718811
+          }
+        },
+        {
+          "tercile": "high",
+          "n": 9218,
+          "projection_range": [
+            4.429887294769287,
+            13.818669319152832
+          ],
+          "coverage_80": {
+            "champion": 0.662291169451074,
+            "scaled": 0.7786938598394446,
+            "mondrian": 0.7980039054024735
+          }
+        }
+      ],
+      "time_thirds": [
+        {
+          "third": "early",
+          "days": [
+            "2024-04-07",
+            "2024-12-12"
+          ],
+          "n": 9342,
+          "coverage_80": {
+            "champion": 0.7990794262470563,
+            "scaled": 0.8008991650610148,
+            "mondrian": 0.8028259473346179
+          }
+        },
+        {
+          "third": "middle",
+          "days": [
+            "2024-12-13",
+            "2025-02-09"
+          ],
+          "n": 8847,
+          "coverage_80": {
+            "champion": 0.799253984401492,
+            "scaled": 0.7978975924042048,
+            "mondrian": 0.7968802984062394
+          }
+        },
+        {
+          "third": "late",
+          "days": [
+            "2025-02-10",
+            "2025-04-13"
+          ],
+          "n": 9466,
+          "coverage_80": {
+            "champion": 0.7964293260088738,
+            "scaled": 0.7932600887386436,
+            "mondrian": 0.7961124022818509
+          }
+        }
+      ]
+    },
+    "assists": {
+      "n_calibration": 8896,
+      "n_eval": 27655,
+      "calibration_days": [
+        "2024-02-05",
+        "2024-04-06"
+      ],
+      "evaluation_days": [
+        "2024-04-07",
+        "2025-04-13"
+      ],
+      "sigma_model": {
+        "edges": [
+          0.6421891450881958,
+          0.898047149181366,
+          1.147864818572998,
+          1.4617722034454346,
+          1.765818178653717,
+          2.2096922397613525,
+          2.9852705001831055,
+          4.030325412750244,
+          5.531213045120239
+        ],
+        "scales": [
+          0.6552756806103032,
+          0.8131057441033448,
+          0.9255714602684707,
+          1.0913922117585138,
+          1.2407012159904738,
+          1.2803428228043598,
+          1.4984144374225916,
+          1.725655867358831,
+          2.0234620303250432,
+          2.3749936318129636
+        ],
+        "raw_scales": [
+          0.6552756806103032,
+          0.8131057441033448,
+          0.9255714602684707,
+          1.0913922117585138,
+          1.2407012159904738,
+          1.2803428228043598,
+          1.4984144374225916,
+          1.725655867358831,
+          2.0234620303250432,
+          2.3749936318129636
+        ],
+        "bin_counts": [
+          890,
+          889,
+          890,
+          889,
+          890,
+          889,
+          890,
+          889,
+          890,
+          890
+        ],
+        "floor": 0.13629523318951026,
+        "mean_abs_resid": 1.3629523318951025,
+        "n": 8896
+      },
+      "mondrian_edges": [
+        1.2451472282409668,
+        2.694953441619873
+      ],
+      "mondrian_fallback_bin_days": 0,
+      "mondrian_bin_days": 510,
+      "mondrian_min_window_bin": 431,
+      "methods": {
+        "champion_0.5": {
+          "coverage": 0.49842704755017175,
+          "mean_width": 1.989554827805131,
+          "n": 27655
+        },
+        "champion_0.8": {
+          "coverage": 0.799566082082806,
+          "mean_width": 4.125015097517063,
+          "n": 27655
+        },
+        "champion_0.9": {
+          "coverage": 0.8996564816488881,
+          "mean_width": 5.909622068056856,
+          "n": 27655
+        },
+        "scaled_0.5": {
+          "coverage": 0.5004881576568433,
+          "mean_width": 2.34539819076097,
+          "n": 27655
+        },
+        "scaled_0.8": {
+          "coverage": 0.7984451274633881,
+          "mean_width": 3.891547556379623,
+          "n": 27655
+        },
+        "scaled_0.9": {
+          "coverage": 0.8978846501536792,
+          "mean_width": 5.109758304505145,
+          "n": 27655
+        },
+        "mondrian_0.5": {
+          "coverage": 0.4987163261616344,
+          "mean_width": 2.2913924587309586,
+          "n": 27655
+        },
+        "mondrian_0.8": {
+          "coverage": 0.799349123124209,
+          "mean_width": 3.988743978407947,
+          "n": 27655
+        },
+        "mondrian_0.9": {
+          "coverage": 0.8979569698065449,
+          "mean_width": 5.294190897671746,
+          "n": 27655
+        }
+      },
+      "daily": [
+        {
+          "date": "2024-04-07",
+          "n": 271,
+          "champion_coverage_80": 0.7785977859778598,
+          "scaled_coverage_80": 0.7749077490774908,
+          "mondrian_coverage_80": 0.8265682656826568
+        },
+        {
+          "date": "2024-04-09",
+          "n": 312,
+          "champion_coverage_80": 0.8333333333333334,
+          "scaled_coverage_80": 0.8685897435897436,
+          "mondrian_coverage_80": 0.8653846153846154
+        },
+        {
+          "date": "2024-04-10",
+          "n": 187,
+          "champion_coverage_80": 0.8021390374331551,
+          "scaled_coverage_80": 0.7700534759358288,
+          "mondrian_coverage_80": 0.7486631016042781
+        },
+        {
+          "date": "2024-04-11",
+          "n": 103,
+          "champion_coverage_80": 0.7766990291262136,
+          "scaled_coverage_80": 0.7864077669902912,
+          "mondrian_coverage_80": 0.7864077669902912
+        },
+        {
+          "date": "2024-04-12",
+          "n": 308,
+          "champion_coverage_80": 0.775974025974026,
+          "scaled_coverage_80": 0.7662337662337663,
+          "mondrian_coverage_80": 0.7564935064935064
+        },
+        {
+          "date": "2024-04-14",
+          "n": 344,
+          "champion_coverage_80": 0.7732558139534884,
+          "scaled_coverage_80": 0.7412790697674418,
+          "mondrian_coverage_80": 0.747093023255814
+        },
+        {
+          "date": "2024-10-22",
+          "n": 37,
+          "champion_coverage_80": 0.8918918918918919,
+          "scaled_coverage_80": 0.8918918918918919,
+          "mondrian_coverage_80": 0.8648648648648649
+        },
+        {
+          "date": "2024-10-23",
+          "n": 208,
+          "champion_coverage_80": 0.8028846153846154,
+          "scaled_coverage_80": 0.7980769230769231,
+          "mondrian_coverage_80": 0.8076923076923077
+        },
+        {
+          "date": "2024-10-24",
+          "n": 91,
+          "champion_coverage_80": 0.8571428571428571,
+          "scaled_coverage_80": 0.8681318681318682,
+          "mondrian_coverage_80": 0.8681318681318682
+        },
+        {
+          "date": "2024-10-25",
+          "n": 225,
+          "champion_coverage_80": 0.8177777777777778,
+          "scaled_coverage_80": 0.8266666666666667,
+          "mondrian_coverage_80": 0.8444444444444444
+        },
+        {
+          "date": "2024-10-26",
+          "n": 215,
+          "champion_coverage_80": 0.8186046511627907,
+          "scaled_coverage_80": 0.8046511627906977,
+          "mondrian_coverage_80": 0.8232558139534883
+        },
+        {
+          "date": "2024-10-27",
+          "n": 115,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.8347826086956521,
+          "mondrian_coverage_80": 0.8260869565217391
+        },
+        {
+          "date": "2024-10-28",
+          "n": 233,
+          "champion_coverage_80": 0.776824034334764,
+          "scaled_coverage_80": 0.8068669527896996,
+          "mondrian_coverage_80": 0.7982832618025751
+        },
+        {
+          "date": "2024-10-29",
+          "n": 87,
+          "champion_coverage_80": 0.7816091954022989,
+          "scaled_coverage_80": 0.8045977011494253,
+          "mondrian_coverage_80": 0.7816091954022989
+        },
+        {
+          "date": "2024-10-30",
+          "n": 237,
+          "champion_coverage_80": 0.8185654008438819,
+          "scaled_coverage_80": 0.7932489451476793,
+          "mondrian_coverage_80": 0.8016877637130801
+        },
+        {
+          "date": "2024-10-31",
+          "n": 87,
+          "champion_coverage_80": 0.8160919540229885,
+          "scaled_coverage_80": 0.8620689655172413,
+          "mondrian_coverage_80": 0.8390804597701149
+        },
+        {
+          "date": "2024-11-01",
+          "n": 186,
+          "champion_coverage_80": 0.8010752688172043,
+          "scaled_coverage_80": 0.8279569892473119,
+          "mondrian_coverage_80": 0.8440860215053764
+        },
+        {
+          "date": "2024-11-02",
+          "n": 224,
+          "champion_coverage_80": 0.7857142857142857,
+          "scaled_coverage_80": 0.8080357142857143,
+          "mondrian_coverage_80": 0.8080357142857143
+        },
+        {
+          "date": "2024-11-03",
+          "n": 71,
+          "champion_coverage_80": 0.8309859154929577,
+          "scaled_coverage_80": 0.8309859154929577,
+          "mondrian_coverage_80": 0.8169014084507042
+        },
+        {
+          "date": "2024-11-04",
+          "n": 311,
+          "champion_coverage_80": 0.8006430868167203,
+          "scaled_coverage_80": 0.8038585209003215,
+          "mondrian_coverage_80": 0.8295819935691319
+        },
+        {
+          "date": "2024-11-06",
+          "n": 258,
+          "champion_coverage_80": 0.7945736434108527,
+          "scaled_coverage_80": 0.8023255813953488,
+          "mondrian_coverage_80": 0.7945736434108527
+        },
+        {
+          "date": "2024-11-07",
+          "n": 74,
+          "champion_coverage_80": 0.7972972972972973,
+          "scaled_coverage_80": 0.7972972972972973,
+          "mondrian_coverage_80": 0.8243243243243243
+        },
+        {
+          "date": "2024-11-08",
+          "n": 296,
+          "champion_coverage_80": 0.8141891891891891,
+          "scaled_coverage_80": 0.7972972972972973,
+          "mondrian_coverage_80": 0.8074324324324325
+        },
+        {
+          "date": "2024-11-09",
+          "n": 82,
+          "champion_coverage_80": 0.8170731707317073,
+          "scaled_coverage_80": 0.7682926829268293,
+          "mondrian_coverage_80": 0.7682926829268293
+        },
+        {
+          "date": "2024-11-10",
+          "n": 225,
+          "champion_coverage_80": 0.8044444444444444,
+          "scaled_coverage_80": 0.7911111111111111,
+          "mondrian_coverage_80": 0.7644444444444445
+        },
+        {
+          "date": "2024-11-11",
+          "n": 110,
+          "champion_coverage_80": 0.7818181818181819,
+          "scaled_coverage_80": 0.7545454545454545,
+          "mondrian_coverage_80": 0.7545454545454545
+        },
+        {
+          "date": "2024-11-12",
+          "n": 171,
+          "champion_coverage_80": 0.8070175438596491,
+          "scaled_coverage_80": 0.7953216374269005,
+          "mondrian_coverage_80": 0.7894736842105263
+        },
+        {
+          "date": "2024-11-13",
+          "n": 224,
+          "champion_coverage_80": 0.8392857142857143,
+          "scaled_coverage_80": 0.8214285714285714,
+          "mondrian_coverage_80": 0.8035714285714286
+        },
+        {
+          "date": "2024-11-14",
+          "n": 20,
+          "champion_coverage_80": 0.9,
+          "scaled_coverage_80": 0.85,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2024-11-15",
+          "n": 259,
+          "champion_coverage_80": 0.8378378378378378,
+          "scaled_coverage_80": 0.8532818532818532,
+          "mondrian_coverage_80": 0.8494208494208494
+        },
+        {
+          "date": "2024-11-16",
+          "n": 102,
+          "champion_coverage_80": 0.7843137254901961,
+          "scaled_coverage_80": 0.7549019607843137,
+          "mondrian_coverage_80": 0.7450980392156863
+        },
+        {
+          "date": "2024-11-17",
+          "n": 218,
+          "champion_coverage_80": 0.7844036697247706,
+          "scaled_coverage_80": 0.7889908256880734,
+          "mondrian_coverage_80": 0.8073394495412844
+        },
+        {
+          "date": "2024-11-18",
+          "n": 170,
+          "champion_coverage_80": 0.7588235294117647,
+          "scaled_coverage_80": 0.7470588235294118,
+          "mondrian_coverage_80": 0.7352941176470589
+        },
+        {
+          "date": "2024-11-19",
+          "n": 122,
+          "champion_coverage_80": 0.8442622950819673,
+          "scaled_coverage_80": 0.7868852459016393,
+          "mondrian_coverage_80": 0.8032786885245902
+        },
+        {
+          "date": "2024-11-20",
+          "n": 186,
+          "champion_coverage_80": 0.7956989247311828,
+          "scaled_coverage_80": 0.8064516129032258,
+          "mondrian_coverage_80": 0.8172043010752689
+        },
+        {
+          "date": "2024-11-21",
+          "n": 78,
+          "champion_coverage_80": 0.7435897435897436,
+          "scaled_coverage_80": 0.782051282051282,
+          "mondrian_coverage_80": 0.7948717948717948
+        },
+        {
+          "date": "2024-11-22",
+          "n": 174,
+          "champion_coverage_80": 0.8333333333333334,
+          "scaled_coverage_80": 0.8045977011494253,
+          "mondrian_coverage_80": 0.8160919540229885
+        },
+        {
+          "date": "2024-11-23",
+          "n": 152,
+          "champion_coverage_80": 0.8157894736842105,
+          "scaled_coverage_80": 0.8092105263157895,
+          "mondrian_coverage_80": 0.7894736842105263
+        },
+        {
+          "date": "2024-11-24",
+          "n": 123,
+          "champion_coverage_80": 0.7967479674796748,
+          "scaled_coverage_80": 0.8130081300813008,
+          "mondrian_coverage_80": 0.8211382113821138
+        },
+        {
+          "date": "2024-11-25",
+          "n": 194,
+          "champion_coverage_80": 0.7938144329896907,
+          "scaled_coverage_80": 0.7731958762886598,
+          "mondrian_coverage_80": 0.7628865979381443
+        },
+        {
+          "date": "2024-11-26",
+          "n": 107,
+          "champion_coverage_80": 0.794392523364486,
+          "scaled_coverage_80": 0.8037383177570093,
+          "mondrian_coverage_80": 0.8037383177570093
+        },
+        {
+          "date": "2024-11-27",
+          "n": 306,
+          "champion_coverage_80": 0.7745098039215687,
+          "scaled_coverage_80": 0.7973856209150327,
+          "mondrian_coverage_80": 0.803921568627451
+        },
+        {
+          "date": "2024-11-29",
+          "n": 205,
+          "champion_coverage_80": 0.8146341463414634,
+          "scaled_coverage_80": 0.8439024390243902,
+          "mondrian_coverage_80": 0.8341463414634146
+        },
+        {
+          "date": "2024-11-30",
+          "n": 108,
+          "champion_coverage_80": 0.8055555555555556,
+          "scaled_coverage_80": 0.7685185185185185,
+          "mondrian_coverage_80": 0.7592592592592593
+        },
+        {
+          "date": "2024-12-01",
+          "n": 204,
+          "champion_coverage_80": 0.7598039215686274,
+          "scaled_coverage_80": 0.8235294117647058,
+          "mondrian_coverage_80": 0.8480392156862745
+        },
+        {
+          "date": "2024-12-02",
+          "n": 87,
+          "champion_coverage_80": 0.8275862068965517,
+          "scaled_coverage_80": 0.7931034482758621,
+          "mondrian_coverage_80": 0.8160919540229885
+        },
+        {
+          "date": "2024-12-03",
+          "n": 242,
+          "champion_coverage_80": 0.8099173553719008,
+          "scaled_coverage_80": 0.7975206611570248,
+          "mondrian_coverage_80": 0.7851239669421488
+        },
+        {
+          "date": "2024-12-04",
+          "n": 125,
+          "champion_coverage_80": 0.76,
+          "scaled_coverage_80": 0.736,
+          "mondrian_coverage_80": 0.752
+        },
+        {
+          "date": "2024-12-05",
+          "n": 173,
+          "champion_coverage_80": 0.7745664739884393,
+          "scaled_coverage_80": 0.8092485549132948,
+          "mondrian_coverage_80": 0.815028901734104
+        },
+        {
+          "date": "2024-12-06",
+          "n": 147,
+          "champion_coverage_80": 0.7891156462585034,
+          "scaled_coverage_80": 0.782312925170068,
+          "mondrian_coverage_80": 0.7959183673469388
+        },
+        {
+          "date": "2024-12-07",
+          "n": 133,
+          "champion_coverage_80": 0.7368421052631579,
+          "scaled_coverage_80": 0.7443609022556391,
+          "mondrian_coverage_80": 0.7593984962406015
+        },
+        {
+          "date": "2024-12-08",
+          "n": 252,
+          "champion_coverage_80": 0.7857142857142857,
+          "scaled_coverage_80": 0.746031746031746,
+          "mondrian_coverage_80": 0.7341269841269841
+        },
+        {
+          "date": "2024-12-09",
+          "n": 17,
+          "champion_coverage_80": 0.7647058823529411,
+          "scaled_coverage_80": 0.6470588235294118,
+          "mondrian_coverage_80": 0.7058823529411765
+        },
+        {
+          "date": "2024-12-10",
+          "n": 43,
+          "champion_coverage_80": 0.8604651162790697,
+          "scaled_coverage_80": 0.8604651162790697,
+          "mondrian_coverage_80": 0.7906976744186046
+        },
+        {
+          "date": "2024-12-11",
+          "n": 37,
+          "champion_coverage_80": 0.972972972972973,
+          "scaled_coverage_80": 1.0,
+          "mondrian_coverage_80": 1.0
+        },
+        {
+          "date": "2024-12-12",
+          "n": 66,
+          "champion_coverage_80": 0.8181818181818182,
+          "scaled_coverage_80": 0.8181818181818182,
+          "mondrian_coverage_80": 0.7878787878787878
+        },
+        {
+          "date": "2024-12-13",
+          "n": 169,
+          "champion_coverage_80": 0.8106508875739645,
+          "scaled_coverage_80": 0.8165680473372781,
+          "mondrian_coverage_80": 0.8224852071005917
+        },
+        {
+          "date": "2024-12-14",
+          "n": 37,
+          "champion_coverage_80": 0.918918918918919,
+          "scaled_coverage_80": 0.918918918918919,
+          "mondrian_coverage_80": 0.8918918918918919
+        },
+        {
+          "date": "2024-12-15",
+          "n": 154,
+          "champion_coverage_80": 0.7792207792207793,
+          "scaled_coverage_80": 0.8311688311688312,
+          "mondrian_coverage_80": 0.8181818181818182
+        },
+        {
+          "date": "2024-12-16",
+          "n": 123,
+          "champion_coverage_80": 0.7886178861788617,
+          "scaled_coverage_80": 0.7967479674796748,
+          "mondrian_coverage_80": 0.7804878048780488
+        },
+        {
+          "date": "2024-12-17",
+          "n": 25,
+          "champion_coverage_80": 0.84,
+          "scaled_coverage_80": 0.88,
+          "mondrian_coverage_80": 0.84
+        },
+        {
+          "date": "2024-12-19",
+          "n": 277,
+          "champion_coverage_80": 0.7942238267148014,
+          "scaled_coverage_80": 0.7942238267148014,
+          "mondrian_coverage_80": 0.7978339350180506
+        },
+        {
+          "date": "2024-12-20",
+          "n": 67,
+          "champion_coverage_80": 0.8059701492537313,
+          "scaled_coverage_80": 0.7761194029850746,
+          "mondrian_coverage_80": 0.7761194029850746
+        },
+        {
+          "date": "2024-12-21",
+          "n": 258,
+          "champion_coverage_80": 0.8217054263565892,
+          "scaled_coverage_80": 0.8178294573643411,
+          "mondrian_coverage_80": 0.8449612403100775
+        },
+        {
+          "date": "2024-12-22",
+          "n": 62,
+          "champion_coverage_80": 0.7580645161290323,
+          "scaled_coverage_80": 0.7903225806451613,
+          "mondrian_coverage_80": 0.7580645161290323
+        },
+        {
+          "date": "2024-12-23",
+          "n": 316,
+          "champion_coverage_80": 0.8544303797468354,
+          "scaled_coverage_80": 0.8575949367088608,
+          "mondrian_coverage_80": 0.8607594936708861
+        },
+        {
+          "date": "2024-12-25",
+          "n": 92,
+          "champion_coverage_80": 0.8043478260869565,
+          "scaled_coverage_80": 0.8369565217391305,
+          "mondrian_coverage_80": 0.8152173913043478
+        },
+        {
+          "date": "2024-12-26",
+          "n": 187,
+          "champion_coverage_80": 0.7433155080213903,
+          "scaled_coverage_80": 0.786096256684492,
+          "mondrian_coverage_80": 0.7967914438502673
+        },
+        {
+          "date": "2024-12-27",
+          "n": 172,
+          "champion_coverage_80": 0.813953488372093,
+          "scaled_coverage_80": 0.813953488372093,
+          "mondrian_coverage_80": 0.8081395348837209
+        },
+        {
+          "date": "2024-12-28",
+          "n": 174,
+          "champion_coverage_80": 0.7758620689655172,
+          "scaled_coverage_80": 0.7873563218390804,
+          "mondrian_coverage_80": 0.8218390804597702
+        },
+        {
+          "date": "2024-12-29",
+          "n": 130,
+          "champion_coverage_80": 0.8076923076923077,
+          "scaled_coverage_80": 0.7692307692307693,
+          "mondrian_coverage_80": 0.7538461538461538
+        },
+        {
+          "date": "2024-12-30",
+          "n": 160,
+          "champion_coverage_80": 0.8125,
+          "scaled_coverage_80": 0.80625,
+          "mondrian_coverage_80": 0.80625
+        },
+        {
+          "date": "2024-12-31",
+          "n": 132,
+          "champion_coverage_80": 0.8106060606060606,
+          "scaled_coverage_80": 0.8257575757575758,
+          "mondrian_coverage_80": 0.8181818181818182
+        },
+        {
+          "date": "2025-01-01",
+          "n": 170,
+          "champion_coverage_80": 0.7588235294117647,
+          "scaled_coverage_80": 0.7470588235294118,
+          "mondrian_coverage_80": 0.7647058823529411
+        },
+        {
+          "date": "2025-01-02",
+          "n": 131,
+          "champion_coverage_80": 0.7862595419847328,
+          "scaled_coverage_80": 0.8015267175572519,
+          "mondrian_coverage_80": 0.7786259541984732
+        },
+        {
+          "date": "2025-01-03",
+          "n": 190,
+          "champion_coverage_80": 0.8368421052631579,
+          "scaled_coverage_80": 0.8105263157894737,
+          "mondrian_coverage_80": 0.8157894736842105
+        },
+        {
+          "date": "2025-01-04",
+          "n": 189,
+          "champion_coverage_80": 0.7566137566137566,
+          "scaled_coverage_80": 0.7619047619047619,
+          "mondrian_coverage_80": 0.7777777777777778
+        },
+        {
+          "date": "2025-01-05",
+          "n": 127,
+          "champion_coverage_80": 0.7795275590551181,
+          "scaled_coverage_80": 0.7401574803149606,
+          "mondrian_coverage_80": 0.7322834645669292
+        },
+        {
+          "date": "2025-01-06",
+          "n": 187,
+          "champion_coverage_80": 0.7754010695187166,
+          "scaled_coverage_80": 0.7754010695187166,
+          "mondrian_coverage_80": 0.7540106951871658
+        },
+        {
+          "date": "2025-01-07",
+          "n": 146,
+          "champion_coverage_80": 0.6986301369863014,
+          "scaled_coverage_80": 0.7328767123287672,
+          "mondrian_coverage_80": 0.773972602739726
+        },
+        {
+          "date": "2025-01-08",
+          "n": 181,
+          "champion_coverage_80": 0.8287292817679558,
+          "scaled_coverage_80": 0.8066298342541437,
+          "mondrian_coverage_80": 0.8066298342541437
+        },
+        {
+          "date": "2025-01-09",
+          "n": 140,
+          "champion_coverage_80": 0.85,
+          "scaled_coverage_80": 0.8357142857142857,
+          "mondrian_coverage_80": 0.8428571428571429
+        },
+        {
+          "date": "2025-01-10",
+          "n": 152,
+          "champion_coverage_80": 0.8157894736842105,
+          "scaled_coverage_80": 0.8355263157894737,
+          "mondrian_coverage_80": 0.8157894736842105
+        },
+        {
+          "date": "2025-01-11",
+          "n": 85,
+          "champion_coverage_80": 0.7411764705882353,
+          "scaled_coverage_80": 0.8117647058823529,
+          "mondrian_coverage_80": 0.8235294117647058
+        },
+        {
+          "date": "2025-01-12",
+          "n": 190,
+          "champion_coverage_80": 0.8052631578947368,
+          "scaled_coverage_80": 0.8105263157894737,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2025-01-13",
+          "n": 127,
+          "champion_coverage_80": 0.8661417322834646,
+          "scaled_coverage_80": 0.8818897637795275,
+          "mondrian_coverage_80": 0.8582677165354331
+        },
+        {
+          "date": "2025-01-14",
+          "n": 160,
+          "champion_coverage_80": 0.80625,
+          "scaled_coverage_80": 0.76875,
+          "mondrian_coverage_80": 0.7875
+        },
+        {
+          "date": "2025-01-15",
+          "n": 231,
+          "champion_coverage_80": 0.7662337662337663,
+          "scaled_coverage_80": 0.7965367965367965,
+          "mondrian_coverage_80": 0.7748917748917749
+        },
+        {
+          "date": "2025-01-16",
+          "n": 111,
+          "champion_coverage_80": 0.8558558558558559,
+          "scaled_coverage_80": 0.8288288288288288,
+          "mondrian_coverage_80": 0.8198198198198198
+        },
+        {
+          "date": "2025-01-17",
+          "n": 201,
+          "champion_coverage_80": 0.8557213930348259,
+          "scaled_coverage_80": 0.8606965174129353,
+          "mondrian_coverage_80": 0.8606965174129353
+        },
+        {
+          "date": "2025-01-18",
+          "n": 121,
+          "champion_coverage_80": 0.8264462809917356,
+          "scaled_coverage_80": 0.8264462809917356,
+          "mondrian_coverage_80": 0.8181818181818182
+        },
+        {
+          "date": "2025-01-19",
+          "n": 157,
+          "champion_coverage_80": 0.8343949044585988,
+          "scaled_coverage_80": 0.8089171974522293,
+          "mondrian_coverage_80": 0.8152866242038217
+        },
+        {
+          "date": "2025-01-20",
+          "n": 172,
+          "champion_coverage_80": 0.8081395348837209,
+          "scaled_coverage_80": 0.7848837209302325,
+          "mondrian_coverage_80": 0.7848837209302325
+        },
+        {
+          "date": "2025-01-21",
+          "n": 109,
+          "champion_coverage_80": 0.7981651376146789,
+          "scaled_coverage_80": 0.8256880733944955,
+          "mondrian_coverage_80": 0.8256880733944955
+        },
+        {
+          "date": "2025-01-22",
+          "n": 162,
+          "champion_coverage_80": 0.7962962962962963,
+          "scaled_coverage_80": 0.7901234567901234,
+          "mondrian_coverage_80": 0.7530864197530864
+        },
+        {
+          "date": "2025-01-23",
+          "n": 212,
+          "champion_coverage_80": 0.7924528301886793,
+          "scaled_coverage_80": 0.7877358490566038,
+          "mondrian_coverage_80": 0.7877358490566038
+        },
+        {
+          "date": "2025-01-24",
+          "n": 58,
+          "champion_coverage_80": 0.7758620689655172,
+          "scaled_coverage_80": 0.7758620689655172,
+          "mondrian_coverage_80": 0.8103448275862069
+        },
+        {
+          "date": "2025-01-25",
+          "n": 306,
+          "champion_coverage_80": 0.8235294117647058,
+          "scaled_coverage_80": 0.826797385620915,
+          "mondrian_coverage_80": 0.803921568627451
+        },
+        {
+          "date": "2025-01-26",
+          "n": 20,
+          "champion_coverage_80": 0.7,
+          "scaled_coverage_80": 0.7,
+          "mondrian_coverage_80": 0.65
+        },
+        {
+          "date": "2025-01-27",
+          "n": 249,
+          "champion_coverage_80": 0.8112449799196787,
+          "scaled_coverage_80": 0.7911646586345381,
+          "mondrian_coverage_80": 0.8232931726907631
+        },
+        {
+          "date": "2025-01-28",
+          "n": 87,
+          "champion_coverage_80": 0.7471264367816092,
+          "scaled_coverage_80": 0.7586206896551724,
+          "mondrian_coverage_80": 0.7816091954022989
+        },
+        {
+          "date": "2025-01-29",
+          "n": 229,
+          "champion_coverage_80": 0.834061135371179,
+          "scaled_coverage_80": 0.8122270742358079,
+          "mondrian_coverage_80": 0.834061135371179
+        },
+        {
+          "date": "2025-01-30",
+          "n": 117,
+          "champion_coverage_80": 0.8290598290598291,
+          "scaled_coverage_80": 0.7948717948717948,
+          "mondrian_coverage_80": 0.8034188034188035
+        },
+        {
+          "date": "2025-01-31",
+          "n": 154,
+          "champion_coverage_80": 0.7727272727272727,
+          "scaled_coverage_80": 0.7532467532467533,
+          "mondrian_coverage_80": 0.7662337662337663
+        },
+        {
+          "date": "2025-02-01",
+          "n": 194,
+          "champion_coverage_80": 0.7989690721649485,
+          "scaled_coverage_80": 0.8041237113402062,
+          "mondrian_coverage_80": 0.7989690721649485
+        },
+        {
+          "date": "2025-02-02",
+          "n": 97,
+          "champion_coverage_80": 0.7628865979381443,
+          "scaled_coverage_80": 0.7216494845360825,
+          "mondrian_coverage_80": 0.7731958762886598
+        },
+        {
+          "date": "2025-02-03",
+          "n": 202,
+          "champion_coverage_80": 0.7722772277227723,
+          "scaled_coverage_80": 0.7673267326732673,
+          "mondrian_coverage_80": 0.7821782178217822
+        },
+        {
+          "date": "2025-02-04",
+          "n": 147,
+          "champion_coverage_80": 0.8027210884353742,
+          "scaled_coverage_80": 0.8027210884353742,
+          "mondrian_coverage_80": 0.8027210884353742
+        },
+        {
+          "date": "2025-02-05",
+          "n": 246,
+          "champion_coverage_80": 0.8008130081300813,
+          "scaled_coverage_80": 0.8048780487804879,
+          "mondrian_coverage_80": 0.7967479674796748
+        },
+        {
+          "date": "2025-02-06",
+          "n": 121,
+          "champion_coverage_80": 0.7520661157024794,
+          "scaled_coverage_80": 0.6859504132231405,
+          "mondrian_coverage_80": 0.7024793388429752
+        },
+        {
+          "date": "2025-02-07",
+          "n": 140,
+          "champion_coverage_80": 0.7571428571428571,
+          "scaled_coverage_80": 0.7714285714285715,
+          "mondrian_coverage_80": 0.7785714285714286
+        },
+        {
+          "date": "2025-02-08",
+          "n": 235,
+          "champion_coverage_80": 0.8085106382978723,
+          "scaled_coverage_80": 0.7872340425531915,
+          "mondrian_coverage_80": 0.7787234042553192
+        },
+        {
+          "date": "2025-02-09",
+          "n": 59,
+          "champion_coverage_80": 0.7796610169491526,
+          "scaled_coverage_80": 0.7627118644067796,
+          "mondrian_coverage_80": 0.7796610169491526
+        },
+        {
+          "date": "2025-02-10",
+          "n": 218,
+          "champion_coverage_80": 0.8073394495412844,
+          "scaled_coverage_80": 0.8302752293577982,
+          "mondrian_coverage_80": 0.8394495412844036
+        },
+        {
+          "date": "2025-02-11",
+          "n": 91,
+          "champion_coverage_80": 0.7362637362637363,
+          "scaled_coverage_80": 0.7912087912087912,
+          "mondrian_coverage_80": 0.8021978021978022
+        },
+        {
+          "date": "2025-02-12",
+          "n": 303,
+          "champion_coverage_80": 0.7953795379537953,
+          "scaled_coverage_80": 0.8052805280528053,
+          "mondrian_coverage_80": 0.7887788778877888
+        },
+        {
+          "date": "2025-02-13",
+          "n": 102,
+          "champion_coverage_80": 0.7549019607843137,
+          "scaled_coverage_80": 0.8235294117647058,
+          "mondrian_coverage_80": 0.803921568627451
+        },
+        {
+          "date": "2025-02-19",
+          "n": 20,
+          "champion_coverage_80": 0.7,
+          "scaled_coverage_80": 0.7,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2025-02-20",
+          "n": 190,
+          "champion_coverage_80": 0.8210526315789474,
+          "scaled_coverage_80": 0.8368421052631579,
+          "mondrian_coverage_80": 0.8315789473684211
+        },
+        {
+          "date": "2025-02-21",
+          "n": 203,
+          "champion_coverage_80": 0.812807881773399,
+          "scaled_coverage_80": 0.7980295566502463,
+          "mondrian_coverage_80": 0.7832512315270936
+        },
+        {
+          "date": "2025-02-22",
+          "n": 108,
+          "champion_coverage_80": 0.8148148148148148,
+          "scaled_coverage_80": 0.7870370370370371,
+          "mondrian_coverage_80": 0.7870370370370371
+        },
+        {
+          "date": "2025-02-23",
+          "n": 221,
+          "champion_coverage_80": 0.8144796380090498,
+          "scaled_coverage_80": 0.8597285067873304,
+          "mondrian_coverage_80": 0.8371040723981901
+        },
+        {
+          "date": "2025-02-24",
+          "n": 161,
+          "champion_coverage_80": 0.7391304347826086,
+          "scaled_coverage_80": 0.8012422360248447,
+          "mondrian_coverage_80": 0.8260869565217391
+        },
+        {
+          "date": "2025-02-25",
+          "n": 149,
+          "champion_coverage_80": 0.8053691275167785,
+          "scaled_coverage_80": 0.8120805369127517,
+          "mondrian_coverage_80": 0.7986577181208053
+        },
+        {
+          "date": "2025-02-26",
+          "n": 190,
+          "champion_coverage_80": 0.7947368421052632,
+          "scaled_coverage_80": 0.7947368421052632,
+          "mondrian_coverage_80": 0.7947368421052632
+        },
+        {
+          "date": "2025-02-27",
+          "n": 100,
+          "champion_coverage_80": 0.78,
+          "scaled_coverage_80": 0.84,
+          "mondrian_coverage_80": 0.82
+        },
+        {
+          "date": "2025-02-28",
+          "n": 211,
+          "champion_coverage_80": 0.8199052132701422,
+          "scaled_coverage_80": 0.8009478672985783,
+          "mondrian_coverage_80": 0.8104265402843602
+        },
+        {
+          "date": "2025-03-01",
+          "n": 123,
+          "champion_coverage_80": 0.7560975609756098,
+          "scaled_coverage_80": 0.7479674796747967,
+          "mondrian_coverage_80": 0.7398373983739838
+        },
+        {
+          "date": "2025-03-02",
+          "n": 192,
+          "champion_coverage_80": 0.8020833333333334,
+          "scaled_coverage_80": 0.796875,
+          "mondrian_coverage_80": 0.8020833333333334
+        },
+        {
+          "date": "2025-03-03",
+          "n": 156,
+          "champion_coverage_80": 0.7884615384615384,
+          "scaled_coverage_80": 0.7628205128205128,
+          "mondrian_coverage_80": 0.7692307692307693
+        },
+        {
+          "date": "2025-03-04",
+          "n": 194,
+          "champion_coverage_80": 0.8505154639175257,
+          "scaled_coverage_80": 0.7835051546391752,
+          "mondrian_coverage_80": 0.7835051546391752
+        },
+        {
+          "date": "2025-03-05",
+          "n": 154,
+          "champion_coverage_80": 0.7597402597402597,
+          "scaled_coverage_80": 0.7792207792207793,
+          "mondrian_coverage_80": 0.7857142857142857
+        },
+        {
+          "date": "2025-03-06",
+          "n": 118,
+          "champion_coverage_80": 0.711864406779661,
+          "scaled_coverage_80": 0.711864406779661,
+          "mondrian_coverage_80": 0.7288135593220338
+        },
+        {
+          "date": "2025-03-07",
+          "n": 162,
+          "champion_coverage_80": 0.8333333333333334,
+          "scaled_coverage_80": 0.8271604938271605,
+          "mondrian_coverage_80": 0.8333333333333334
+        },
+        {
+          "date": "2025-03-08",
+          "n": 158,
+          "champion_coverage_80": 0.7974683544303798,
+          "scaled_coverage_80": 0.7974683544303798,
+          "mondrian_coverage_80": 0.7658227848101266
+        },
+        {
+          "date": "2025-03-09",
+          "n": 175,
+          "champion_coverage_80": 0.8114285714285714,
+          "scaled_coverage_80": 0.8285714285714286,
+          "mondrian_coverage_80": 0.8285714285714286
+        },
+        {
+          "date": "2025-03-10",
+          "n": 252,
+          "champion_coverage_80": 0.7619047619047619,
+          "scaled_coverage_80": 0.7777777777777778,
+          "mondrian_coverage_80": 0.75
+        },
+        {
+          "date": "2025-03-11",
+          "n": 81,
+          "champion_coverage_80": 0.8024691358024691,
+          "scaled_coverage_80": 0.8024691358024691,
+          "mondrian_coverage_80": 0.8271604938271605
+        },
+        {
+          "date": "2025-03-12",
+          "n": 186,
+          "champion_coverage_80": 0.7903225806451613,
+          "scaled_coverage_80": 0.8225806451612904,
+          "mondrian_coverage_80": 0.8225806451612904
+        },
+        {
+          "date": "2025-03-13",
+          "n": 111,
+          "champion_coverage_80": 0.8288288288288288,
+          "scaled_coverage_80": 0.8378378378378378,
+          "mondrian_coverage_80": 0.8198198198198198
+        },
+        {
+          "date": "2025-03-14",
+          "n": 216,
+          "champion_coverage_80": 0.8333333333333334,
+          "scaled_coverage_80": 0.8101851851851852,
+          "mondrian_coverage_80": 0.8240740740740741
+        },
+        {
+          "date": "2025-03-15",
+          "n": 155,
+          "champion_coverage_80": 0.8064516129032258,
+          "scaled_coverage_80": 0.7741935483870968,
+          "mondrian_coverage_80": 0.8064516129032258
+        },
+        {
+          "date": "2025-03-16",
+          "n": 168,
+          "champion_coverage_80": 0.8452380952380952,
+          "scaled_coverage_80": 0.8154761904761905,
+          "mondrian_coverage_80": 0.8095238095238095
+        },
+        {
+          "date": "2025-03-17",
+          "n": 210,
+          "champion_coverage_80": 0.8238095238095238,
+          "scaled_coverage_80": 0.7714285714285715,
+          "mondrian_coverage_80": 0.7857142857142857
+        },
+        {
+          "date": "2025-03-18",
+          "n": 85,
+          "champion_coverage_80": 0.8705882352941177,
+          "scaled_coverage_80": 0.8352941176470589,
+          "mondrian_coverage_80": 0.8352941176470589
+        },
+        {
+          "date": "2025-03-19",
+          "n": 225,
+          "champion_coverage_80": 0.7955555555555556,
+          "scaled_coverage_80": 0.7955555555555556,
+          "mondrian_coverage_80": 0.7911111111111111
+        },
+        {
+          "date": "2025-03-20",
+          "n": 104,
+          "champion_coverage_80": 0.8365384615384616,
+          "scaled_coverage_80": 0.8173076923076923,
+          "mondrian_coverage_80": 0.8173076923076923
+        },
+        {
+          "date": "2025-03-21",
+          "n": 218,
+          "champion_coverage_80": 0.8165137614678899,
+          "scaled_coverage_80": 0.8119266055045872,
+          "mondrian_coverage_80": 0.8302752293577982
+        },
+        {
+          "date": "2025-03-22",
+          "n": 108,
+          "champion_coverage_80": 0.8055555555555556,
+          "scaled_coverage_80": 0.8333333333333334,
+          "mondrian_coverage_80": 0.7870370370370371
+        },
+        {
+          "date": "2025-03-23",
+          "n": 159,
+          "champion_coverage_80": 0.7484276729559748,
+          "scaled_coverage_80": 0.7861635220125787,
+          "mondrian_coverage_80": 0.7924528301886793
+        },
+        {
+          "date": "2025-03-24",
+          "n": 172,
+          "champion_coverage_80": 0.8197674418604651,
+          "scaled_coverage_80": 0.8372093023255814,
+          "mondrian_coverage_80": 0.8488372093023255
+        },
+        {
+          "date": "2025-03-25",
+          "n": 171,
+          "champion_coverage_80": 0.8011695906432749,
+          "scaled_coverage_80": 0.783625730994152,
+          "mondrian_coverage_80": 0.783625730994152
+        },
+        {
+          "date": "2025-03-26",
+          "n": 125,
+          "champion_coverage_80": 0.768,
+          "scaled_coverage_80": 0.752,
+          "mondrian_coverage_80": 0.784
+        },
+        {
+          "date": "2025-03-27",
+          "n": 172,
+          "champion_coverage_80": 0.8023255813953488,
+          "scaled_coverage_80": 0.813953488372093,
+          "mondrian_coverage_80": 0.8313953488372093
+        },
+        {
+          "date": "2025-03-28",
+          "n": 148,
+          "champion_coverage_80": 0.8243243243243243,
+          "scaled_coverage_80": 0.8378378378378378,
+          "mondrian_coverage_80": 0.8108108108108109
+        },
+        {
+          "date": "2025-03-29",
+          "n": 151,
+          "champion_coverage_80": 0.7748344370860927,
+          "scaled_coverage_80": 0.8079470198675497,
+          "mondrian_coverage_80": 0.8013245033112583
+        },
+        {
+          "date": "2025-03-30",
+          "n": 183,
+          "champion_coverage_80": 0.7868852459016393,
+          "scaled_coverage_80": 0.7595628415300546,
+          "mondrian_coverage_80": 0.7923497267759563
+        },
+        {
+          "date": "2025-03-31",
+          "n": 164,
+          "champion_coverage_80": 0.7926829268292683,
+          "scaled_coverage_80": 0.8414634146341463,
+          "mondrian_coverage_80": 0.8109756097560976
+        },
+        {
+          "date": "2025-04-01",
+          "n": 138,
+          "champion_coverage_80": 0.7318840579710145,
+          "scaled_coverage_80": 0.7463768115942029,
+          "mondrian_coverage_80": 0.7318840579710145
+        },
+        {
+          "date": "2025-04-02",
+          "n": 192,
+          "champion_coverage_80": 0.8125,
+          "scaled_coverage_80": 0.8177083333333334,
+          "mondrian_coverage_80": 0.859375
+        },
+        {
+          "date": "2025-04-03",
+          "n": 126,
+          "champion_coverage_80": 0.8095238095238095,
+          "scaled_coverage_80": 0.8174603174603174,
+          "mondrian_coverage_80": 0.8333333333333334
+        },
+        {
+          "date": "2025-04-04",
+          "n": 229,
+          "champion_coverage_80": 0.8471615720524017,
+          "scaled_coverage_80": 0.8384279475982532,
+          "mondrian_coverage_80": 0.8165938864628821
+        },
+        {
+          "date": "2025-04-05",
+          "n": 103,
+          "champion_coverage_80": 0.7475728155339806,
+          "scaled_coverage_80": 0.7961165048543689,
+          "mondrian_coverage_80": 0.8155339805825242
+        },
+        {
+          "date": "2025-04-06",
+          "n": 229,
+          "champion_coverage_80": 0.8034934497816594,
+          "scaled_coverage_80": 0.8209606986899564,
+          "mondrian_coverage_80": 0.8253275109170306
+        },
+        {
+          "date": "2025-04-07",
+          "n": 41,
+          "champion_coverage_80": 0.7073170731707317,
+          "scaled_coverage_80": 0.7317073170731707,
+          "mondrian_coverage_80": 0.8048780487804879
+        },
+        {
+          "date": "2025-04-08",
+          "n": 225,
+          "champion_coverage_80": 0.8533333333333334,
+          "scaled_coverage_80": 0.84,
+          "mondrian_coverage_80": 0.8177777777777778
+        },
+        {
+          "date": "2025-04-09",
+          "n": 203,
+          "champion_coverage_80": 0.8029556650246306,
+          "scaled_coverage_80": 0.7487684729064039,
+          "mondrian_coverage_80": 0.729064039408867
+        },
+        {
+          "date": "2025-04-10",
+          "n": 111,
+          "champion_coverage_80": 0.8108108108108109,
+          "scaled_coverage_80": 0.8018018018018018,
+          "mondrian_coverage_80": 0.8198198198198198
+        },
+        {
+          "date": "2025-04-11",
+          "n": 309,
+          "champion_coverage_80": 0.7831715210355987,
+          "scaled_coverage_80": 0.7540453074433657,
+          "mondrian_coverage_80": 0.7475728155339806
+        },
+        {
+          "date": "2025-04-13",
+          "n": 297,
+          "champion_coverage_80": 0.7205387205387206,
+          "scaled_coverage_80": 0.6599326599326599,
+          "mondrian_coverage_80": 0.6430976430976431
+        }
+      ],
+      "terciles": [
+        {
+          "tercile": "low",
+          "n": 9219,
+          "projection_range": [
+            0.256558895111084,
+            1.3225311040878296
+          ],
+          "coverage_80": {
+            "champion": 0.9347000759301443,
+            "scaled": 0.8539971797374987,
+            "mondrian": 0.8055103590411108
+          }
+        },
+        {
+          "tercile": "mid",
+          "n": 9218,
+          "projection_range": [
+            1.322567343711853,
+            2.625734806060791
+          ],
+          "coverage_80": {
+            "champion": 0.8540898242568887,
+            "scaled": 0.788999783033196,
+            "mondrian": 0.7926882187025385
+          }
+        },
+        {
+          "tercile": "high",
+          "n": 9218,
+          "projection_range": [
+            2.6262810230255127,
+            12.162471771240234
+          ],
+          "coverage_80": {
+            "champion": 0.6098936862660013,
+            "scaled": 0.752332393143849,
+            "mondrian": 0.7998481232371447
+          }
+        }
+      ],
+      "time_thirds": [
+        {
+          "third": "early",
+          "days": [
+            "2024-04-07",
+            "2024-12-12"
+          ],
+          "n": 9342,
+          "coverage_80": {
+            "champion": 0.7999357739242132,
+            "scaled": 0.7989723827874117,
+            "mondrian": 0.8010062085206594
+          }
+        },
+        {
+          "third": "middle",
+          "days": [
+            "2024-12-13",
+            "2025-02-09"
+          ],
+          "n": 8847,
+          "coverage_80": {
+            "champion": 0.800949474398101,
+            "scaled": 0.7991409517350514,
+            "mondrian": 0.8006103763987793
+          }
+        },
+        {
+          "third": "late",
+          "days": [
+            "2025-02-10",
+            "2025-04-13"
+          ],
+          "n": 9466,
+          "coverage_80": {
+            "champion": 0.797908303401648,
+            "scaled": 0.7972744559476019,
+            "mondrian": 0.7965349672512149
+          }
+        }
+      ]
+    },
+    "threes": {
+      "n_calibration": 8896,
+      "n_eval": 27655,
+      "calibration_days": [
+        "2024-02-05",
+        "2024-04-06"
+      ],
+      "evaluation_days": [
+        "2024-04-07",
+        "2025-04-13"
+      ],
+      "sigma_model": {
+        "edges": [
+          0.1346682906150818,
+          0.3674395680427551,
+          0.586443156003952,
+          0.8147276043891907,
+          1.0491411685943604,
+          1.2770297527313232,
+          1.5938952565193176,
+          1.958132266998291,
+          2.445905923843384
+        ],
+        "scales": [
+          0.0667751848790206,
+          0.3909793696769579,
+          0.641047865286302,
+          0.7302135881476515,
+          0.8525194971748952,
+          0.9316981996004171,
+          1.0993694125936273,
+          1.232630004362529,
+          1.2948649358213618,
+          1.432353071416362
+        ],
+        "raw_scales": [
+          0.0667751848790206,
+          0.3909793696769579,
+          0.641047865286302,
+          0.7302135881476515,
+          0.8525194971748952,
+          0.9316981996004171,
+          1.0993694125936273,
+          1.232630004362529,
+          1.2948649358213618,
+          1.432353071416362
+        ],
+        "bin_counts": [
+          890,
+          889,
+          890,
+          889,
+          890,
+          889,
+          890,
+          889,
+          890,
+          890
+        ],
+        "floor": 0.0867265735567877,
+        "mean_abs_resid": 0.8672657355678769,
+        "n": 8896
+      },
+      "mondrian_edges": [
+        0.6590548753738403,
+        1.4691004753112793
+      ],
+      "mondrian_fallback_bin_days": 0,
+      "mondrian_bin_days": 510,
+      "mondrian_min_window_bin": 440,
+      "methods": {
+        "champion_0.5": {
+          "coverage": 0.49886096546736575,
+          "mean_width": 1.3051353418553335,
+          "n": 27655
+        },
+        "champion_0.8": {
+          "coverage": 0.7981558488519255,
+          "mean_width": 2.8607033668924813,
+          "n": 27655
+        },
+        "champion_0.9": {
+          "coverage": 0.8989694449466643,
+          "mean_width": 3.9929524359690833,
+          "n": 27655
+        },
+        "scaled_0.5": {
+          "coverage": 0.4978846501536793,
+          "mean_width": 1.4769004258078902,
+          "n": 27655
+        },
+        "scaled_0.8": {
+          "coverage": 0.7983728078105226,
+          "mean_width": 2.430887084782159,
+          "n": 27655
+        },
+        "scaled_0.9": {
+          "coverage": 0.8986440065087687,
+          "mean_width": 3.282182401012526,
+          "n": 27655
+        },
+        "mondrian_0.5": {
+          "coverage": 0.4971252937985898,
+          "mean_width": 1.5345533543438274,
+          "n": 27655
+        },
+        "mondrian_0.8": {
+          "coverage": 0.7993129632977761,
+          "mean_width": 2.6278437401088404,
+          "n": 27655
+        },
+        "mondrian_0.9": {
+          "coverage": 0.8995480021695896,
+          "mean_width": 3.3962161761002867,
+          "n": 27655
+        }
+      },
+      "daily": [
+        {
+          "date": "2024-04-07",
+          "n": 271,
+          "champion_coverage_80": 0.7859778597785978,
+          "scaled_coverage_80": 0.7564575645756457,
+          "mondrian_coverage_80": 0.7896678966789668
+        },
+        {
+          "date": "2024-04-09",
+          "n": 312,
+          "champion_coverage_80": 0.7628205128205128,
+          "scaled_coverage_80": 0.7884615384615384,
+          "mondrian_coverage_80": 0.7692307692307693
+        },
+        {
+          "date": "2024-04-10",
+          "n": 187,
+          "champion_coverage_80": 0.8609625668449198,
+          "scaled_coverage_80": 0.7486631016042781,
+          "mondrian_coverage_80": 0.7807486631016043
+        },
+        {
+          "date": "2024-04-11",
+          "n": 103,
+          "champion_coverage_80": 0.7766990291262136,
+          "scaled_coverage_80": 0.7378640776699029,
+          "mondrian_coverage_80": 0.7766990291262136
+        },
+        {
+          "date": "2024-04-12",
+          "n": 308,
+          "champion_coverage_80": 0.788961038961039,
+          "scaled_coverage_80": 0.7727272727272727,
+          "mondrian_coverage_80": 0.7662337662337663
+        },
+        {
+          "date": "2024-04-14",
+          "n": 344,
+          "champion_coverage_80": 0.811046511627907,
+          "scaled_coverage_80": 0.7732558139534884,
+          "mondrian_coverage_80": 0.7790697674418605
+        },
+        {
+          "date": "2024-10-22",
+          "n": 37,
+          "champion_coverage_80": 0.7297297297297297,
+          "scaled_coverage_80": 0.7837837837837838,
+          "mondrian_coverage_80": 0.7567567567567568
+        },
+        {
+          "date": "2024-10-23",
+          "n": 208,
+          "champion_coverage_80": 0.7932692307692307,
+          "scaled_coverage_80": 0.7980769230769231,
+          "mondrian_coverage_80": 0.7740384615384616
+        },
+        {
+          "date": "2024-10-24",
+          "n": 91,
+          "champion_coverage_80": 0.8021978021978022,
+          "scaled_coverage_80": 0.8131868131868132,
+          "mondrian_coverage_80": 0.8241758241758241
+        },
+        {
+          "date": "2024-10-25",
+          "n": 225,
+          "champion_coverage_80": 0.8222222222222222,
+          "scaled_coverage_80": 0.8444444444444444,
+          "mondrian_coverage_80": 0.8488888888888889
+        },
+        {
+          "date": "2024-10-26",
+          "n": 215,
+          "champion_coverage_80": 0.786046511627907,
+          "scaled_coverage_80": 0.8,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2024-10-27",
+          "n": 115,
+          "champion_coverage_80": 0.8260869565217391,
+          "scaled_coverage_80": 0.8434782608695652,
+          "mondrian_coverage_80": 0.8260869565217391
+        },
+        {
+          "date": "2024-10-28",
+          "n": 233,
+          "champion_coverage_80": 0.7811158798283262,
+          "scaled_coverage_80": 0.7982832618025751,
+          "mondrian_coverage_80": 0.7896995708154506
+        },
+        {
+          "date": "2024-10-29",
+          "n": 87,
+          "champion_coverage_80": 0.7011494252873564,
+          "scaled_coverage_80": 0.735632183908046,
+          "mondrian_coverage_80": 0.7011494252873564
+        },
+        {
+          "date": "2024-10-30",
+          "n": 237,
+          "champion_coverage_80": 0.7721518987341772,
+          "scaled_coverage_80": 0.8185654008438819,
+          "mondrian_coverage_80": 0.8481012658227848
+        },
+        {
+          "date": "2024-10-31",
+          "n": 87,
+          "champion_coverage_80": 0.8160919540229885,
+          "scaled_coverage_80": 0.7816091954022989,
+          "mondrian_coverage_80": 0.8045977011494253
+        },
+        {
+          "date": "2024-11-01",
+          "n": 186,
+          "champion_coverage_80": 0.8118279569892473,
+          "scaled_coverage_80": 0.8333333333333334,
+          "mondrian_coverage_80": 0.8333333333333334
+        },
+        {
+          "date": "2024-11-02",
+          "n": 224,
+          "champion_coverage_80": 0.7678571428571429,
+          "scaled_coverage_80": 0.78125,
+          "mondrian_coverage_80": 0.7767857142857143
+        },
+        {
+          "date": "2024-11-03",
+          "n": 71,
+          "champion_coverage_80": 0.8169014084507042,
+          "scaled_coverage_80": 0.8732394366197183,
+          "mondrian_coverage_80": 0.8732394366197183
+        },
+        {
+          "date": "2024-11-04",
+          "n": 311,
+          "champion_coverage_80": 0.8231511254019293,
+          "scaled_coverage_80": 0.842443729903537,
+          "mondrian_coverage_80": 0.8167202572347267
+        },
+        {
+          "date": "2024-11-06",
+          "n": 258,
+          "champion_coverage_80": 0.8217054263565892,
+          "scaled_coverage_80": 0.810077519379845,
+          "mondrian_coverage_80": 0.7829457364341085
+        },
+        {
+          "date": "2024-11-07",
+          "n": 74,
+          "champion_coverage_80": 0.8243243243243243,
+          "scaled_coverage_80": 0.8243243243243243,
+          "mondrian_coverage_80": 0.8648648648648649
+        },
+        {
+          "date": "2024-11-08",
+          "n": 296,
+          "champion_coverage_80": 0.793918918918919,
+          "scaled_coverage_80": 0.7905405405405406,
+          "mondrian_coverage_80": 0.7871621621621622
+        },
+        {
+          "date": "2024-11-09",
+          "n": 82,
+          "champion_coverage_80": 0.8658536585365854,
+          "scaled_coverage_80": 0.8780487804878049,
+          "mondrian_coverage_80": 0.8536585365853658
+        },
+        {
+          "date": "2024-11-10",
+          "n": 225,
+          "champion_coverage_80": 0.8311111111111111,
+          "scaled_coverage_80": 0.8266666666666667,
+          "mondrian_coverage_80": 0.8088888888888889
+        },
+        {
+          "date": "2024-11-11",
+          "n": 110,
+          "champion_coverage_80": 0.8272727272727273,
+          "scaled_coverage_80": 0.8363636363636363,
+          "mondrian_coverage_80": 0.8545454545454545
+        },
+        {
+          "date": "2024-11-12",
+          "n": 171,
+          "champion_coverage_80": 0.7777777777777778,
+          "scaled_coverage_80": 0.783625730994152,
+          "mondrian_coverage_80": 0.7543859649122807
+        },
+        {
+          "date": "2024-11-13",
+          "n": 224,
+          "champion_coverage_80": 0.7678571428571429,
+          "scaled_coverage_80": 0.7633928571428571,
+          "mondrian_coverage_80": 0.7410714285714286
+        },
+        {
+          "date": "2024-11-14",
+          "n": 20,
+          "champion_coverage_80": 0.9,
+          "scaled_coverage_80": 0.9,
+          "mondrian_coverage_80": 0.9
+        },
+        {
+          "date": "2024-11-15",
+          "n": 259,
+          "champion_coverage_80": 0.7953667953667953,
+          "scaled_coverage_80": 0.7953667953667953,
+          "mondrian_coverage_80": 0.806949806949807
+        },
+        {
+          "date": "2024-11-16",
+          "n": 102,
+          "champion_coverage_80": 0.8529411764705882,
+          "scaled_coverage_80": 0.8137254901960784,
+          "mondrian_coverage_80": 0.8431372549019608
+        },
+        {
+          "date": "2024-11-17",
+          "n": 218,
+          "champion_coverage_80": 0.7614678899082569,
+          "scaled_coverage_80": 0.7706422018348624,
+          "mondrian_coverage_80": 0.7935779816513762
+        },
+        {
+          "date": "2024-11-18",
+          "n": 170,
+          "champion_coverage_80": 0.7529411764705882,
+          "scaled_coverage_80": 0.7352941176470589,
+          "mondrian_coverage_80": 0.7588235294117647
+        },
+        {
+          "date": "2024-11-19",
+          "n": 122,
+          "champion_coverage_80": 0.7622950819672131,
+          "scaled_coverage_80": 0.7622950819672131,
+          "mondrian_coverage_80": 0.7622950819672131
+        },
+        {
+          "date": "2024-11-20",
+          "n": 186,
+          "champion_coverage_80": 0.8118279569892473,
+          "scaled_coverage_80": 0.7795698924731183,
+          "mondrian_coverage_80": 0.7526881720430108
+        },
+        {
+          "date": "2024-11-21",
+          "n": 78,
+          "champion_coverage_80": 0.7564102564102564,
+          "scaled_coverage_80": 0.7692307692307693,
+          "mondrian_coverage_80": 0.7948717948717948
+        },
+        {
+          "date": "2024-11-22",
+          "n": 174,
+          "champion_coverage_80": 0.8390804597701149,
+          "scaled_coverage_80": 0.8333333333333334,
+          "mondrian_coverage_80": 0.8448275862068966
+        },
+        {
+          "date": "2024-11-23",
+          "n": 152,
+          "champion_coverage_80": 0.8157894736842105,
+          "scaled_coverage_80": 0.8026315789473685,
+          "mondrian_coverage_80": 0.756578947368421
+        },
+        {
+          "date": "2024-11-24",
+          "n": 123,
+          "champion_coverage_80": 0.8373983739837398,
+          "scaled_coverage_80": 0.8455284552845529,
+          "mondrian_coverage_80": 0.8292682926829268
+        },
+        {
+          "date": "2024-11-25",
+          "n": 194,
+          "champion_coverage_80": 0.8247422680412371,
+          "scaled_coverage_80": 0.8402061855670103,
+          "mondrian_coverage_80": 0.8350515463917526
+        },
+        {
+          "date": "2024-11-26",
+          "n": 107,
+          "champion_coverage_80": 0.8411214953271028,
+          "scaled_coverage_80": 0.8504672897196262,
+          "mondrian_coverage_80": 0.8317757009345794
+        },
+        {
+          "date": "2024-11-27",
+          "n": 306,
+          "champion_coverage_80": 0.761437908496732,
+          "scaled_coverage_80": 0.7908496732026143,
+          "mondrian_coverage_80": 0.7941176470588235
+        },
+        {
+          "date": "2024-11-29",
+          "n": 205,
+          "champion_coverage_80": 0.7853658536585366,
+          "scaled_coverage_80": 0.8146341463414634,
+          "mondrian_coverage_80": 0.8292682926829268
+        },
+        {
+          "date": "2024-11-30",
+          "n": 108,
+          "champion_coverage_80": 0.7962962962962963,
+          "scaled_coverage_80": 0.8333333333333334,
+          "mondrian_coverage_80": 0.8055555555555556
+        },
+        {
+          "date": "2024-12-01",
+          "n": 204,
+          "champion_coverage_80": 0.7941176470588235,
+          "scaled_coverage_80": 0.803921568627451,
+          "mondrian_coverage_80": 0.8186274509803921
+        },
+        {
+          "date": "2024-12-02",
+          "n": 87,
+          "champion_coverage_80": 0.8045977011494253,
+          "scaled_coverage_80": 0.7241379310344828,
+          "mondrian_coverage_80": 0.8275862068965517
+        },
+        {
+          "date": "2024-12-03",
+          "n": 242,
+          "champion_coverage_80": 0.7892561983471075,
+          "scaled_coverage_80": 0.8140495867768595,
+          "mondrian_coverage_80": 0.8347107438016529
+        },
+        {
+          "date": "2024-12-04",
+          "n": 125,
+          "champion_coverage_80": 0.744,
+          "scaled_coverage_80": 0.712,
+          "mondrian_coverage_80": 0.736
+        },
+        {
+          "date": "2024-12-05",
+          "n": 173,
+          "champion_coverage_80": 0.8092485549132948,
+          "scaled_coverage_80": 0.791907514450867,
+          "mondrian_coverage_80": 0.815028901734104
+        },
+        {
+          "date": "2024-12-06",
+          "n": 147,
+          "champion_coverage_80": 0.782312925170068,
+          "scaled_coverage_80": 0.7687074829931972,
+          "mondrian_coverage_80": 0.7959183673469388
+        },
+        {
+          "date": "2024-12-07",
+          "n": 133,
+          "champion_coverage_80": 0.706766917293233,
+          "scaled_coverage_80": 0.7293233082706767,
+          "mondrian_coverage_80": 0.7819548872180451
+        },
+        {
+          "date": "2024-12-08",
+          "n": 252,
+          "champion_coverage_80": 0.7777777777777778,
+          "scaled_coverage_80": 0.7896825396825397,
+          "mondrian_coverage_80": 0.7658730158730159
+        },
+        {
+          "date": "2024-12-09",
+          "n": 17,
+          "champion_coverage_80": 0.8235294117647058,
+          "scaled_coverage_80": 0.8823529411764706,
+          "mondrian_coverage_80": 0.8823529411764706
+        },
+        {
+          "date": "2024-12-10",
+          "n": 43,
+          "champion_coverage_80": 0.813953488372093,
+          "scaled_coverage_80": 0.7906976744186046,
+          "mondrian_coverage_80": 0.7209302325581395
+        },
+        {
+          "date": "2024-12-11",
+          "n": 37,
+          "champion_coverage_80": 0.8108108108108109,
+          "scaled_coverage_80": 0.8918918918918919,
+          "mondrian_coverage_80": 0.8648648648648649
+        },
+        {
+          "date": "2024-12-12",
+          "n": 66,
+          "champion_coverage_80": 0.7878787878787878,
+          "scaled_coverage_80": 0.7727272727272727,
+          "mondrian_coverage_80": 0.7727272727272727
+        },
+        {
+          "date": "2024-12-13",
+          "n": 169,
+          "champion_coverage_80": 0.7751479289940828,
+          "scaled_coverage_80": 0.8047337278106509,
+          "mondrian_coverage_80": 0.834319526627219
+        },
+        {
+          "date": "2024-12-14",
+          "n": 37,
+          "champion_coverage_80": 0.7297297297297297,
+          "scaled_coverage_80": 0.8378378378378378,
+          "mondrian_coverage_80": 0.8378378378378378
+        },
+        {
+          "date": "2024-12-15",
+          "n": 154,
+          "champion_coverage_80": 0.7922077922077922,
+          "scaled_coverage_80": 0.8506493506493507,
+          "mondrian_coverage_80": 0.8051948051948052
+        },
+        {
+          "date": "2024-12-16",
+          "n": 123,
+          "champion_coverage_80": 0.8617886178861789,
+          "scaled_coverage_80": 0.8617886178861789,
+          "mondrian_coverage_80": 0.9024390243902439
+        },
+        {
+          "date": "2024-12-17",
+          "n": 25,
+          "champion_coverage_80": 0.96,
+          "scaled_coverage_80": 0.92,
+          "mondrian_coverage_80": 0.92
+        },
+        {
+          "date": "2024-12-19",
+          "n": 277,
+          "champion_coverage_80": 0.8158844765342961,
+          "scaled_coverage_80": 0.7870036101083032,
+          "mondrian_coverage_80": 0.7942238267148014
+        },
+        {
+          "date": "2024-12-20",
+          "n": 67,
+          "champion_coverage_80": 0.835820895522388,
+          "scaled_coverage_80": 0.8208955223880597,
+          "mondrian_coverage_80": 0.7910447761194029
+        },
+        {
+          "date": "2024-12-21",
+          "n": 258,
+          "champion_coverage_80": 0.8372093023255814,
+          "scaled_coverage_80": 0.8255813953488372,
+          "mondrian_coverage_80": 0.8217054263565892
+        },
+        {
+          "date": "2024-12-22",
+          "n": 62,
+          "champion_coverage_80": 0.8225806451612904,
+          "scaled_coverage_80": 0.7903225806451613,
+          "mondrian_coverage_80": 0.7741935483870968
+        },
+        {
+          "date": "2024-12-23",
+          "n": 316,
+          "champion_coverage_80": 0.7689873417721519,
+          "scaled_coverage_80": 0.759493670886076,
+          "mondrian_coverage_80": 0.7658227848101266
+        },
+        {
+          "date": "2024-12-25",
+          "n": 92,
+          "champion_coverage_80": 0.7717391304347826,
+          "scaled_coverage_80": 0.7934782608695652,
+          "mondrian_coverage_80": 0.8043478260869565
+        },
+        {
+          "date": "2024-12-26",
+          "n": 187,
+          "champion_coverage_80": 0.7700534759358288,
+          "scaled_coverage_80": 0.7593582887700535,
+          "mondrian_coverage_80": 0.7647058823529411
+        },
+        {
+          "date": "2024-12-27",
+          "n": 172,
+          "champion_coverage_80": 0.8081395348837209,
+          "scaled_coverage_80": 0.7848837209302325,
+          "mondrian_coverage_80": 0.7965116279069767
+        },
+        {
+          "date": "2024-12-28",
+          "n": 174,
+          "champion_coverage_80": 0.7931034482758621,
+          "scaled_coverage_80": 0.8275862068965517,
+          "mondrian_coverage_80": 0.8275862068965517
+        },
+        {
+          "date": "2024-12-29",
+          "n": 130,
+          "champion_coverage_80": 0.7692307692307693,
+          "scaled_coverage_80": 0.7846153846153846,
+          "mondrian_coverage_80": 0.7307692307692307
+        },
+        {
+          "date": "2024-12-30",
+          "n": 160,
+          "champion_coverage_80": 0.85,
+          "scaled_coverage_80": 0.8625,
+          "mondrian_coverage_80": 0.83125
+        },
+        {
+          "date": "2024-12-31",
+          "n": 132,
+          "champion_coverage_80": 0.8106060606060606,
+          "scaled_coverage_80": 0.803030303030303,
+          "mondrian_coverage_80": 0.8106060606060606
+        },
+        {
+          "date": "2025-01-01",
+          "n": 170,
+          "champion_coverage_80": 0.8176470588235294,
+          "scaled_coverage_80": 0.8176470588235294,
+          "mondrian_coverage_80": 0.7823529411764706
+        },
+        {
+          "date": "2025-01-02",
+          "n": 131,
+          "champion_coverage_80": 0.7862595419847328,
+          "scaled_coverage_80": 0.7786259541984732,
+          "mondrian_coverage_80": 0.8396946564885496
+        },
+        {
+          "date": "2025-01-03",
+          "n": 190,
+          "champion_coverage_80": 0.8157894736842105,
+          "scaled_coverage_80": 0.8210526315789474,
+          "mondrian_coverage_80": 0.8210526315789474
+        },
+        {
+          "date": "2025-01-04",
+          "n": 189,
+          "champion_coverage_80": 0.8042328042328042,
+          "scaled_coverage_80": 0.798941798941799,
+          "mondrian_coverage_80": 0.7777777777777778
+        },
+        {
+          "date": "2025-01-05",
+          "n": 127,
+          "champion_coverage_80": 0.7874015748031497,
+          "scaled_coverage_80": 0.7795275590551181,
+          "mondrian_coverage_80": 0.8188976377952756
+        },
+        {
+          "date": "2025-01-06",
+          "n": 187,
+          "champion_coverage_80": 0.8288770053475936,
+          "scaled_coverage_80": 0.8235294117647058,
+          "mondrian_coverage_80": 0.8021390374331551
+        },
+        {
+          "date": "2025-01-07",
+          "n": 146,
+          "champion_coverage_80": 0.815068493150685,
+          "scaled_coverage_80": 0.821917808219178,
+          "mondrian_coverage_80": 0.8013698630136986
+        },
+        {
+          "date": "2025-01-08",
+          "n": 181,
+          "champion_coverage_80": 0.8232044198895028,
+          "scaled_coverage_80": 0.7734806629834254,
+          "mondrian_coverage_80": 0.8232044198895028
+        },
+        {
+          "date": "2025-01-09",
+          "n": 140,
+          "champion_coverage_80": 0.7714285714285715,
+          "scaled_coverage_80": 0.7571428571428571,
+          "mondrian_coverage_80": 0.7428571428571429
+        },
+        {
+          "date": "2025-01-10",
+          "n": 152,
+          "champion_coverage_80": 0.7894736842105263,
+          "scaled_coverage_80": 0.75,
+          "mondrian_coverage_80": 0.7828947368421053
+        },
+        {
+          "date": "2025-01-11",
+          "n": 85,
+          "champion_coverage_80": 0.788235294117647,
+          "scaled_coverage_80": 0.7529411764705882,
+          "mondrian_coverage_80": 0.7411764705882353
+        },
+        {
+          "date": "2025-01-12",
+          "n": 190,
+          "champion_coverage_80": 0.8105263157894737,
+          "scaled_coverage_80": 0.7842105263157895,
+          "mondrian_coverage_80": 0.8315789473684211
+        },
+        {
+          "date": "2025-01-13",
+          "n": 127,
+          "champion_coverage_80": 0.7874015748031497,
+          "scaled_coverage_80": 0.7874015748031497,
+          "mondrian_coverage_80": 0.8110236220472441
+        },
+        {
+          "date": "2025-01-14",
+          "n": 160,
+          "champion_coverage_80": 0.83125,
+          "scaled_coverage_80": 0.83125,
+          "mondrian_coverage_80": 0.83125
+        },
+        {
+          "date": "2025-01-15",
+          "n": 231,
+          "champion_coverage_80": 0.8051948051948052,
+          "scaled_coverage_80": 0.8225108225108225,
+          "mondrian_coverage_80": 0.8268398268398268
+        },
+        {
+          "date": "2025-01-16",
+          "n": 111,
+          "champion_coverage_80": 0.7927927927927928,
+          "scaled_coverage_80": 0.8198198198198198,
+          "mondrian_coverage_80": 0.7927927927927928
+        },
+        {
+          "date": "2025-01-17",
+          "n": 201,
+          "champion_coverage_80": 0.8407960199004975,
+          "scaled_coverage_80": 0.8407960199004975,
+          "mondrian_coverage_80": 0.835820895522388
+        },
+        {
+          "date": "2025-01-18",
+          "n": 121,
+          "champion_coverage_80": 0.8016528925619835,
+          "scaled_coverage_80": 0.7933884297520661,
+          "mondrian_coverage_80": 0.7851239669421488
+        },
+        {
+          "date": "2025-01-19",
+          "n": 157,
+          "champion_coverage_80": 0.8152866242038217,
+          "scaled_coverage_80": 0.802547770700637,
+          "mondrian_coverage_80": 0.802547770700637
+        },
+        {
+          "date": "2025-01-20",
+          "n": 172,
+          "champion_coverage_80": 0.7906976744186046,
+          "scaled_coverage_80": 0.8023255813953488,
+          "mondrian_coverage_80": 0.8313953488372093
+        },
+        {
+          "date": "2025-01-21",
+          "n": 109,
+          "champion_coverage_80": 0.8532110091743119,
+          "scaled_coverage_80": 0.8532110091743119,
+          "mondrian_coverage_80": 0.8440366972477065
+        },
+        {
+          "date": "2025-01-22",
+          "n": 162,
+          "champion_coverage_80": 0.8024691358024691,
+          "scaled_coverage_80": 0.8148148148148148,
+          "mondrian_coverage_80": 0.8024691358024691
+        },
+        {
+          "date": "2025-01-23",
+          "n": 212,
+          "champion_coverage_80": 0.8018867924528302,
+          "scaled_coverage_80": 0.8113207547169812,
+          "mondrian_coverage_80": 0.8018867924528302
+        },
+        {
+          "date": "2025-01-24",
+          "n": 58,
+          "champion_coverage_80": 0.7758620689655172,
+          "scaled_coverage_80": 0.7413793103448276,
+          "mondrian_coverage_80": 0.7931034482758621
+        },
+        {
+          "date": "2025-01-25",
+          "n": 306,
+          "champion_coverage_80": 0.8006535947712419,
+          "scaled_coverage_80": 0.8137254901960784,
+          "mondrian_coverage_80": 0.8202614379084967
+        },
+        {
+          "date": "2025-01-26",
+          "n": 20,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.75,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2025-01-27",
+          "n": 249,
+          "champion_coverage_80": 0.8032128514056225,
+          "scaled_coverage_80": 0.7751004016064257,
+          "mondrian_coverage_80": 0.7710843373493976
+        },
+        {
+          "date": "2025-01-28",
+          "n": 87,
+          "champion_coverage_80": 0.8160919540229885,
+          "scaled_coverage_80": 0.8160919540229885,
+          "mondrian_coverage_80": 0.7931034482758621
+        },
+        {
+          "date": "2025-01-29",
+          "n": 229,
+          "champion_coverage_80": 0.7991266375545851,
+          "scaled_coverage_80": 0.8034934497816594,
+          "mondrian_coverage_80": 0.7991266375545851
+        },
+        {
+          "date": "2025-01-30",
+          "n": 117,
+          "champion_coverage_80": 0.8205128205128205,
+          "scaled_coverage_80": 0.7948717948717948,
+          "mondrian_coverage_80": 0.8376068376068376
+        },
+        {
+          "date": "2025-01-31",
+          "n": 154,
+          "champion_coverage_80": 0.7467532467532467,
+          "scaled_coverage_80": 0.7532467532467533,
+          "mondrian_coverage_80": 0.7467532467532467
+        },
+        {
+          "date": "2025-02-01",
+          "n": 194,
+          "champion_coverage_80": 0.8092783505154639,
+          "scaled_coverage_80": 0.7938144329896907,
+          "mondrian_coverage_80": 0.8247422680412371
+        },
+        {
+          "date": "2025-02-02",
+          "n": 97,
+          "champion_coverage_80": 0.7731958762886598,
+          "scaled_coverage_80": 0.7938144329896907,
+          "mondrian_coverage_80": 0.7731958762886598
+        },
+        {
+          "date": "2025-02-03",
+          "n": 202,
+          "champion_coverage_80": 0.7722772277227723,
+          "scaled_coverage_80": 0.7920792079207921,
+          "mondrian_coverage_80": 0.7772277227722773
+        },
+        {
+          "date": "2025-02-04",
+          "n": 147,
+          "champion_coverage_80": 0.8367346938775511,
+          "scaled_coverage_80": 0.8163265306122449,
+          "mondrian_coverage_80": 0.8435374149659864
+        },
+        {
+          "date": "2025-02-05",
+          "n": 246,
+          "champion_coverage_80": 0.7926829268292683,
+          "scaled_coverage_80": 0.7682926829268293,
+          "mondrian_coverage_80": 0.7845528455284553
+        },
+        {
+          "date": "2025-02-06",
+          "n": 121,
+          "champion_coverage_80": 0.7603305785123967,
+          "scaled_coverage_80": 0.7520661157024794,
+          "mondrian_coverage_80": 0.7272727272727273
+        },
+        {
+          "date": "2025-02-07",
+          "n": 140,
+          "champion_coverage_80": 0.8,
+          "scaled_coverage_80": 0.8214285714285714,
+          "mondrian_coverage_80": 0.7714285714285715
+        },
+        {
+          "date": "2025-02-08",
+          "n": 235,
+          "champion_coverage_80": 0.7659574468085106,
+          "scaled_coverage_80": 0.7914893617021277,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2025-02-09",
+          "n": 59,
+          "champion_coverage_80": 0.8135593220338984,
+          "scaled_coverage_80": 0.8135593220338984,
+          "mondrian_coverage_80": 0.7796610169491526
+        },
+        {
+          "date": "2025-02-10",
+          "n": 218,
+          "champion_coverage_80": 0.8348623853211009,
+          "scaled_coverage_80": 0.8211009174311926,
+          "mondrian_coverage_80": 0.8211009174311926
+        },
+        {
+          "date": "2025-02-11",
+          "n": 91,
+          "champion_coverage_80": 0.7802197802197802,
+          "scaled_coverage_80": 0.7692307692307693,
+          "mondrian_coverage_80": 0.7472527472527473
+        },
+        {
+          "date": "2025-02-12",
+          "n": 303,
+          "champion_coverage_80": 0.7788778877887789,
+          "scaled_coverage_80": 0.7953795379537953,
+          "mondrian_coverage_80": 0.7887788778877888
+        },
+        {
+          "date": "2025-02-13",
+          "n": 102,
+          "champion_coverage_80": 0.8333333333333334,
+          "scaled_coverage_80": 0.7941176470588235,
+          "mondrian_coverage_80": 0.8137254901960784
+        },
+        {
+          "date": "2025-02-19",
+          "n": 20,
+          "champion_coverage_80": 0.65,
+          "scaled_coverage_80": 0.75,
+          "mondrian_coverage_80": 0.8
+        },
+        {
+          "date": "2025-02-20",
+          "n": 190,
+          "champion_coverage_80": 0.8052631578947368,
+          "scaled_coverage_80": 0.8052631578947368,
+          "mondrian_coverage_80": 0.8052631578947368
+        },
+        {
+          "date": "2025-02-21",
+          "n": 203,
+          "champion_coverage_80": 0.8177339901477833,
+          "scaled_coverage_80": 0.8078817733990148,
+          "mondrian_coverage_80": 0.812807881773399
+        },
+        {
+          "date": "2025-02-22",
+          "n": 108,
+          "champion_coverage_80": 0.7314814814814815,
+          "scaled_coverage_80": 0.7962962962962963,
+          "mondrian_coverage_80": 0.7962962962962963
+        },
+        {
+          "date": "2025-02-23",
+          "n": 221,
+          "champion_coverage_80": 0.8144796380090498,
+          "scaled_coverage_80": 0.8371040723981901,
+          "mondrian_coverage_80": 0.7873303167420814
+        },
+        {
+          "date": "2025-02-24",
+          "n": 161,
+          "champion_coverage_80": 0.8012422360248447,
+          "scaled_coverage_80": 0.8012422360248447,
+          "mondrian_coverage_80": 0.8074534161490683
+        },
+        {
+          "date": "2025-02-25",
+          "n": 149,
+          "champion_coverage_80": 0.7718120805369127,
+          "scaled_coverage_80": 0.785234899328859,
+          "mondrian_coverage_80": 0.7718120805369127
+        },
+        {
+          "date": "2025-02-26",
+          "n": 190,
+          "champion_coverage_80": 0.7894736842105263,
+          "scaled_coverage_80": 0.7842105263157895,
+          "mondrian_coverage_80": 0.8210526315789474
+        },
+        {
+          "date": "2025-02-27",
+          "n": 100,
+          "champion_coverage_80": 0.85,
+          "scaled_coverage_80": 0.88,
+          "mondrian_coverage_80": 0.87
+        },
+        {
+          "date": "2025-02-28",
+          "n": 211,
+          "champion_coverage_80": 0.7867298578199052,
+          "scaled_coverage_80": 0.7725118483412322,
+          "mondrian_coverage_80": 0.7819905213270142
+        },
+        {
+          "date": "2025-03-01",
+          "n": 123,
+          "champion_coverage_80": 0.8292682926829268,
+          "scaled_coverage_80": 0.8292682926829268,
+          "mondrian_coverage_80": 0.8211382113821138
+        },
+        {
+          "date": "2025-03-02",
+          "n": 192,
+          "champion_coverage_80": 0.8385416666666666,
+          "scaled_coverage_80": 0.828125,
+          "mondrian_coverage_80": 0.8229166666666666
+        },
+        {
+          "date": "2025-03-03",
+          "n": 156,
+          "champion_coverage_80": 0.7692307692307693,
+          "scaled_coverage_80": 0.7435897435897436,
+          "mondrian_coverage_80": 0.7371794871794872
+        },
+        {
+          "date": "2025-03-04",
+          "n": 194,
+          "champion_coverage_80": 0.788659793814433,
+          "scaled_coverage_80": 0.8350515463917526,
+          "mondrian_coverage_80": 0.8350515463917526
+        },
+        {
+          "date": "2025-03-05",
+          "n": 154,
+          "champion_coverage_80": 0.7922077922077922,
+          "scaled_coverage_80": 0.7792207792207793,
+          "mondrian_coverage_80": 0.7727272727272727
+        },
+        {
+          "date": "2025-03-06",
+          "n": 118,
+          "champion_coverage_80": 0.7796610169491526,
+          "scaled_coverage_80": 0.7796610169491526,
+          "mondrian_coverage_80": 0.8220338983050848
+        },
+        {
+          "date": "2025-03-07",
+          "n": 162,
+          "champion_coverage_80": 0.7716049382716049,
+          "scaled_coverage_80": 0.7901234567901234,
+          "mondrian_coverage_80": 0.8024691358024691
+        },
+        {
+          "date": "2025-03-08",
+          "n": 158,
+          "champion_coverage_80": 0.759493670886076,
+          "scaled_coverage_80": 0.7531645569620253,
+          "mondrian_coverage_80": 0.7848101265822784
+        },
+        {
+          "date": "2025-03-09",
+          "n": 175,
+          "champion_coverage_80": 0.8114285714285714,
+          "scaled_coverage_80": 0.8171428571428572,
+          "mondrian_coverage_80": 0.8171428571428572
+        },
+        {
+          "date": "2025-03-10",
+          "n": 252,
+          "champion_coverage_80": 0.8214285714285714,
+          "scaled_coverage_80": 0.7698412698412699,
+          "mondrian_coverage_80": 0.7698412698412699
+        },
+        {
+          "date": "2025-03-11",
+          "n": 81,
+          "champion_coverage_80": 0.8765432098765432,
+          "scaled_coverage_80": 0.8888888888888888,
+          "mondrian_coverage_80": 0.8888888888888888
+        },
+        {
+          "date": "2025-03-12",
+          "n": 186,
+          "champion_coverage_80": 0.8010752688172043,
+          "scaled_coverage_80": 0.7741935483870968,
+          "mondrian_coverage_80": 0.7795698924731183
+        },
+        {
+          "date": "2025-03-13",
+          "n": 111,
+          "champion_coverage_80": 0.7747747747747747,
+          "scaled_coverage_80": 0.7657657657657657,
+          "mondrian_coverage_80": 0.7747747747747747
+        },
+        {
+          "date": "2025-03-14",
+          "n": 216,
+          "champion_coverage_80": 0.8333333333333334,
+          "scaled_coverage_80": 0.8564814814814815,
+          "mondrian_coverage_80": 0.8425925925925926
+        },
+        {
+          "date": "2025-03-15",
+          "n": 155,
+          "champion_coverage_80": 0.7741935483870968,
+          "scaled_coverage_80": 0.7870967741935484,
+          "mondrian_coverage_80": 0.8129032258064516
+        },
+        {
+          "date": "2025-03-16",
+          "n": 168,
+          "champion_coverage_80": 0.8392857142857143,
+          "scaled_coverage_80": 0.7976190476190477,
+          "mondrian_coverage_80": 0.8154761904761905
+        },
+        {
+          "date": "2025-03-17",
+          "n": 210,
+          "champion_coverage_80": 0.7333333333333333,
+          "scaled_coverage_80": 0.7952380952380952,
+          "mondrian_coverage_80": 0.7666666666666667
+        },
+        {
+          "date": "2025-03-18",
+          "n": 85,
+          "champion_coverage_80": 0.7647058823529411,
+          "scaled_coverage_80": 0.7529411764705882,
+          "mondrian_coverage_80": 0.8117647058823529
+        },
+        {
+          "date": "2025-03-19",
+          "n": 225,
+          "champion_coverage_80": 0.8088888888888889,
+          "scaled_coverage_80": 0.8044444444444444,
+          "mondrian_coverage_80": 0.7911111111111111
+        },
+        {
+          "date": "2025-03-20",
+          "n": 104,
+          "champion_coverage_80": 0.7884615384615384,
+          "scaled_coverage_80": 0.7692307692307693,
+          "mondrian_coverage_80": 0.7884615384615384
+        },
+        {
+          "date": "2025-03-21",
+          "n": 218,
+          "champion_coverage_80": 0.7706422018348624,
+          "scaled_coverage_80": 0.7981651376146789,
+          "mondrian_coverage_80": 0.7752293577981652
+        },
+        {
+          "date": "2025-03-22",
+          "n": 108,
+          "champion_coverage_80": 0.7962962962962963,
+          "scaled_coverage_80": 0.8148148148148148,
+          "mondrian_coverage_80": 0.8055555555555556
+        },
+        {
+          "date": "2025-03-23",
+          "n": 159,
+          "champion_coverage_80": 0.7924528301886793,
+          "scaled_coverage_80": 0.8176100628930818,
+          "mondrian_coverage_80": 0.8113207547169812
+        },
+        {
+          "date": "2025-03-24",
+          "n": 172,
+          "champion_coverage_80": 0.7965116279069767,
+          "scaled_coverage_80": 0.813953488372093,
+          "mondrian_coverage_80": 0.7906976744186046
+        },
+        {
+          "date": "2025-03-25",
+          "n": 171,
+          "champion_coverage_80": 0.8070175438596491,
+          "scaled_coverage_80": 0.8011695906432749,
+          "mondrian_coverage_80": 0.7660818713450293
+        },
+        {
+          "date": "2025-03-26",
+          "n": 125,
+          "champion_coverage_80": 0.76,
+          "scaled_coverage_80": 0.792,
+          "mondrian_coverage_80": 0.832
+        },
+        {
+          "date": "2025-03-27",
+          "n": 172,
+          "champion_coverage_80": 0.8023255813953488,
+          "scaled_coverage_80": 0.8197674418604651,
+          "mondrian_coverage_80": 0.7848837209302325
+        },
+        {
+          "date": "2025-03-28",
+          "n": 148,
+          "champion_coverage_80": 0.831081081081081,
+          "scaled_coverage_80": 0.831081081081081,
+          "mondrian_coverage_80": 0.7837837837837838
+        },
+        {
+          "date": "2025-03-29",
+          "n": 151,
+          "champion_coverage_80": 0.7748344370860927,
+          "scaled_coverage_80": 0.7814569536423841,
+          "mondrian_coverage_80": 0.7947019867549668
+        },
+        {
+          "date": "2025-03-30",
+          "n": 183,
+          "champion_coverage_80": 0.8415300546448088,
+          "scaled_coverage_80": 0.7923497267759563,
+          "mondrian_coverage_80": 0.8142076502732241
+        },
+        {
+          "date": "2025-03-31",
+          "n": 164,
+          "champion_coverage_80": 0.823170731707317,
+          "scaled_coverage_80": 0.8292682926829268,
+          "mondrian_coverage_80": 0.8292682926829268
+        },
+        {
+          "date": "2025-04-01",
+          "n": 138,
+          "champion_coverage_80": 0.7536231884057971,
+          "scaled_coverage_80": 0.7463768115942029,
+          "mondrian_coverage_80": 0.7318840579710145
+        },
+        {
+          "date": "2025-04-02",
+          "n": 192,
+          "champion_coverage_80": 0.875,
+          "scaled_coverage_80": 0.8385416666666666,
+          "mondrian_coverage_80": 0.8541666666666666
+        },
+        {
+          "date": "2025-04-03",
+          "n": 126,
+          "champion_coverage_80": 0.8095238095238095,
+          "scaled_coverage_80": 0.8174603174603174,
+          "mondrian_coverage_80": 0.8333333333333334
+        },
+        {
+          "date": "2025-04-04",
+          "n": 229,
+          "champion_coverage_80": 0.851528384279476,
+          "scaled_coverage_80": 0.851528384279476,
+          "mondrian_coverage_80": 0.8471615720524017
+        },
+        {
+          "date": "2025-04-05",
+          "n": 103,
+          "champion_coverage_80": 0.8349514563106796,
+          "scaled_coverage_80": 0.8155339805825242,
+          "mondrian_coverage_80": 0.8543689320388349
+        },
+        {
+          "date": "2025-04-06",
+          "n": 229,
+          "champion_coverage_80": 0.7685589519650655,
+          "scaled_coverage_80": 0.8078602620087336,
+          "mondrian_coverage_80": 0.8296943231441049
+        },
+        {
+          "date": "2025-04-07",
+          "n": 41,
+          "champion_coverage_80": 0.7804878048780488,
+          "scaled_coverage_80": 0.7317073170731707,
+          "mondrian_coverage_80": 0.7560975609756098
+        },
+        {
+          "date": "2025-04-08",
+          "n": 225,
+          "champion_coverage_80": 0.8355555555555556,
+          "scaled_coverage_80": 0.8266666666666667,
+          "mondrian_coverage_80": 0.8044444444444444
+        },
+        {
+          "date": "2025-04-09",
+          "n": 203,
+          "champion_coverage_80": 0.7684729064039408,
+          "scaled_coverage_80": 0.7684729064039408,
+          "mondrian_coverage_80": 0.729064039408867
+        },
+        {
+          "date": "2025-04-10",
+          "n": 111,
+          "champion_coverage_80": 0.7657657657657657,
+          "scaled_coverage_80": 0.7657657657657657,
+          "mondrian_coverage_80": 0.7387387387387387
+        },
+        {
+          "date": "2025-04-11",
+          "n": 309,
+          "champion_coverage_80": 0.7605177993527508,
+          "scaled_coverage_80": 0.7702265372168284,
+          "mondrian_coverage_80": 0.7961165048543689
+        },
+        {
+          "date": "2025-04-13",
+          "n": 297,
+          "champion_coverage_80": 0.7441077441077442,
+          "scaled_coverage_80": 0.7239057239057239,
+          "mondrian_coverage_80": 0.7441077441077442
+        }
+      ],
+      "terciles": [
+        {
+          "tercile": "low",
+          "n": 9219,
+          "projection_range": [
+            -0.23934604227542877,
+            0.7152256369590759
+          ],
+          "coverage_80": {
+            "champion": 0.9501030480529341,
+            "scaled": 0.8603970061828832,
+            "mondrian": 0.8023646816357523
+          }
+        },
+        {
+          "tercile": "mid",
+          "n": 9218,
+          "projection_range": [
+            0.7152390480041504,
+            1.5705742835998535
+          ],
+          "coverage_80": {
+            "champion": 0.8163376003471469,
+            "scaled": 0.819049685398134,
+            "mondrian": 0.8066825775656324
+          }
+        },
+        {
+          "tercile": "high",
+          "n": 9218,
+          "projection_range": [
+            1.5705941915512085,
+            5.027440547943115
+          ],
+          "coverage_80": {
+            "champion": 0.6280104144065958,
+            "scaled": 0.7156650032545021,
+            "mondrian": 0.7888912996311565
+          }
+        }
+      ],
+      "time_thirds": [
+        {
+          "third": "early",
+          "days": [
+            "2024-04-07",
+            "2024-12-12"
+          ],
+          "n": 9342,
+          "coverage_80": {
+            "champion": 0.795011774780561,
+            "scaled": 0.7961892528366517,
+            "mondrian": 0.7973667308927425
+          }
+        },
+        {
+          "third": "middle",
+          "days": [
+            "2024-12-13",
+            "2025-02-09"
+          ],
+          "n": 8847,
+          "coverage_80": {
+            "champion": 0.8021928337289477,
+            "scaled": 0.8002712783994574,
+            "mondrian": 0.8020798010625071
+          }
+        },
+        {
+          "third": "late",
+          "days": [
+            "2025-02-10",
+            "2025-04-13"
+          ],
+          "n": 9466,
+          "coverage_80": {
+            "champion": 0.797485738432284,
+            "scaled": 0.7987534333403761,
+            "mondrian": 0.798647792098035
+          }
+        }
+      ]
+    }
+  },
+  "champion_anchor": {
+    "points": {
+      "coverage": 0.798264328331224,
+      "mean_width": 14.367161781071022,
+      "published_coverage": 0.798,
+      "published_mean_width": 14.37,
+      "reproduced": true
+    },
+    "rebounds": {
+      "coverage": 0.7982281685047912,
+      "mean_width": 5.914145385527175,
+      "published_coverage": 0.798,
+      "published_mean_width": 5.91,
+      "reproduced": true
+    },
+    "assists": {
+      "coverage": 0.799566082082806,
+      "mean_width": 4.125015097517063,
+      "published_coverage": 0.8,
+      "published_mean_width": 4.13,
+      "reproduced": true
+    },
+    "threes": {
+      "coverage": 0.7981558488519255,
+      "mean_width": 2.8607033668924813,
+      "published_coverage": 0.798,
+      "published_mean_width": 2.86,
+      "reproduced": true
+    }
+  },
+  "verdicts": {
+    "scaled": {
+      "per_stat": {
+        "points": {
+          "tercile_coverage": [
+            0.8431500162707452,
+            0.7811889780863528,
+            0.7679540030375352
+          ],
+          "worst_tercile": 0.7679540030375352,
+          "clause1_shape_this_stat": true,
+          "clause3_marginal_ok": true,
+          "clause4_width_ok": true,
+          "champion_coverage": 0.798264328331224,
+          "champion_mean_width": 14.367161781071022,
+          "challenger_coverage": 0.7974326523232689,
+          "challenger_mean_width": 13.831701456170498
+        },
+        "rebounds": {
+          "tercile_coverage": [
+            0.8238420652999241,
+            0.7894337166413539,
+            0.7786938598394446
+          ],
+          "worst_tercile": 0.7786938598394446,
+          "clause1_shape_this_stat": true,
+          "clause3_marginal_ok": true,
+          "clause4_width_ok": true,
+          "champion_coverage": 0.7982281685047912,
+          "champion_mean_width": 5.914145385527175,
+          "challenger_coverage": 0.7973241728439704,
+          "challenger_mean_width": 5.8073029463531824
+        },
+        "assists": {
+          "tercile_coverage": [
+            0.8539971797374987,
+            0.788999783033196,
+            0.752332393143849
+          ],
+          "worst_tercile": 0.752332393143849,
+          "clause1_shape_this_stat": true,
+          "clause3_marginal_ok": true,
+          "clause4_width_ok": true,
+          "champion_coverage": 0.799566082082806,
+          "champion_mean_width": 4.125015097517063,
+          "challenger_coverage": 0.7984451274633881,
+          "challenger_mean_width": 3.891547556379623
+        },
+        "threes": {
+          "tercile_coverage": [
+            0.8603970061828832,
+            0.819049685398134,
+            0.7156650032545021
+          ],
+          "worst_tercile": 0.7156650032545021,
+          "clause1_shape_this_stat": false,
+          "clause3_marginal_ok": true,
+          "clause4_width_ok": true,
+          "champion_coverage": 0.7981558488519255,
+          "champion_mean_width": 2.8607033668924813,
+          "challenger_coverage": 0.7983728078105226,
+          "challenger_mean_width": 2.430887084782159
+        }
+      },
+      "clauses": {
+        "clause1_shape_3_of_4": true,
+        "clause1_stats_passing": 3,
+        "clause2_no_stat_abandoned": true,
+        "worst_tercile_overall": 0.7156650032545021,
+        "clause3_marginal_all_stats": true,
+        "clause4_width_all_stats": true
+      },
+      "fixes_shape": true
+    },
+    "mondrian": {
+      "per_stat": {
+        "points": {
+          "tercile_coverage": [
+            0.8041002277904328,
+            0.7931221523106965,
+            0.7955087871555652
+          ],
+          "worst_tercile": 0.7931221523106965,
+          "clause1_shape_this_stat": true,
+          "clause3_marginal_ok": true,
+          "clause4_width_ok": true,
+          "champion_coverage": 0.798264328331224,
+          "champion_mean_width": 14.367161781071022,
+          "challenger_coverage": 0.7975772916290002,
+          "challenger_mean_width": 14.234539749177923
+        },
+        "rebounds": {
+          "tercile_coverage": [
+            0.8014969085584119,
+            0.7963766543718811,
+            0.7980039054024735
+          ],
+          "worst_tercile": 0.7963766543718811,
+          "clause1_shape_this_stat": true,
+          "clause3_marginal_ok": true,
+          "clause4_width_ok": true,
+          "champion_coverage": 0.7982281685047912,
+          "champion_mean_width": 5.914145385527175,
+          "challenger_coverage": 0.7986259265955523,
+          "challenger_mean_width": 5.942145253611482
+        },
+        "assists": {
+          "tercile_coverage": [
+            0.8055103590411108,
+            0.7926882187025385,
+            0.7998481232371447
+          ],
+          "worst_tercile": 0.7926882187025385,
+          "clause1_shape_this_stat": true,
+          "clause3_marginal_ok": true,
+          "clause4_width_ok": true,
+          "champion_coverage": 0.799566082082806,
+          "champion_mean_width": 4.125015097517063,
+          "challenger_coverage": 0.799349123124209,
+          "challenger_mean_width": 3.988743978407947
+        },
+        "threes": {
+          "tercile_coverage": [
+            0.8023646816357523,
+            0.8066825775656324,
+            0.7888912996311565
+          ],
+          "worst_tercile": 0.7888912996311565,
+          "clause1_shape_this_stat": true,
+          "clause3_marginal_ok": true,
+          "clause4_width_ok": true,
+          "champion_coverage": 0.7981558488519255,
+          "champion_mean_width": 2.8607033668924813,
+          "challenger_coverage": 0.7993129632977761,
+          "challenger_mean_width": 2.6278437401088404
+        }
+      },
+      "clauses": {
+        "clause1_shape_3_of_4": true,
+        "clause1_stats_passing": 4,
+        "clause2_no_stat_abandoned": true,
+        "worst_tercile_overall": 0.7888912996311565,
+        "clause3_marginal_all_stats": true,
+        "clause4_width_all_stats": true
+      },
+      "fixes_shape": true
+    }
+  },
+  "pooled": {
+    "methods_80": {
+      "champion_0.8": {
+        "coverage": 0.7985536069426866,
+        "mean_width": 6.816756407751935,
+        "n": 110620
+      },
+      "scaled_0.8": {
+        "coverage": 0.7978936901102874,
+        "mean_width": 6.490359760921366,
+        "n": 110620
+      },
+      "mondrian_0.8": {
+        "coverage": 0.7987163261616345,
+        "mean_width": 6.698318180326548,
+        "n": 110620
+      }
+    },
+    "monthly": [
+      {
+        "month": "2024-04",
+        "n": 6100,
+        "champion_coverage_80": 0.7888524590163934,
+        "scaled_coverage_80": 0.7770491803278688,
+        "mondrian_coverage_80": 0.7834426229508197
+      },
+      {
+        "month": "2024-10",
+        "n": 6140,
+        "champion_coverage_80": 0.7970684039087947,
+        "scaled_coverage_80": 0.8096091205211726,
+        "mondrian_coverage_80": 0.8068403908794788
+      },
+      {
+        "month": "2024-11",
+        "n": 19024,
+        "champion_coverage_80": 0.8045626576955425,
+        "scaled_coverage_80": 0.8048780487804879,
+        "mondrian_coverage_80": 0.8037216148023549
+      },
+      {
+        "month": "2024-12",
+        "n": 16244,
+        "champion_coverage_80": 0.7983255355823689,
+        "scaled_coverage_80": 0.7994951982270376,
+        "mondrian_coverage_80": 0.8015267175572519
+      },
+      {
+        "month": "2025-01",
+        "n": 19484,
+        "champion_coverage_80": 0.8028125641552043,
+        "scaled_coverage_80": 0.8010162184356395,
+        "mondrian_coverage_80": 0.8007595976185589
+      },
+      {
+        "month": "2025-02",
+        "n": 14832,
+        "champion_coverage_80": 0.7940264293419633,
+        "scaled_coverage_80": 0.7964536138079827,
+        "mondrian_coverage_80": 0.7980043149946062
+      },
+      {
+        "month": "2025-03",
+        "n": 19984,
+        "champion_coverage_80": 0.8021417133706965,
+        "scaled_coverage_80": 0.8004403522818254,
+        "mondrian_coverage_80": 0.8007906325060048
+      },
+      {
+        "month": "2025-04",
+        "n": 8812,
+        "champion_coverage_80": 0.7838175215615071,
+        "scaled_coverage_80": 0.7758738084430322,
+        "mondrian_coverage_80": 0.7796187017703132
+      }
+    ]
+  },
+  "selection": {
+    "method": "scaled",
+    "reason": "both fix the shape; scaled is narrower pooled (6.49 < 6.70)"
+  }
+}
