@@ -400,6 +400,11 @@ def test_a_row_serves_no_probability_field(client, tmp_path):
         # a side for a game that has not been played yet (#119). It is the
         # player's own team, not a status and not a probability.
         "team",
+        # The projection's 80% conformal range (the conformal ship): two
+        # bounds in the stat's own unit, calibrated on the counted record.
+        # A measured range around the number -- still not a probability,
+        # and the token scan below still applies to them.
+        "interval_low", "interval_high",
     }
     assert not any(
         token in field.lower() for field in row for token in ("prob", "pct", "percent", "chance", "odds")
@@ -639,6 +644,10 @@ def test_the_props_row_carries_no_availability_field(client, tmp_path):
         # a side for a game that has not been played yet (#119). It is the
         # player's own team, not a status and not a probability.
         "team",
+        # The projection's 80% conformal range (the conformal ship): the
+        # model's measured spread for the line, in the stat's own unit.
+        # Not an availability signal of any kind.
+        "interval_low", "interval_high",
     }
     assert not any(
         token in field.lower() for field in row

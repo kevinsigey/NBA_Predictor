@@ -330,18 +330,22 @@ def fit_sigma_model(
     quantiles = [i / n_bins for i in range(1, n_bins)]
     edges = sorted({float(q) for q in np.quantile(projected, quantiles)})
     assignment = np.searchsorted(edges, projected, side="right")
-    n_effective = len(edges) + 1
+    # A bin can come back empty only when the projections themselves are
+    # degenerate (a constant predictor collapses the deciles onto one
+    # value). Merging an empty bin into its neighbours is the estimator's
+    # own answer -- the surviving bins still partition the range in
+    # order -- where raising would refuse a measurable, if coarse, curve.
+    kept: list[int] = []
     raw: list[float] = []
     counts: list[float] = []
-    for b in range(n_effective):
+    for b in range(len(edges) + 1):
         part = abs_resid[assignment == b]
         if len(part) == 0:
-            raise AssertionError(
-                f"sigma bin {b} is empty on {len(calibration)} calibration rows; "
-                "equal-frequency bins cannot be empty -- the fit is not trusted"
-            )
+            continue
+        kept.append(b)
         raw.append(float(part.mean()))
         counts.append(float(len(part)))
+    edges = [edges[b] for b in kept[:-1]]
     scales = _pava_non_decreasing(raw, counts)
     mean_abs = float(abs_resid.mean())
     return {

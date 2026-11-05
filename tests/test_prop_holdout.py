@@ -68,6 +68,25 @@ def test_holdout_is_strictly_later_than_train():
         assert res[market]["train_max_date"] < res[market]["holdout_min_date"]
 
 
+def test_holdout_publishes_the_conformal_cold_start():
+    """The cold start the served intervals calibrate from before the live
+    counted record builds up: measured on THIS holdout's residuals, never
+    invented. Sigma scales must be non-decreasing in the projection (the
+    isotonic fit), the quantile a real order statistic of the normalized
+    scores, and n the holdout's own size."""
+    res = prop_holdout_metrics(make_player_games(), dummy_prop_factories())
+    for market in MARKETS:
+        block = res[market]["conformal"]
+        assert block is not None
+        assert block["n_holdout"] == res[market]["n_holdout"]
+        assert block["half_width_80"] > 0
+        assert block["q80"] > 0
+        scales = block["sigma"]["scales"]
+        assert scales == sorted(scales)
+        assert len(scales) == len(block["sigma"]["edges"]) + 1
+        assert block["sigma"]["floor"] > 0
+
+
 def test_all_four_markets_are_reported_and_nothing_is_dropped():
     df = make_player_games()
     res = prop_holdout_metrics(df, dummy_prop_factories())

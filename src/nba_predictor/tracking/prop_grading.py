@@ -49,11 +49,31 @@ covering a subset.
 beating the projection, negative is the player falling short. It says
 nothing about whether the model was "right" to move -- that is what the
 grade is for.
+
+**The interval.** Every graded row also carries the model's 80% range for
+that line (``interval_low`` / ``interval_high`` / ``inside_interval``):
+scaled conformal intervals calibrated on the counted record itself
+(`tracking/conformal_intervals.py` -- the method the preregistered
+trial-2 race selected, docs/conformal-scaled-results-2026-11.md). A
+game's ranges are computed from counted residuals of game days strictly
+before its own day, so the range a reader sees after the game is the
+range the calibration available before tip-off produces; the aggregates
+count how often the actual landed inside that range over the same
+pre-tip population the grades count, so the coverage figure and the
+ranges it judges can never describe two different intervals.
 """
 
 from pathlib import Path
 
 from nba_predictor.tracking import store
+from nba_predictor.tracking.conformal_intervals import (
+    BASIS_HOLDOUT,
+    BASIS_ROLLING,
+    BASIS_SEASON,
+    LEVEL as INTERVAL_LEVEL,
+    METHOD as INTERVAL_METHOD,
+    PropIntervalCalibrator,
+)
 from nba_predictor.tracking.player_props import resolved_player_props
 from nba_predictor.tracking.timing import earliest_recorded_outcome
 
@@ -147,6 +167,135 @@ def prop_bands(models_dir: Path) -> dict[str, float] | None:
         if isinstance(mae, (int, float)) and not isinstance(mae, bool):
             bands[str(stat)] = float(mae)
     return bands or None
+
+
+def prop_conformal_cold_start(models_dir: Path) -> dict[str, dict] | None:
+    """The manifest's published holdout conformal parameters per stat, or
+    None when the manifest carries none.
+
+    The retrain measures these on the same chronological holdout as the
+    MAE bands (`pipeline/ingest.py::train_player_prop_models` publishing
+    `metrics[stat]["conformal"]`): the scaled method's sigma bins and its
+    normalized 80% quantile, for the cold start -- the days before the
+    counted record holds enough of its own residuals to calibrate on
+    (`tracking/conformal_intervals.py`, tier 3). A manifest written by a
+    retrain from before the block existed parses to None, exactly as a
+    missing MAE parses to no band: no parameter is ever invented to fill
+    the gap. Only stats whose block is complete are returned.
+    """
+    import json
+
+    path = Path(models_dir) / "player_props_manifest.json"
+    try:
+        manifest = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return None
+    out: dict[str, dict] = {}
+    for stat, figures in (manifest.get("metrics") or {}).items():
+        block = (figures or {}).get("conformal")
+        if not isinstance(block, dict):
+            continue
+        sigma = block.get("sigma")
+        q80 = block.get("q80")
+        if not isinstance(sigma, dict) or not isinstance(q80, (int, float)):
+            continue
+        if not all(k in sigma for k in ("edges", "scales", "floor")):
+            continue
+        out[str(stat)] = {
+            "q80": float(q80),
+            "sigma": {
+                "edges": [float(e) for e in sigma["edges"]],
+                "scales": [float(s) for s in sigma["scales"]],
+                "floor": float(sigma["floor"]),
+            },
+            "n_holdout": int(block.get("n_holdout", 0)),
+        }
+    return out or None
+
+
+def build_interval_calibrator(
+    db_path: Path,
+    schedule: list[dict],
+    cold_start: dict[str, dict] | None = None,
+) -> PropIntervalCalibrator:
+    """The production interval calibrator over this store's counted record.
+
+    Built from the same `_graded_rows` population the grading reads (with
+    no bands -- the calibrator needs residuals, not grades), so a surface
+    that serves projections directly (the game page's box score) prices
+    its ranges from exactly the record the grading payload calibrates
+    on. Callers cache the result; building it is a bulk store read.
+    """
+    rows = _graded_rows(db_path, schedule, None)
+    return PropIntervalCalibrator.from_graded_rows(rows, cold_start)
+
+
+INTERVAL_NOTE = (
+    "The range on each line is the model's 80% interval, built by scaled "
+    "conformal prediction from the counted record itself: each game day's "
+    "ranges are calibrated only on counted lines from game days before it, "
+    "with the width scaled by the size of the projection -- bigger lines "
+    "get wider ranges. An interval is never carried across from an older "
+    "day's calibration."
+)
+
+
+def _attach_intervals(
+    rows: list[dict], cold_start: dict[str, dict] | None
+) -> dict[tuple[str, str], dict]:
+    """Attach `interval_low` / `interval_high` / `inside_interval` to every
+    graded row, and return the calibration info per (stat, game_date).
+
+    The calibrator is built from the rows themselves (their pre-tip subset
+    calibrates; every row is priced), so the day payload, the per-game
+    payload and the aggregates all read the same intervals -- the coverage
+    the aggregates publish counts THESE rows' inside flags, never a
+    recomputation that could drift from what the review showed.
+    """
+    if not rows:
+        return {}
+    calibrator = PropIntervalCalibrator.from_graded_rows(rows, cold_start)
+    infos: dict[tuple[str, str], dict] = {}
+    for r in rows:
+        hw, info = calibrator.half_width(r["stat"], r["predicted"], r["game_date"])
+        infos[(r["stat"], r["game_date"])] = info
+        if hw is None:
+            r["interval_low"] = None
+            r["interval_high"] = None
+            r["inside_interval"] = None
+        else:
+            r["interval_low"] = _round1(r["predicted"] - hw)
+            r["interval_high"] = _round1(r["predicted"] + hw)
+            r["inside_interval"] = bool(r["_abs_delta"] <= hw + _EPSILON)
+    return infos
+
+
+def _tier_phrase(bases: set[str | None]) -> str:
+    """One clause describing how a day was calibrated, from the set of
+    tiers its stats used."""
+    if bases == {BASIS_ROLLING}:
+        return "the trailing 14 game days before it"
+    if bases == {BASIS_SEASON}:
+        return "every counted game day before it (the season was too young for a 14-day window)"
+    if bases == {BASIS_HOLDOUT}:
+        return "the model's holdout parameters (the counted record had not built up yet)"
+    return "the counted game days before it"
+
+
+def _interval_note_for_day(
+    infos: dict[tuple[str, str], dict], game_date: str, stats: list[str]
+) -> str | None:
+    """The interval basis note for one game day, or None when no stat that
+    day carries an interval at all (the section then says nothing)."""
+    day_infos = [infos[(s, game_date)] for s in stats if (s, game_date) in infos]
+    if not day_infos or all(i["basis"] is None for i in day_infos):
+        return None
+    bases = {i["basis"] for i in day_infos if i["basis"] is not None}
+    ns = [i["n"] for i in day_infos if i["basis"] is not None and i["basis"] != BASIS_HOLDOUT]
+    note = f"80% ranges calibrated on {_tier_phrase(bases)}"
+    if ns:
+        note += f" ({min(ns)}-{max(ns)} counted lines per stat)"
+    return note + ". " + INTERVAL_NOTE
 
 
 def _rolling_baselines(db_path: Path, schedule: list[dict]) -> dict[tuple[str, str], list[tuple[str, str, float]]]:
@@ -322,6 +471,12 @@ def _prop_aggregates(rows: list[dict], bands: dict[str, float] | None) -> dict:
             }
             for label in GRADES
         ] if banded else []
+        # Live coverage of the shipped 80% intervals over the same rows:
+        # the share of the stat's counted pre-tip lines whose actual
+        # landed inside the range that day's own calibration produced.
+        # Rows with no interval (no tier could serve their day) are
+        # counted in neither side; interval_n says how many were judged.
+        interval_rows = [r for r in srows if r.get("inside_interval") is not None]
         per_stat.append(
             {
                 "stat": stat,
@@ -331,6 +486,17 @@ def _prop_aggregates(rows: list[dict], bands: dict[str, float] | None) -> dict:
                 "holdout_mae": (bands or {}).get(stat),
                 "band_n": len(banded),
                 "bands": shares,
+                "interval_coverage": (
+                    round(
+                        100.0
+                        * sum(1 for r in interval_rows if r["inside_interval"])
+                        / len(interval_rows),
+                        1,
+                    )
+                    if interval_rows
+                    else None
+                ),
+                "interval_n": len(interval_rows),
             }
         )
 
@@ -366,6 +532,7 @@ def build_prop_grading(
     bands: dict[str, float] | None,
     *,
     limit: int = SECTION_LIMIT,
+    cold_start: dict[str, dict] | None = None,
 ) -> dict:
     """The graded player props for the most recent completed game day, plus
     the model's tracking aggregates over the whole counted record.
@@ -375,8 +542,28 @@ def build_prop_grading(
     from model files and nothing is fetched; callers cache or snapshot the
     result (the public snapshot carries it, and the hub route serves it
     behind the props cache's TTL discipline).
+
+    `cold_start` is the manifest's holdout conformal block
+    (`prop_conformal_cold_start`), the intervals' tier-3 calibration; the
+    intervals themselves are attached from the counted rows before any
+    section reads them, so the day, the rankings and the aggregates all
+    carry the same ranges.
     """
     rows = _graded_rows(db_path, schedule, bands)
+    infos = _attach_intervals(rows, cold_start)
+    aggregates = _prop_aggregates(rows, bands)
+    pre_tip_rows = [r for r in rows if r["made_before_tip"]]
+    if pre_tip_rows:
+        # The aggregates' own population is pre-tip; the calibration note
+        # describes that population's latest day, not a later day graded
+        # only on rows that cannot prove they were made in time.
+        latest_date = max(r["game_date"] for r in pre_tip_rows)
+        day_stats = sorted({r["stat"] for r in pre_tip_rows if r["game_date"] == latest_date})
+        aggregates["interval_method"] = INTERVAL_METHOD
+        aggregates["interval_level"] = INTERVAL_LEVEL
+        aggregates["interval_calibration"] = _interval_note_for_day(
+            infos, latest_date, day_stats
+        )
     payload: dict = {
         "bands": bands,
         "counting": COUNTING_NOTE,
@@ -386,7 +573,7 @@ def build_prop_grading(
         "most_confident": [],
         "biggest_surprises": [],
         "n_with_baseline": 0,
-        "aggregates": _prop_aggregates(rows, bands),
+        "aggregates": aggregates,
     }
     if not rows:
         return payload
@@ -441,6 +628,7 @@ def build_game_prop_grading(
     game_id: str,
     *,
     limit: int = SECTION_LIMIT,
+    cold_start: dict[str, dict] | None = None,
 ) -> dict | None:
     """One game's complete counted grading, for its post-game review.
 
@@ -451,8 +639,15 @@ def build_game_prop_grading(
     them. None when the game has no counted rows at all: an unplayed game,
     an unknown id, and a played game nobody projected are all the same
     absence to the review, and the review shows no section for it.
+
+    Intervals are attached from the FULL counted population before the
+    game is filtered out of it (the calibrator needs the record, not the
+    game), so this game's ranges are the same ones the day payload and
+    the aggregates carry.
     """
-    rows = [r for r in _graded_rows(db_path, schedule, bands) if r["game_id"] == game_id]
+    all_rows = _graded_rows(db_path, schedule, bands)
+    infos = _attach_intervals(all_rows, cold_start)
+    rows = [r for r in all_rows if r["game_id"] == game_id]
     if not rows:
         return None
     stat_order = {stat: i for i, stat in enumerate(STATS)}
@@ -473,4 +668,9 @@ def build_game_prop_grading(
         "bands": bands,
         "counting": COUNTING_NOTE,
         "grade_basis": GRADE_NOTE,
+        "interval_method": INTERVAL_METHOD,
+        "interval_level": INTERVAL_LEVEL,
+        "interval_basis": _interval_note_for_day(
+            infos, first["game_date"], sorted({r["stat"] for r in rows})
+        ),
     }

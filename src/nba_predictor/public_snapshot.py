@@ -31,7 +31,11 @@ from nba_predictor import config
 from nba_predictor.services.hub_service import compute_track_record, load_hub_cache
 from nba_predictor.services.schedule_repository import load_schedule
 from nba_predictor.tracking import store
-from nba_predictor.tracking.prop_grading import build_prop_grading, prop_bands
+from nba_predictor.tracking.prop_grading import (
+    build_prop_grading,
+    prop_bands,
+    prop_conformal_cold_start,
+)
 from nba_predictor.tracking.store import init_db
 
 #: How old a model may be at publish time. Fourteen days: the daily refresh runs
@@ -157,7 +161,12 @@ def generate_snapshot(
         # Per-pick player-prop grading for the most recent completed day,
         # computed here (publish time, stored data) rather than per request.
         # The props manifest sits beside the game manifest it was handed.
-        "prop_grading": build_prop_grading(db_path, schedule, prop_bands(manifest_path.parent)),
+        "prop_grading": build_prop_grading(
+            db_path,
+            schedule,
+            prop_bands(manifest_path.parent),
+            cold_start=prop_conformal_cold_start(manifest_path.parent),
+        ),
         "manifest": manifest,
     }
 
