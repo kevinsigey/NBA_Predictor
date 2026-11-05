@@ -34,6 +34,9 @@ export interface BoxScoreRow {
   predicted: Partial<Record<StatKey, number>>;
   /** Absent until the game is played; never defaulted to 0. */
   actual: Partial<Record<StatKey, number>>;
+  /** The model's 80% conformal range per stat, where the API served one.
+   *  Absent per stat when no calibration tier could serve the day. */
+  intervals: Partial<Record<StatKey, { low: number; high: number }>>;
   rebuilt: boolean;
 }
 
@@ -62,6 +65,7 @@ export function pivotProps(props: PlayerProp[]): BoxScoreRow[] {
         position: "",
         predicted: {},
         actual: {},
+        intervals: {},
         rebuilt: false,
       };
       rows.set(prop.player_id, row);
@@ -70,6 +74,13 @@ export function pivotProps(props: PlayerProp[]): BoxScoreRow[] {
     // (player, stat) pair, so a repeat is a duplicate, not an update.
     if (row.predicted[prop.stat] === undefined) {
       row.predicted[prop.stat] = prop.predicted_value;
+    }
+    if (
+      row.intervals[prop.stat] === undefined &&
+      prop.interval_low !== null && prop.interval_low !== undefined &&
+      prop.interval_high !== null && prop.interval_high !== undefined
+    ) {
+      row.intervals[prop.stat] = { low: prop.interval_low, high: prop.interval_high };
     }
     if (prop.actual_value !== null && prop.actual_value !== undefined) {
       row.actual[prop.stat] = prop.actual_value;

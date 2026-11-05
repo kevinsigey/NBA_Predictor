@@ -204,6 +204,15 @@ export interface PlayerProp {
   mae_n?: number;
   /** The n behind `mae_pre_tip`, which is the figure most likely to be thin. */
   mae_n_pre_tip?: number;
+  /**
+   * The model's 80% conformal range for this projection, calibrated on the
+   * counted record's residuals from game days strictly before this game's
+   * day, with the width scaled by the size of the projection. Both null
+   * when no calibration tier could serve the day: the projection then
+   * stands without a range rather than beside an invented one.
+   */
+  interval_low?: number | null;
+  interval_high?: number | null;
 }
 
 /** A player the availability gate removed from this game's ranking. Served by
@@ -291,6 +300,13 @@ export interface PropGradingRow {
   made_before_tip: boolean;
   baseline: number | null;
   departure: number | null;
+  /** The model's 80% conformal range for the line, calibrated on counted
+   *  game days strictly before this game's day, and whether the actual
+   *  landed inside it. All three null when no calibration tier could
+   *  serve the day. */
+  interval_low?: number | null;
+  interval_high?: number | null;
+  inside_interval?: boolean | null;
 }
 
 export interface PropGradingGame {
@@ -327,6 +343,12 @@ export interface PropStatAggregate {
   holdout_mae: number | null;
   band_n: number;
   bands: PropBandShare[];
+  /** Live coverage of the shipped 80% intervals: the percent of the
+   *  stat's counted pre-tip lines whose actual landed inside the range
+   *  that day's own calibration produced, over the `interval_n` lines
+   *  that carried a range at all. Null when none did. */
+  interval_coverage?: number | null;
+  interval_n?: number;
 }
 
 /** The prop model's tracking: aggregates over the full counted record the
@@ -340,6 +362,12 @@ export interface PropAggregates {
   total: number;
   per_stat: PropStatAggregate[];
   daily: { date: string; stats: Record<string, { n: number; mae: number }> }[];
+  /** The shipped intervals as captioned on the record page: the method
+   *  and level are constants of the build; `interval_calibration` is the
+   *  backend's sentence for how the latest counted day was calibrated. */
+  interval_method?: string | null;
+  interval_level?: number | null;
+  interval_calibration?: string | null;
 }
 
 /** The prop-grading payload for the most recent completed game day. The
@@ -372,6 +400,11 @@ export interface PropGameGrading {
   bands: Record<string, number> | null;
   counting: string;
   grade_basis: string;
+  /** How this game's 80% ranges were calibrated, in the backend's words;
+   *  null when no range could be served for the game at all. */
+  interval_method?: string | null;
+  interval_level?: number | null;
+  interval_basis?: string | null;
 }
 
 export interface TrackRecord {

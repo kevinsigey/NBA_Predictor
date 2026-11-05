@@ -188,6 +188,7 @@ def cached_prop_grading(
     *,
     now=time.monotonic,
     compute=None,
+    cold_start: dict[str, dict] | None = None,
 ) -> "PropGradingOut":
     """The prop-grading payload, from cache inside the TTL and fresh past it.
 
@@ -195,11 +196,16 @@ def cached_prop_grading(
     failure rule matches the props aggregate: past the TTL a failed refresh
     serves the last good payload and says how old it is; a cold failure
     propagates, because inventing a grading is not on the menu.
+
+    `cold_start` is the manifest's holdout conformal block, forwarded to
+    the builder for the intervals' tier-3 calibration.
     """
     key = str(db_path)
     if compute is None:
         def compute():
-            return PropGradingOut(**build_prop_grading(db_path, schedule, bands))
+            return PropGradingOut(
+                **build_prop_grading(db_path, schedule, bands, cold_start=cold_start)
+            )
 
     entry = _PROP_GRADING_CACHE.get(key)
     if entry is not None and now() - entry[0] < PLAYER_PROPS_CACHE_TTL_SECONDS:
@@ -252,11 +258,13 @@ def cached_game_prop_grading(
     *,
     now=time.monotonic,
     compute=None,
+    cold_start: dict[str, dict] | None = None,
 ) -> "PropGameGradingOut | None":
     """The one game's complete counted grading, from cache inside the TTL.
 
     `compute` is injected so a test can count calls, mirroring
-    `cached_prop_grading`.
+    `cached_prop_grading`. `cold_start` is forwarded to the builder for
+    the intervals' tier-3 calibration, as in `cached_prop_grading`.
     """
     key = (str(db_path), game_id)
     entry = _GAME_GRADING_CACHE.get(key)
@@ -264,7 +272,9 @@ def cached_game_prop_grading(
         return entry[1]
     if compute is None:
         def compute():
-            built = build_game_prop_grading(db_path, schedule, bands, game_id)
+            built = build_game_prop_grading(
+                db_path, schedule, bands, game_id, cold_start=cold_start
+            )
             return PropGameGradingOut(**built) if built is not None else None
 
     value = compute()

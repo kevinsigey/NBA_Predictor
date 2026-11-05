@@ -129,6 +129,14 @@ class PlayerPropOut(BaseModel):
     # be thin -- so both travel with it rather than being reconstructed.
     mae_n: int = 0
     mae_n_pre_tip: int = 0
+    # The model's 80% conformal range for THIS projection (tracking/
+    # conformal_intervals.py): calibrated on the counted record's residuals
+    # from game days strictly before this game's day, scaled by the size of
+    # the projection. Both None when no calibration tier could serve the
+    # day -- the projection then stands without a range rather than beside
+    # an invented one. Metadata only: `predicted_value` is untouched.
+    interval_low: float | None = None
+    interval_high: float | None = None
 
 
 class OutPlayerOut(BaseModel):
@@ -316,6 +324,14 @@ class PropGradingRowOut(BaseModel):
     made_before_tip: bool = False
     baseline: float | None = None
     departure: float | None = None
+    # The model's 80% conformal range for this line, calibrated on counted
+    # game days strictly before this game's day, and whether the actual
+    # landed inside it. All three None when no calibration tier could
+    # serve the day (an empty counted record and no holdout parameters):
+    # no range is invented to fill the space.
+    interval_low: float | None = None
+    interval_high: float | None = None
+    inside_interval: bool | None = None
 
 
 class PropGradingGameOut(BaseModel):
@@ -363,6 +379,13 @@ class PropStatAggregateOut(BaseModel):
     # are shares of these, never of a larger set they were not judged in.
     band_n: int = 0
     bands: list[PropBandShareOut] = []
+    # Live coverage of the shipped 80% intervals: the percent of the
+    # stat's counted pre-tip lines whose actual landed inside the range
+    # that day's own calibration produced. A percent of `interval_n`
+    # lines (those whose day a calibration tier could serve), never of
+    # the larger `n`. None when no line of the stat carried an interval.
+    interval_coverage: float | None = None
+    interval_n: int = 0
 
 
 class PropDailyStatOut(BaseModel):
@@ -387,6 +410,14 @@ class PropAggregatesOut(BaseModel):
     total: int = 0
     per_stat: list[PropStatAggregateOut] = []
     daily: list[PropDailyMaeOut] = []
+    # The shipped intervals, as the page captions them: the method and
+    # level are constants of the build; `interval_calibration` is the
+    # backend's sentence for how the latest counted day in this window
+    # was calibrated (the window, the tier, the line counts). None when
+    # the record holds no pre-tip line to calibrate a day from.
+    interval_method: str | None = None
+    interval_level: float | None = None
+    interval_calibration: str | None = None
 
 
 class PropGameGradingOut(BaseModel):
@@ -405,6 +436,12 @@ class PropGameGradingOut(BaseModel):
     bands: dict[str, float] | None = None
     counting: str
     grade_basis: str
+    # How this game's 80% ranges were calibrated, in the backend's words
+    # (the tier and the counted lines behind it); None when no range
+    # could be served for the game at all.
+    interval_method: str | None = None
+    interval_level: float | None = None
+    interval_basis: str | None = None
 
 
 class PropGradingOut(BaseModel):

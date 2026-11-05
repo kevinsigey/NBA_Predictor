@@ -28,6 +28,12 @@ export function PostGameReview({ grading }: { grading: PropGameGrading | null })
 
   const banded = grading.rows.filter((r) => r.grade !== null);
   const within = banded.filter((r) => r.grade === "On the number" || r.grade === "Close").length;
+  // The interval verdict is a different judgement from the grade: not how
+  // the miss compares with the model's average error, but whether the
+  // actual landed inside the 80% range that day's own calibration drew
+  // around the projection before the game.
+  const ranged = grading.rows.filter((r) => r.inside_interval !== null && r.inside_interval !== undefined);
+  const inside = ranged.filter((r) => r.inside_interval).length;
   const surprises = grading.biggest_surprises
     .filter((r) => r.grade === "Off" || r.grade === "Way off")
     .slice(0, SURPRISES_SHOWN);
@@ -53,6 +59,13 @@ export function PostGameReview({ grading }: { grading: PropGameGrading | null })
         <span className="tabular-nums">{grading.n_graded}</span> player lines graded {"\u00b7"}{" "}
         <span className="tabular-nums">{grading.n_pre_tip}</span> made before tip-off
       </p>
+
+      {ranged.length > 0 && (
+        <p className="mt-1 text-sm text-pr-text-dim" data-testid="review-interval-count">
+          <span className="tabular-nums">{inside}</span> of{" "}
+          <span className="tabular-nums">{ranged.length}</span> lines landed inside their 80% range
+        </p>
+      )}
 
       {banded.length > 0 && (
         <div data-testid="review-on-the-number" className="mt-3">
@@ -99,6 +112,10 @@ export function PostGameReview({ grading }: { grading: PropGameGrading | null })
                     >
                       <span>
                         Proj {row.predicted.toFixed(1)} {"\u2192"} {row.actual} actual {"\u00b7"} {statLabel(row.stat)}
+                        {row.interval_low !== null && row.interval_low !== undefined &&
+                          row.interval_high !== null && row.interval_high !== undefined && (
+                            <> {"\u00b7"} 80% range {row.interval_low.toFixed(1)}{"\u2013"}{row.interval_high.toFixed(1)}</>
+                          )}
                         {!row.made_before_tip && (
                           <span className="ml-2 text-xs font-normal uppercase tracking-wide text-pr-lean">
                             Made after tip-off
@@ -112,6 +129,7 @@ export function PostGameReview({ grading }: { grading: PropGameGrading | null })
                             {row.grade}
                           </span>
                         )}
+                        <IntervalMark row={row} />
                       </span>
                     </li>
                   ))}
@@ -123,7 +141,27 @@ export function PostGameReview({ grading }: { grading: PropGameGrading | null })
       </div>
 
       <p className="mt-3 max-w-3xl text-sm text-pr-text-faint">{grading.grade_basis}</p>
+      {grading.interval_basis && (
+        <p className="mt-2 max-w-3xl text-sm text-pr-text-faint" data-testid="review-interval-basis">
+          {grading.interval_basis}
+        </p>
+      )}
     </section>
+  );
+}
+
+/** Whether the actual landed inside the line's own 80% range, in the win /
+ *  loss colours the rest of the review uses. Renders nothing when the day
+ *  could not be calibrated: no range was promised, so no verdict is due. */
+function IntervalMark({ row }: { row: PropGradingRow }) {
+  if (row.inside_interval === null || row.inside_interval === undefined) return null;
+  return (
+    <span
+      className={`text-xs font-semibold ${row.inside_interval ? "text-pr-win" : "text-pr-loss"}`}
+      title="Whether the actual landed inside the model's 80% range for this line, calibrated on counted game days before this one"
+    >
+      {row.inside_interval ? "\u2713 in the 80% range" : "\u2717 outside the 80% range"}
+    </span>
   );
 }
 
@@ -143,6 +181,10 @@ function GradedRowCard({ row }: { row: PropGradingRow }) {
         </span>
         <span className="block text-sm text-pr-text-dim">
           Proj {row.predicted.toFixed(1)} {"\u2192"} {row.actual} actual {"\u00b7"} {statLabel(row.stat)}
+          {row.interval_low !== null && row.interval_low !== undefined &&
+            row.interval_high !== null && row.interval_high !== undefined && (
+              <> {"\u00b7"} 80% range {row.interval_low.toFixed(1)}{"\u2013"}{row.interval_high.toFixed(1)}</>
+            )}
         </span>
       </span>
       <span className="flex shrink-0 flex-col items-end gap-1">
@@ -152,6 +194,7 @@ function GradedRowCard({ row }: { row: PropGradingRow }) {
             {row.grade}
           </span>
         )}
+        <IntervalMark row={row} />
       </span>
     </li>
   );

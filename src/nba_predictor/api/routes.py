@@ -49,7 +49,12 @@ from nba_predictor.api.schemas import (
 )
 from nba_predictor.models.player_props import in_sample_mae_by_stat
 from nba_predictor.data.team_reference import TEAMS, get_team
-from nba_predictor.tracking.prop_grading import prop_bands as _shared_prop_bands
+from nba_predictor.tracking.prop_grading import (
+    build_interval_calibrator,
+    prop_bands as _shared_prop_bands,
+    prop_conformal_cold_start as _shared_prop_cold_start,
+)
+from nba_predictor.tracking.conformal_intervals import interval_for
 from nba_predictor.odds.value_bets import std_from_mae
 from nba_predictor.pipeline.ingest import run_ingest
 from nba_predictor.odds import edge_gate
@@ -224,6 +229,16 @@ def _prop_bands(models_dir: Path) -> dict[str, float] | None:
     band, never a default.
     """
     return _shared_prop_bands(models_dir)
+
+
+def _prop_cold_start(models_dir: Path) -> dict[str, dict] | None:
+    """The manifest's holdout conformal parameters per stat, or None.
+
+    The cold start for the prop intervals: the parameters the retrain
+    measured on its own holdout, for the days before the counted record
+    can calibrate on itself. As with the bands, a missing block means no
+    cold start, never an invented one."""
+    return _shared_prop_cold_start(models_dir)
 
 
 def _game_out(g: dict, db_path: Path) -> GameOut:
@@ -456,6 +471,37 @@ def _mae_record(db_path: Path, schedule: list[dict], *, now=time.monotonic) -> d
             _MAE_COMPUTE_LOCK.release()
 
 
+# The interval calibrator is a property of the tracking database and the
+# schedule in exactly the MAE record's sense: it changes only when a game
+# resolves, and building it is the same class of bulk read, so it is cached
+# on the same key and the same age bound. One difference, deliberate: a
+# failed build does NOT propagate. A projection without its range is a
+# plainer page; a projection withheld over an interval is a broken one --
+# the ratings precedent ("an enhancement, never the page"). The failure is
+# logged, never silent, and nothing is cached, so the next request retries.
+_INTERVAL_CALIBRATOR_CACHE: dict[tuple, tuple[float, object]] = {}
+
+
+def _interval_calibrator(db_path: Path, schedule: list[dict], models_dir: Path, *, now=time.monotonic):
+    """The counted record's conformal calibrator, or None when it cannot be
+    built right now (the caller then serves projections without ranges)."""
+    key = (str(db_path), *_db_state(db_path), len(schedule))
+    cached = _INTERVAL_CALIBRATOR_CACHE.get(key)
+    if cached is not None and now() - cached[0] < MAE_CACHE_TTL_SECONDS:
+        return cached[1]
+    try:
+        calibrator = build_interval_calibrator(
+            db_path, schedule, _prop_cold_start(models_dir)
+        )
+    except Exception:  # noqa: BLE001 - an enhancement, never the page
+        logger.exception("interval calibrator unavailable for %s", db_path)
+        return None
+    for stale in [k for k in _INTERVAL_CALIBRATOR_CACHE if k[0] == str(db_path)]:
+        del _INTERVAL_CALIBRATOR_CACHE[stale]
+    _INTERVAL_CALIBRATOR_CACHE[key] = (now(), calibrator)
+    return calibrator
+
+
 def _rows_per_stat(rows: list[dict]) -> dict[str, int]:
     """How many resolved rows each stat's MAE was computed from.
 
@@ -555,6 +601,7 @@ def get_game_players(
     db_path: Path = Depends(get_db_path),
     injuries: list[dict] = Depends(get_injury_report),
     roster_index: dict[str, set[str]] | None = Depends(get_roster_index),
+    models_dir: Path = Depends(get_models_dir),
 ) -> list[PlayerPropOut]:
     """One projection per player and stat, with an out player left out.
 
@@ -596,10 +643,26 @@ def get_game_players(
     n_by_stat = mae_record["n_all"]
     n_pre_tip_by_stat = mae_record["n_pre_tip"]
 
+    # The projection's 80% conformal range, from the counted record's own
+    # residuals on game days strictly before THIS game's day. Metadata
+    # only: the projection served is the pick's own value, untouched.
+    calibrator = _interval_calibrator(db_path, schedule, models_dir)
+
     props = []
     for (player_id, stat), (pick, rebuilt) in picks.items():
         if player_id in out_ids:
             continue
+        interval_low = interval_high = None
+        if calibrator is not None:
+            low, high, _info = interval_for(
+                calibrator, stat, pick["predicted_value"], game["game_date"]
+            )
+            if low is not None:
+                # Floored at zero, as in the grading payload: the stats
+                # are counts, and the floor can only bind where every
+                # possible actual is already inside.
+                interval_low = round(max(0.0, low), 1)
+                interval_high = round(high, 1)
         props.append(
             PlayerPropOut(
                 player_id=player_id,
@@ -613,6 +676,8 @@ def get_game_players(
                 mae_pre_tip=mae_pre_tip_by_stat.get(stat),
                 mae_n=n_by_stat.get(stat, 0),
                 mae_n_pre_tip=n_pre_tip_by_stat.get(stat, 0),
+                interval_low=interval_low,
+                interval_high=interval_high,
             )
         )
     return props
@@ -869,7 +934,9 @@ def hub_prop_grading(
     surprises. Computed from stored predictions and outcomes only, and
     served behind the props cache's TTL: the payload changes when a game
     resolves, not when a request arrives."""
-    return cached_prop_grading(db_path, schedule, _prop_bands(models_dir))
+    return cached_prop_grading(
+        db_path, schedule, _prop_bands(models_dir), cold_start=_prop_cold_start(models_dir)
+    )
 
 
 @router.get("/hub/prop-grading/games/{game_id}", response_model=PropGameGradingOut)
@@ -884,7 +951,10 @@ def hub_game_prop_grading(
     surprises. A game with no counted rows -- unplayed, unknown, or played
     with nobody projected -- is a 404: the review shows no section for it,
     and an empty grading object would invite it to draw one."""
-    grading = cached_game_prop_grading(db_path, schedule, _prop_bands(models_dir), game_id)
+    grading = cached_game_prop_grading(
+        db_path, schedule, _prop_bands(models_dir), game_id,
+        cold_start=_prop_cold_start(models_dir),
+    )
     if grading is None:
         raise HTTPException(status_code=404, detail=f"No graded player props for game: {game_id}")
     return grading

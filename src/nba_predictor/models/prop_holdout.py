@@ -29,7 +29,19 @@ import numpy as np
 import pandas as pd
 
 from nba_predictor.features.player_stats import build_player_feature_frame
+from nba_predictor.models.conformal_props import (
+    conformal_half_width,
+    fit_sigma_model,
+    sigma_values,
+)
 from nba_predictor.models.evaluate.walk_forward import chronological_split
+
+#: Below this many holdout rows the conformal cold-start block is not
+#: measured: decile bins over a handful of residuals would publish a
+#: volatility curve nobody should calibrate on. The block is None and the
+#: serving cold start simply has one fewer tier until a retrain with a
+#: real holdout publishes it.
+CONFORMAL_MIN_HOLDOUT_ROWS = 100
 
 #: market name -> the column it actually lives in. "threes" is the market's
 #: public name; the box score calls it fg3m. One map, resolved once, rather than
@@ -137,6 +149,36 @@ def prop_holdout_metrics(
 
         # The baseline any model has to beat: the player's own rolling mean (features are shift(1), so causal).
         naive_mae = float(np.abs(holdout_frame[f"{target}_roll"] - holdout_frame[target]).mean())
+
+        # The conformal cold start, measured on these same holdout
+        # residuals: the scaled method's sigma curve fitted on the
+        # holdout and its normalized 80% quantile, plus the symmetric
+        # 80% half-width beside them. Published into the manifest so the
+        # served intervals have a measured calibration before the live
+        # counted record builds up (tracking/conformal_intervals.py,
+        # tier 3) -- the holdout is the only honest source for it.
+        conformal = None
+        if len(holdout_frame) >= CONFORMAL_MIN_HOLDOUT_ROWS:
+            holdout_resid = pd.DataFrame(
+                {
+                    "projected": holdout_pred,
+                    "abs_resid": np.abs(holdout_pred - holdout_frame[target].to_numpy(float)),
+                }
+            )
+            sigma_model = fit_sigma_model(holdout_resid)
+            scores = holdout_resid["abs_resid"].to_numpy(float) / sigma_values(
+                sigma_model, holdout_resid["projected"]
+            )
+            conformal = {
+                "half_width_80": conformal_half_width(holdout_resid["abs_resid"], 0.8),
+                "q80": conformal_half_width(scores, 0.8),
+                "sigma": {
+                    "edges": sigma_model["edges"],
+                    "scales": sigma_model["scales"],
+                    "floor": sigma_model["floor"],
+                },
+                "n_holdout": int(len(holdout_frame)),
+            }
         results[market] = {
             "holdout_mae": holdout_mae,
             "naive_mae": naive_mae,
@@ -148,6 +190,7 @@ def prop_holdout_metrics(
             "holdout_min_date": holdout_min,
             "n_train": int(len(train_frame)),
             "n_holdout": int(len(holdout_frame)),
+            "conformal": conformal,
             "n_players": int(combined_frame["player_id"].nunique()),
             "feature_cols": list(feature_cols),
         }

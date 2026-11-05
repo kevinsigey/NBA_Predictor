@@ -387,6 +387,12 @@ def train_player_prop_models(training_df: pd.DataFrame, models_dir: Path, model_
             "mae": h.get("holdout_mae", in_sample),          # the headline is the holdout figure when there is one
             "naive_mae": h.get("naive_mae"),
             "in_sample_mae": in_sample,
+            # The conformal cold start, from the same holdout: published so
+            # the served 80% intervals have a measured calibration before
+            # the live counted record builds up (None until a holdout
+            # exists -- no parameters are invented for a model that has
+            # never been held out).
+            "conformal": h.get("conformal"),
         }
 
     manifest = build_manifest(
