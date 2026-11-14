@@ -13,8 +13,8 @@ ran -- and that only runs inside `run_ingest`, which in production is the manual
 re-scored when a team played another game, so the estimate stayed frozen at the
 roster of whatever game preceded the last manual refresh.
 
-This re-scores exactly the upcoming games whose estimate predates a completed
-game of either team, then goes quiet until the next one.
+This re-scores the upcoming games inside the lead window whose estimate predates a
+completed game of either team (or is `REFRESH_HOURS` old), then goes quiet.
 """
 
 from __future__ import annotations
@@ -28,11 +28,19 @@ from pathlib import Path
 import pandas as pd
 
 from nba_predictor.tracking import store
+from nba_predictor.tracking.timing import pick_cutoff
 
 logger = logging.getLogger(__name__)
 
-#: Upcoming games further out than this are not worth a projection yet.
-HORIZON_DAYS = 14
+#: A game gets a projection only once tip-off is this close. The track record counts the EARLIEST row per
+#: (game, player, stat), so a row written days ahead is the counted pick, frozen on a roster estimate and a rolling
+#: window that miss every game played since. Replaying the live path on 2026-10-28/31 and 11-02 slates: points MAE
+#: 4.9-5.8 for rows written 9-14 days ahead against 4.5-5.1 for rows written the day before (live served 5.55 against
+#: 4.67 for the same model re-scored on settled data). So nothing is recorded early.
+LEAD_HOURS = 30
+#: Inside the lead window the projection is re-scored when its newest row is this old, so the shown pick (the newest
+#: pre-tip row) tracks injuries and lineup news up to tip-off. Reruns are history; they never replace the counted pick.
+REFRESH_HOURS = 6
 #: Box-score history behind the rolling features. The full-season ingest uses a
 #: whole season; this reaches back over the summer to the last regular-season
 #: games so a player's rolling average is not three preseason minutes.
@@ -64,21 +72,30 @@ def stale_upcoming_games(schedule: list[dict], db_path: Path, now: pd.Timestamp)
                 "SELECT game_id, MAX(created_at) FROM player_prediction_snapshots GROUP BY game_id"
             )
         }
-    horizon = now + timedelta(days=HORIZON_DAYS)
     out = []
     for g in schedule:
-        if g.get("completed") or pd.Timestamp(f"{g['game_date']}T00:00Z") > horizon:
+        if g.get("completed"):
             continue
+        tip = pd.Timestamp(pick_cutoff(g))
+        if not now < tip <= now + timedelta(hours=LEAD_HOURS):
+            continue
+        last = newest.get(g["game_id"])
         latest_game = max((team_last[t] for t in (g["home_team"], g["away_team"]) if t in team_last), default=None)
-        if latest_game is not None and latest_game > newest.get(g["game_id"], pd.Timestamp.min.tz_localize("UTC")):
+        if (
+            last is None
+            or now - last >= timedelta(hours=REFRESH_HOURS)
+            or (latest_game is not None and latest_game > last)
+        ):
             out.append(g)
     return out
 
 
 def refresh_stale_player_props(
-    schedule: list[dict], db_path: Path, models_dir: Path, *, fetch=None, score=None, now=None
+    schedule: list[dict], db_path: Path, models_dir: Path, *, fetch=None, score=None, now=None, rosters=None, history=None
 ) -> int:
     """Re-score the stale upcoming games. Returns rows stored (0 when nothing was stale)."""
+    from nba_predictor.data.rosters import get_rosters
+    from nba_predictor.pipeline.history import load_history
     from nba_predictor.pipeline.ingest import fetch_player_boxscores, record_names_from_boxscores, score_upcoming_player_props
 
     fetch = fetch or fetch_player_boxscores
@@ -91,7 +108,11 @@ def refresh_stale_player_props(
     completed = [g for g in schedule if g.get("completed") and g["game_date"] >= since]
     boxes = fetch(completed)
     record_names_from_boxscores(boxes, db_path)
-    return score(completed + stale, boxes, models_dir, db_path, model_version="roster-refresh")
+    # Same inputs as the full ingest: the frozen earlier seasons behind the rolling window, and the current rosters.
+    history = history if history is not None else load_history("2100-01-01")[1]
+    rosters = rosters if rosters is not None else get_rosters()
+    return score(completed + stale, boxes, models_dir, db_path, model_version="roster-refresh",
+                 rosters=rosters, extra_completed=history)
 
 
 def rebuild_player_names(schedule: list[dict], db_path: Path, *, fetch=None, now=None) -> int:
