@@ -22,6 +22,31 @@ def compute_rest_days(current_date: str, previous_game_date: str | None) -> int:
     return (current - previous).days - 1
 
 
+#: Rest is capped at a full week. Anything at or past seven days is the same "fully rested" signal, and an
+#: uncapped gap (99 for no previous game, ~180 across the offseason) is a sentinel that a linear model would
+#: extrapolate from. Used only by the flagged rest path in build.py; `compute_rest_days` keeps its raw value.
+REST_CAP_DAYS = 7
+
+#: Teams whose arena sits at real altitude, as a HOME venue. team_reference carries altitude_ft = 0 for Utah
+#: (Delta Center is ~4,226 ft), so the `altitude_ft > 1000` test in context.is_high_altitude misses UTA.
+HIGH_ALTITUDE_HOME = frozenset({"DEN", "UTA"})
+
+
+def rest_features(current_date: str, previous_game_date: str | None) -> tuple[int, int]:
+    """(rest days capped at REST_CAP_DAYS, is_first_game).
+
+    A team's first game in the data has no previous game to measure rest from. It gets the cap and a flag,
+    instead of the 99 sentinel `compute_rest_days` returns.
+    """
+    if previous_game_date is None:
+        return REST_CAP_DAYS, 1
+    return min(compute_rest_days(current_date, previous_game_date), REST_CAP_DAYS), 0
+
+
+def is_high_altitude_home(home_team_abbr: str) -> bool:
+    return home_team_abbr in HIGH_ALTITUDE_HOME
+
+
 def is_back_to_back(rest_days: int) -> bool:
     return rest_days == 0
 
