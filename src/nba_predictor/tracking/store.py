@@ -360,6 +360,11 @@ def read_connection(db_path: Path):
     writers itself (the 5 s busy timeout in `bounded_reads`); the lock is only
     needed where this process does read-then-write. Never write through this.
     """
+    if _nolock_enabled():
+        # nolock=1 turns SQLite's own file locking off, so the process lock is all there is.
+        with get_connection(db_path) as conn:
+            yield conn
+        return
     conn = _connect(db_path)
     conn.row_factory = sqlite3.Row
     try:
