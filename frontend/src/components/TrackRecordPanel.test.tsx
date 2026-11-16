@@ -118,9 +118,17 @@ describe("TrackRecordPanel", () => {
     render(<TrackRecordPanel />);
     const lead = await screen.findByTestId("tally-game_outcome");
     expect(lead).toHaveTextContent("11 of 24");
-    // The blended 85% (counted + rebuilt) is shown nowhere: the headline is the pre-tip slice only.
-    expect(document.body).not.toHaveTextContent("85%");
+    // The headline tile is the pre-tip slice only; the all-picks 85% is not in it.
+    expect(lead).not.toHaveTextContent("85%");
     expect(lead).toHaveTextContent("46%");
+  });
+
+  it("shows the all-recorded-picks figure as a labelled secondary line, after the headline", async () => {
+    render(<TrackRecordPanel />);
+    const lead = await screen.findByTestId("tally-game_outcome");
+    const all = await screen.findByTestId("all-picks-game_outcome");
+    expect(all).toHaveTextContent("All recorded picks, including these: 1,182 of 1,389 (85%)");
+    expect(lead.compareDocumentPosition(all) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("says plainly that a small sample is early", async () => {
@@ -294,6 +302,8 @@ describe("parity with the page before the kit", () => {
     // "46%" then "11 of 24". Same figures, read in the other order.
     ["11 of 2446%", "46%11 of 24"],
     ["5 of 1050%", "50%5 of 10"],
+    // The all-recorded-picks figure is now shown, secondary and labelled, in the backtest block.
+    ["Winner pick1,171 of 1,365Every recorded pick", "Winner pick1,171 of 1,365All recorded picks, including these: 1,182 of 1,389 (85%)Every recorded pick"],
     // The headline no longer calls the pre-tip subset the whole "counted record".
     ["Counted record: picks made before tip-off", "Picks made before tip-off"],
     // Rebuilt picks do feed a count elsewhere; it is only the headline that excludes them.
