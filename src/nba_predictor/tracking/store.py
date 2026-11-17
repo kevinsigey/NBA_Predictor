@@ -334,7 +334,7 @@ def conflicting_outcome_keys(db_path: Path) -> list[tuple[str, str, str, int]]:
     Ordered so the answer is stable and quotable. Empty on a clean database,
     and empty on every database this version creates.
     """
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         return _conflicting_outcome_keys(conn)
 
 
@@ -347,6 +347,30 @@ def get_connection(db_path: Path):
             yield conn
         finally:
             conn.close()
+
+
+@contextmanager
+def read_connection(db_path: Path):
+    """A connection for READS ONLY, without `_DB_LOCK`.
+
+    `get_connection` holds the process-wide lock for the whole `with` body, so a
+    reader that pulls a few hundred thousand rows (track record, prop grading)
+    made every other DB read, `/games` included, queue behind it with no
+    timeout: measured 10 s for a 0.04 s request. SQLite serialises readers and
+    writers itself (the 5 s busy timeout in `bounded_reads`); the lock is only
+    needed where this process does read-then-write. Never write through this.
+    """
+    if _nolock_enabled():
+        # nolock=1 turns SQLite's own file locking off, so the process lock is all there is.
+        with get_connection(db_path) as conn:
+            yield conn
+        return
+    conn = _connect(db_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 
 def insert_prediction(
@@ -397,7 +421,7 @@ def insert_predictions(db_path: Path, rows: Sequence[dict], attempts: int = 4) -
 
 
 def get_predictions_for_game(db_path: Path, game_id: str) -> list[sqlite3.Row]:
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         cur = conn.execute(
             "SELECT * FROM predictions WHERE game_id = ? ORDER BY created_at",
             (game_id,),
@@ -433,7 +457,7 @@ def insert_market_prediction(
 
 
 def get_market_predictions_for_game(db_path: Path, game_id: str) -> list[sqlite3.Row]:
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         cur = conn.execute(
             "SELECT * FROM game_market_predictions WHERE game_id = ? ORDER BY created_at",
             (game_id,),
@@ -517,14 +541,14 @@ def record_player_names(db_path: Path, box_rows) -> int:
 
 def load_player_names(db_path: Path) -> dict[str, str]:
     try:
-        with get_connection(db_path) as conn:
+        with read_connection(db_path) as conn:
             return {r["player_id"]: r["player_name"] for r in conn.execute("SELECT player_id, player_name FROM player_names")}
     except sqlite3.OperationalError:  # table not created yet on an old DB
         return {}
 
 
 def get_player_predictions_for_game(db_path: Path, game_id: str) -> list[sqlite3.Row]:
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         cur = conn.execute(
             "SELECT * FROM player_prediction_snapshots WHERE game_id = ? ORDER BY created_at",
             (game_id,),
@@ -533,7 +557,7 @@ def get_player_predictions_for_game(db_path: Path, game_id: str) -> list[sqlite3
 
 
 def get_latest_prediction_for_game(db_path: Path, game_id: str) -> sqlite3.Row | None:
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         cur = conn.execute(
             "SELECT * FROM predictions WHERE game_id = ? ORDER BY created_at DESC LIMIT 1",
             (game_id,),
@@ -626,7 +650,7 @@ def get_player_outcomes_for_player(db_path: Path, player_id: str) -> list[sqlite
     The drawer's last-ten-games chart reads the actuals from here: what a
     player actually did, as recorded, rather than what a cache says.
     """
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         cur = conn.execute(
             "SELECT * FROM game_player_outcomes WHERE player_id = ? ORDER BY recorded_at, id",
             (str(player_id),),
@@ -635,7 +659,7 @@ def get_player_outcomes_for_player(db_path: Path, player_id: str) -> list[sqlite
 
 
 def get_player_outcomes_for_game(db_path: Path, game_id: str) -> list[sqlite3.Row]:
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         cur = conn.execute(
             "SELECT * FROM game_player_outcomes WHERE game_id = ? ORDER BY recorded_at, id",
             (game_id,),
@@ -645,7 +669,7 @@ def get_player_outcomes_for_game(db_path: Path, game_id: str) -> list[sqlite3.Ro
 
 def get_all_predictions(db_path: Path) -> list[sqlite3.Row]:
     """The latest prediction per game across the whole tracking DB (for settlement)."""
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         cur = conn.execute(
             """
             SELECT p.* FROM predictions p
@@ -721,7 +745,7 @@ def read_prop_ledger(db_path: Path, game_id: str) -> list[dict]:
     reporting it as one is the exact error the game-level track record is built
     to avoid.
     """
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         conn.row_factory = sqlite3.Row
         rows = conn.execute(
             """
@@ -808,7 +832,7 @@ def get_recent_market_predictions(db_path: Path, since: str) -> list[sqlite3.Row
     `since` is an ISO-8601 timestamp string so this stays a plain SQL
     comparison, the same form `get_market_predictions_for_game` already uses.
     """
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         cur = conn.execute(
             """
             SELECT * FROM game_market_predictions

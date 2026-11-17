@@ -24,7 +24,7 @@ from nba_predictor.api.schemas import (
 )
 from nba_predictor.tracking import store
 from nba_predictor.tracking.prop_grading import build_game_prop_grading, build_prop_grading
-from nba_predictor.tracking.store import get_connection
+from nba_predictor.tracking.store import read_connection
 from nba_predictor.tracking.timing import (
     earliest_recorded,
     earliest_recorded_outcome,
@@ -383,7 +383,7 @@ def counted_picks(db_path: Path, schedule: list[dict]) -> list[tuple[dict, list]
     """
     schedule_by_id = {g["game_id"]: g for g in schedule}
     by_game: dict[str, list] = {}
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         for row in conn.execute("SELECT * FROM predictions"):
             by_game.setdefault(row["game_id"], []).append(row)
 
@@ -629,7 +629,7 @@ def _settle_market_predictions(
     as 0%.
     """
     schedule_by_id = {g["game_id"]: g for g in schedule}
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         rows = conn.execute(
             "SELECT * FROM game_market_predictions WHERE market = ?", (market,)
         ).fetchall()
@@ -806,7 +806,7 @@ def _summarize_player_props(db_path: Path) -> TrackRecordOut | None:
     must not be skipped -- a file predating the index, or any writer that
     escapes it, doubles every count.
     """
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         rows = conn.execute(
             """
             WITH counted AS (
@@ -899,7 +899,7 @@ def _tracking_window(db_path: Path, schedule: list[dict], today: date) -> list[d
     Empty when the tracking DB has nothing the schedule can date.
     """
     schedule_by_id = {g["game_id"]: g for g in schedule}
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         ids = {row[0] for row in conn.execute("SELECT DISTINCT game_id FROM predictions")}
         ids |= {row[0] for row in conn.execute("SELECT DISTINCT game_id FROM game_market_predictions")}
 
@@ -970,7 +970,7 @@ def compute_track_record(
     graded_by_market: dict[str, list[tuple[date, bool]]] = {}
     pre_tip_by_market: dict[str, list[tuple[date, bool]]] = {}
 
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         market_counts = conn.execute(
             "SELECT market, COUNT(*) as total FROM game_market_predictions GROUP BY market"
         ).fetchall()
@@ -1139,7 +1139,7 @@ def compute_vs_market(
     today = today or date.today()
     schedule_by_id = {g["game_id"]: g for g in schedule}
 
-    with get_connection(db_path) as conn:
+    with read_connection(db_path) as conn:
         rows = conn.execute(
             "SELECT * FROM game_market_predictions WHERE market = 'h2h'"
         ).fetchall()

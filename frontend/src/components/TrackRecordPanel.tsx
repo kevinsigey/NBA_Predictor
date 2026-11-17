@@ -144,6 +144,8 @@ export default function TrackRecordPanel() {
       label: labelFor(r.market),
       n: r.n_rebuilt ?? 0,
       correct: r.correct_predictions - r.pre_tip!.correct_predictions,
+      // The all-recorded-picks figure (pre-tip plus rebuilt): secondary to the headline, labelled where shown.
+      all: { correct: r.correct_predictions, n: r.total_predictions },
     }));
 
   // NBA's own blocks: the every-pick table (it also shows counted vs rebuilt,
@@ -228,6 +230,11 @@ export default function TrackRecordPanel() {
                 <p className="font-pr-display text-lg font-semibold tabular-nums text-pr-text">
                   {n0(b.correct)} <span className="text-pr-text-faint">of</span> {n0(b.n)}
                 </p>
+                {b.all.n > 0 && (
+                  <p data-testid={`all-picks-${b.key}`} className="mt-1 text-xs tabular-nums text-pr-text-faint">
+                    All recorded picks, including these: {n0(b.all.correct)} of {n0(b.all.n)} ({Math.round((b.all.correct / b.all.n) * 100)}%)
+                  </p>
+                )}
               </li>
             ))}
           </ul>

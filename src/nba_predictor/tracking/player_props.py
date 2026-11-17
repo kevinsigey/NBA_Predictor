@@ -119,7 +119,7 @@ def resolved_player_props(db_path: Path, schedule: list[dict]) -> list[dict]:
     games = {g.get("game_id"): g for g in schedule if g.get("game_id")}
     actuals_by_game: dict[str, dict[tuple[str, str], float]] = {}
     rows_by_game: dict[str, list] = {}
-    with store.get_connection(db_path) as conn:
+    with store.read_connection(db_path) as conn:
         # Grouped per game, then deduped by `_earliest_outcome`, so a duplicated
         # key in a file that predates the unique index resolves to the earliest
         # recorded row instead of to whatever SQLite scanned last.

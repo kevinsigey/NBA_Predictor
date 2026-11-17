@@ -1055,7 +1055,7 @@ def picks_history(since: str = "", db_path: Path = Depends(get_db_path)) -> dict
     )
     from nba_predictor.services.schedule_repository import load_schedule
 
-    with store.get_connection(db_path) as conn:
+    with store.read_connection(db_path) as conn:
         # The parameter list is built from the filter, so a query with NO
         # filter has NO parameters. Passing an empty tuple as the second
         # argument to execute() is a ProgrammingError, not a no-op.

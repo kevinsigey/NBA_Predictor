@@ -216,7 +216,8 @@ def test_the_manifest_does_not_claim_a_missing_value_metric():
         # code writes, the assertion contradicted the writer's documented
         # honest-metrics design.)
         assert "mae" in metrics, f"{stat} has no headline MAE: {set(metrics)}"
-        assert set(metrics) <= {"mae", "naive_mae", "in_sample_mae"}, (
+        # "conformal" (NBA#171) holds the 80% range parameters, not an accuracy claim.
+        assert set(metrics) <= {"mae", "naive_mae", "in_sample_mae", "conformal"}, (
             f"{stat} claims a non-MAE metric: {set(metrics)}"
         )
 

@@ -312,7 +312,7 @@ def _rolling_baselines(db_path: Path, schedule: list[dict]) -> dict[tuple[str, s
     a graded game, so it is left out rather than placed by guess.
     """
     dates = {g.get("game_id"): g.get("game_date") for g in schedule if g.get("game_id")}
-    with store.get_connection(db_path) as conn:
+    with store.read_connection(db_path) as conn:
         rows = conn.execute(
             "SELECT game_id, player_id, stat, actual_value, recorded_at FROM game_player_outcomes"
         ).fetchall()
@@ -368,7 +368,7 @@ def _props_tables_present(db_path: Path) -> bool:
     import sqlite3
 
     try:
-        with store.get_connection(db_path) as conn:
+        with store.read_connection(db_path) as conn:
             found = {
                 row[0]
                 for row in conn.execute(
