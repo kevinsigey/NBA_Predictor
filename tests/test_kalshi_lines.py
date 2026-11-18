@@ -80,3 +80,13 @@ def test_game_level_rungs_keep_their_title_and_have_no_player():
     assert row["player"] is None and row["stat"] == "spread" and row["line"] == 8.5 and row["title"].startswith("Oklahoma City")
     total = kl.normalize({**HURTS, "title": "Full Game: Over 243.5 points scored", "floor_strike": 243.5}, "KXNBATOTAL", "t")
     assert total["player"] is None and total["stat"] == "total"
+
+
+def test_normalize_records_the_size_resting_at_each_sides_ask():
+    # Kalshi's public market list carries yes_ask_size_fp and yes_bid_size_fp;
+    # NO's ask is the YES bid from the other side, so it rests on the YES bid size.
+    market = {"title": "A B: 5+ receptions", "floor_strike": 4.5,
+              "yes_ask_size_fp": "774.30", "yes_bid_size_fp": "1.00"}
+    row = kl.normalize(market, "KXTEST", "2026-11-18T00:00:00+00:00")
+    assert (row["yes_ask_size"], row["no_ask_size"]) == (774.3, 1.0)
+    assert kl.normalize({"title": "A B: 5+ receptions"}, "KXTEST", "t")["yes_ask_size"] is None
