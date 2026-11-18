@@ -35,8 +35,23 @@ NO_HISTORY_DEFAULT = 0.0
 _PLAYER_COLS = ["game_id", "team", "player_id", "minutes", "points", "rebounds", "assists"]
 
 
-def compute_availability_features(games: pd.DataFrame, players: pd.DataFrame | None) -> pd.DataFrame:
+def _absent(top, prev_played, report):
+    """Who in `top` counts as missing. No report: whoever sat the previous game (the trained definition).
+    With tonight's report ({player_id: status}, ESPN's words): Out is missing, Day-To-Day falls back to the previous
+    game, and a player the report does not list is available -- a rest day last game is not an absence tonight."""
+    if report is None:
+        return [x for x in top if x not in prev_played]
+    status = {str(k): str(v).strip().lower() for k, v in report.items()}
+    return [x for x in top if status.get(str(x)) == "out" or (status.get(str(x)) == "day-to-day" and x not in prev_played)]
+
+
+def compute_availability_features(games: pd.DataFrame, players: pd.DataFrame | None,
+                                  report_by_game: dict | None = None) -> pd.DataFrame:
     """One row per game_id with the four AVAILABILITY_COLUMNS.
+
+    `report_by_game`: {game_id: {player_id: status}} -- the injury report seen before that game's tip. A game with an
+    entry is scored from the report (see `_absent`); every other game keeps the previous-game definition. Serving only:
+    reports are stored from 2026-10-20 on, too few seasons to train on.
 
     `games`: game_id, game_date, home_team, away_team (played or not).
     `players`: one row per (player, completed game) as `ingest.to_player_training_frame`
@@ -62,7 +77,7 @@ def compute_availability_features(games: pd.DataFrame, players: pd.DataFrame | N
             m_share = p_share = NO_HISTORY_DEFAULT
             if prev_played is not None and cum_min:
                 top = sorted(cum_min, key=cum_min.get, reverse=True)[:ROTATION_SIZE]
-                absent = [x for x in top if x not in prev_played]
+                absent = _absent(top, prev_played, (report_by_game or {}).get(gid))
                 tot = sum(cum_min[x] for x in top)
                 if tot:
                     m_share = sum(cum_min[x] for x in absent) / tot
@@ -91,7 +106,8 @@ def _season_of(game_date: str) -> int:
     return year if month >= 10 else year - 1
 
 
-def compute_availability_by_season(games: pd.DataFrame, players: pd.DataFrame | None) -> pd.DataFrame:
+def compute_availability_by_season(games: pd.DataFrame, players: pd.DataFrame | None,
+                                   report_by_game: dict | None = None) -> pd.DataFrame:
     """`compute_availability_features`, with each season ranked over its own production-sized window.
 
     The plain function ranks the rotation by cumulative minutes over WHATEVER frame it is given. Production only ever
@@ -108,7 +124,7 @@ def compute_availability_by_season(games: pd.DataFrame, players: pd.DataFrame | 
         lo, hi = f"{season - 1}-10-01", f"{season + 1}-09-30"
         in_window = (games["game_date"] >= lo) & (games["game_date"] <= hi)
         p = None if players is None or not len(players) else players[(players["game_date"] >= lo) & (players["game_date"] <= hi)]
-        feat = compute_availability_features(games[in_window], p)
+        feat = compute_availability_features(games[in_window], p, report_by_game)
         parts.append(feat[feat["game_id"].isin(games.loc[seasons == season, "game_id"])])
     out = pd.concat(parts, ignore_index=True)
     return out.set_index("game_id").loc[games["game_id"]].reset_index()[["game_id", *AVAILABILITY_COLUMNS]]

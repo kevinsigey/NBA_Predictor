@@ -556,6 +556,20 @@ def to_scoring_frame(games: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _tonights_report(games: list[dict], get_injuries=None) -> dict | None:
+    """{game_id: {player_id: status}} for every upcoming game, from the live ESPN report; None (the previous-game
+    definition) when the flag is off or the feed is down."""
+    if not config.INJURY_REPORT_AVAILABILITY:
+        return None
+    try:
+        rows = (get_injuries or espn.get_injuries)()
+    except Exception:
+        logger.warning("injury report unavailable: availability falls back to the previous game", exc_info=True)
+        return None
+    report = {r["player_id"]: r.get("status", "") for r in rows if r.get("player_id")}
+    return {g["game_id"]: report for g in games if not g.get("completed")}
+
+
 def score_upcoming_games(
     games: list[dict], models_dir: Path, db_path: Path, model_version: str, players: pd.DataFrame | None = None,
 ) -> int:
@@ -571,7 +585,7 @@ def score_upcoming_games(
     not used; if the manifest lacks margin_sigma, we fail loudly rather than
     silently falling back."""
     scoring_df = to_scoring_frame(games)
-    frame, feature_cols = build_feature_frame(scoring_df, players=players)
+    frame, feature_cols = build_feature_frame(scoring_df, players=players, report_by_game=_tonights_report(games))
     upcoming_frame = frame[frame["home_win"].isna()].reset_index(drop=True)
     if len(upcoming_frame) == 0:
         return 0

@@ -22,6 +22,10 @@ BALLDONTLIE_API_KEY = os.environ.get("BALLDONTLIE_API_KEY")
 SPORTSBOOK_API_KEY = os.environ.get("SPORTSBOOK_API_KEY")
 ODDS_API_KEY = os.environ.get("ODDS_API_KEY")
 
+# Score upcoming games' availability columns from tonight's ESPN injury report instead of who sat the previous game.
+# Off: the serving replay (docs/nba-injury-report-availability-2026-11.md) did not pass the ship rule.
+INJURY_REPORT_AVAILABILITY = os.environ.get("INJURY_REPORT_AVAILABILITY", "false").lower() == "true"
+
 
 def ensure_cache_dirs() -> None:
     for name in CACHE_SUBDIRS:

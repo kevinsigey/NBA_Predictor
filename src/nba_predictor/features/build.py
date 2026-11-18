@@ -79,7 +79,7 @@ def _long_format_box_scores(games: pd.DataFrame) -> pd.DataFrame:
 
 def build_feature_frame(
     games: pd.DataFrame, carry_over_weight: float | None = None, include_travel_fatigue: bool = False,
-    rest_by_team: bool = False, players: pd.DataFrame | None = None,
+    rest_by_team: bool = False, players: pd.DataFrame | None = None, report_by_game: dict | None = None,
 ) -> tuple[pd.DataFrame, list[str]]:
     """Features for `games`.
 
@@ -103,7 +103,7 @@ def build_feature_frame(
     if not set(AVAILABILITY_COLUMNS) <= set(games.columns):
         if players is None:
             logger.warning("no player box scores supplied: availability features take their no-history default (0.0)")
-        games = games.merge(compute_availability_by_season(games, players), on="game_id", how="left")
+        games = games.merge(compute_availability_by_season(games, players, report_by_game), on="game_id", how="left")
 
     long_form = add_rolling_four_factors(
         _long_format_box_scores(games), carry_over_weight_value=carry_over_weight
