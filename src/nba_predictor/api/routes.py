@@ -150,6 +150,14 @@ def _market_lines(db_path: Path, g: dict) -> tuple[float | None, float | None]:
     return mode(spreads), mode(totals)
 
 
+def _market_home_win(db_path: Path, g: dict) -> float | None:
+    """The moneyline's home win probability from the latest PRE-TIP h2h row, or None. Never defaulted."""
+    rows = [r for r in _read_or([], store.get_market_predictions_for_game, db_path, g["game_id"])
+            if r["market"] == "h2h" and r["selection"] == g["home_team"] and r["market_probability"] is not None
+            and made_before_tip(r["created_at"], g)]
+    return float(rows[-1]["market_probability"]) if rows else None  # rows are ordered by created_at
+
+
 _READ_FAILED: ContextVar[bool] = ContextVar("tracking_read_failed", default=False)
 
 
@@ -203,6 +211,7 @@ def _prediction_out(db_path: Path, g: dict, manifest: dict | None = None) -> tup
             predicted_total=row["predicted_total"],
             market_point=home_point,
             market_total_point=total_point,
+            market_home_win_probability=_market_home_win(db_path, g),
             cover_prob_spread=cover_prob(row["predicted_margin"], -home_point, margin_sigma) if home_point is not None and margin_sigma is not None else None,
             cover_prob_total=over_prob(row["predicted_total"], total_point, total_sigma) if total_point is not None and total_sigma is not None else None,
             margin_sigma=margin_sigma,

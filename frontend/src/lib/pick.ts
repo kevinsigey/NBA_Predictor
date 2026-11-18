@@ -22,3 +22,10 @@ export function marginLine(p: Prediction, home: string, away: string): string {
 
 /** Whether the pick (home at >= 50%) matched the result. */
 export const pickWon = (p: Prediction, homePts: number, awayPts: number) => p.home_win_probability >= 0.5 === homePts > awayPts;
+
+/** The market's favourite and its probability, or null when no pre-tip moneyline exists (never defaulted). */
+export function marketFavourite(p: Prediction, home: string, away: string): { team: string; prob: number } | null {
+  const m = p.market_home_win_probability;
+  if (m == null) return null;
+  return m >= 0.5 ? { team: home, prob: m } : { team: away, prob: 1 - m };
+}

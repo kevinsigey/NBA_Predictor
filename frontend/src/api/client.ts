@@ -18,6 +18,8 @@ export interface Prediction {
   // The market line the cover probability is priced against (None when no line).
   market_point?: number | null;
   market_total_point?: number | null;
+  // The moneyline's home win probability, pre-tip only; absent/null when no line was recorded.
+  market_home_win_probability?: number | null;
   // Spread cover probability (None when no line available)
   cover_prob_spread?: number | null;
   // Total over probability (None when no line available)

@@ -6,7 +6,7 @@ import TopCalls from "./TopCalls";
 import TeamRatings from "./TeamRatings";
 import Availability from "./Availability";
 import PostGameReview from "./PostGameReview";
-import { favourite } from "../lib/pick";
+import { favourite, marketFavourite } from "../lib/pick";
 import { teamName } from "../lib/teams";
 import { ErrorState, FixtureExplainer, SignalRows, Skeleton, StatusBadge, kickoff, pct, signalIsDrawn, stat, statusWords, type Signal } from "../predictor-ui";
 import { panelFacts } from "../predictor-ui/lib/panelFacts";
@@ -428,6 +428,7 @@ export default function GameDetailModal({ gameId, onClose }: GameDetailModalProp
         ? ("in-play" as const)
         : ("pre-game" as const);
   const pickFav = detail?.prediction ? favourite(detail.prediction, detail.home_team, detail.away_team) : null;
+  const mktFav = detail?.prediction ? marketFavourite(detail.prediction, detail.home_team, detail.away_team) : null;
   const marginFav = detail?.prediction ? favoredTeam(detail.prediction.predicted_margin, detail.home_team, detail.away_team) : null;
   // The win and margin numbers come from separate models. When they point at
   // different teams, or the margin rounds to nothing, don't print a
@@ -489,6 +490,22 @@ export default function GameDetailModal({ gameId, onClose }: GameDetailModalProp
 
         {error && <ErrorState message={error} onRetry={() => setReloadKey((k) => k + 1)} />}
         {!error && !detail && <Skeleton label="Loading…" />}
+
+        {/* The market is the headline. The model's own figure stays where the one-figure rule keeps it (the block's
+            moneyline tile and bar below), so it is named here, not repeated. */}
+        {detail?.prediction && (
+          <div data-testid="market-headline" className="mb-5 border-b border-[var(--color-line)] pb-5">
+            {mktFav ? (
+              <>
+                <div className="text-xs uppercase tracking-wide text-pr-text-dim">Market</div>
+                <div className="font-pr-display text-3xl font-semibold">{mktFav.team} {pct(mktFav.prob)}</div>
+                <div className="text-xs text-pr-text-dim">Model view below</div>
+              </>
+            ) : (
+              <div className="text-xs text-pr-text-dim">No market line: the model number below is the only one.</div>
+            )}
+          </div>
+        )}
 
         {detail?.completed ? (
           <div className="mb-5 flex items-center justify-center gap-6 border-b border-[var(--color-line)] pb-5">

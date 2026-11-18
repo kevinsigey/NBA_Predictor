@@ -15,6 +15,8 @@ class PredictionOut(BaseModel):
     # The market line the cover probability is priced against (None when no line).
     market_point: float | None = None
     market_total_point: float | None = None
+    # Home win probability priced by the moneyline (None when no pre-tip line was recorded)
+    market_home_win_probability: float | None = None
     # Spread cover probability (None when no line available)
     cover_prob_spread: float | None = None
     # Total over probability (None when no line available)
