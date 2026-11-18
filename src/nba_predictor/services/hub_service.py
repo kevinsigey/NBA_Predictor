@@ -1,3 +1,4 @@
+import copy
 import json
 import logging
 import os
@@ -959,7 +960,116 @@ def _recent_picks(per_pick: list[TrackRecordPickOut]) -> list[TrackRecordPickOut
     return counted[:RECENT_PICKS_PER_MARKET]
 
 
+# --------------------------------------------------------------------------
+# The track-record cache: the MAE discipline from `routes._mae_record`,
+# applied to the whole record. Building it settles every market against
+# every recorded outcome -- a publish-time cost the /hub/track-record
+# route was paying per request (12s cold against 2.5s warm in
+# production, and the warm figure was the browser's, not a cache's).
+# The answer changes only when the database does, so the key is the
+# database's own write marker -- (mtime_ns, size) of the tracking file,
+# the same signal `_db_state` keys the MAE cache on -- plus the inputs
+# that shape the payload (schedule length, the day the weekly window is
+# anchored to, and whether the per-pick disclosure is inlined). The TTL
+# is the backstop for a change the marker somehow misses, never the
+# mechanism. A failed recompute drops the entry and propagates, as the
+# MAE cache does: an expired figure is never served quietly.
+# --------------------------------------------------------------------------
+
+_TRACK_RECORD_CACHE: dict[tuple, tuple[float, list[TrackRecordOut]]] = {}
+_TRACK_RECORD_LOCK = threading.Lock()
+TRACK_RECORD_CACHE_TTL_SECONDS = int(os.getenv("TRACK_RECORD_CACHE_TTL_SECONDS", "900"))
+TRACK_RECORD_COMPUTE_WAIT_SECONDS = float(os.getenv("TRACK_RECORD_COMPUTE_WAIT_SECONDS", "30"))
+
+
+def _track_record_db_state(db_path: Path) -> tuple[int, int]:
+    """(mtime_ns, size) of the tracking database, or (-1, -1) when unreadable.
+
+    The same write marker `routes._db_state` keys the MAE cache on,
+    duplicated because routes imports this module, not the reverse.
+    """
+    try:
+        st = Path(db_path).stat()
+        return (st.st_mtime_ns, st.st_size)
+    except OSError:
+        return (-1, -1)
+
+
+def clear_track_record_cache() -> None:
+    """Drop every cached record. For tests."""
+    _TRACK_RECORD_CACHE.clear()
+
+
+def _drop_track_record_entries(db_path: Path) -> None:
+    """Every entry for one database, any state of it: an older state of the
+    same file can never be asked for again."""
+    prefix = str(db_path)
+    for stale in [k for k in _TRACK_RECORD_CACHE if k[0] == prefix]:
+        del _TRACK_RECORD_CACHE[stale]
+
+
+def _drop_superseded_entries(key: tuple) -> None:
+    """Older database states of the SAME variant as `key` (same schedule
+    length, day and picks shape). The other variants stay: unlike the MAE
+    cache's one figure per database, the summary and the full disclosure
+    are both live answers for the same state."""
+    for stale in [k for k in _TRACK_RECORD_CACHE if k[0] == key[0] and k[3:] == key[3:]]:
+        del _TRACK_RECORD_CACHE[stale]
+
+
 def compute_track_record(
+    db_path: Path, schedule: list[dict] | None = None, today: date | None = None,
+    *, include_picks: bool = True, now=time.monotonic,
+) -> list[TrackRecordOut]:
+    """The track record, from cache while the database state that produced
+    it is current. `now` is a clock, injected so the TTL backstop is
+    testable without sleeping. Callers get a deep copy: the cached rows
+    are the ones the next caller is served, and a caller mutating its
+    rows must not rewrite the cache."""
+    schedule = schedule or []
+    today = today or date.today()
+    key = (str(db_path), *_track_record_db_state(db_path), len(schedule),
+           today.isoformat(), include_picks)
+    entry = _TRACK_RECORD_CACHE.get(key)
+    if entry is not None and now() - entry[0] < TRACK_RECORD_CACHE_TTL_SECONDS:
+        return copy.deepcopy(entry[1])
+
+    waited = _TRACK_RECORD_LOCK.acquire(timeout=TRACK_RECORD_COMPUTE_WAIT_SECONDS)
+    try:
+        # Re-key and re-check under the lock: the database may have moved
+        # while this call waited, and an in-flight compute (the refresh
+        # warm, most likely) may have just landed the value wanted.
+        key = (str(db_path), *_track_record_db_state(db_path), len(schedule),
+               today.isoformat(), include_picks)
+        entry = _TRACK_RECORD_CACHE.get(key)
+        if entry is not None and now() - entry[0] < TRACK_RECORD_CACHE_TTL_SECONDS:
+            return copy.deepcopy(entry[1])
+        try:
+            rows = _compute_track_record(db_path, schedule, today, include_picks=include_picks)
+        except Exception:
+            _drop_track_record_entries(db_path)
+            raise
+        _drop_superseded_entries(key)
+        _TRACK_RECORD_CACHE[key] = (now(), rows)
+        return copy.deepcopy(rows)
+    finally:
+        if waited:
+            _TRACK_RECORD_LOCK.release()
+
+
+def warm_track_record_cache(db_path: Path, schedule: list[dict] | None = None, *, now=time.monotonic) -> bool:
+    """Fill the summary record off the request path (the route's shape).
+    Never raises: a warm that fails must not take the API down, and the
+    request path still computes -- and propagates -- for itself."""
+    try:
+        compute_track_record(db_path, schedule, include_picks=False, now=now)
+    except Exception as exc:  # noqa: BLE001 - reported, not raised: see docstring
+        logger.error("track-record cache warm failed for %s: %s: %s", db_path, type(exc).__name__, exc)
+        return False
+    return True
+
+
+def _compute_track_record(
     db_path: Path, schedule: list[dict] | None = None, today: date | None = None,
     *, include_picks: bool = True,
 ) -> list[TrackRecordOut]:
