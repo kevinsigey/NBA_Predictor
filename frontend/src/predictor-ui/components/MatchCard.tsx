@@ -1,4 +1,4 @@
-// Synced from predictor-ui@213533e42ec1. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
+// Synced from predictor-ui@bbb3208c7642. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
 import type { ReactNode } from "react";
 import { pct } from "../fmt";
 import { ProbabilityBar, type Segment } from "./ProbabilityBar";
@@ -15,6 +15,9 @@ type Props = {
   /** Omit for an upcoming game that is not next up: no badge. */
   status?: Status;
   pick?: { label: string; prob: number };
+  /** The market's favourite, headlined above the model pick. `null` = the site looks for a line and found none
+   *  (the card says so and keeps the model number); omit it on a site that has no market data at all. */
+  market?: { label: string; prob: number } | null;
   /** Top-left line, usually the kickoff date. */
   when?: string;
   /** Sport-specific line under the pick: a spread, a total, a venue. */
@@ -44,10 +47,15 @@ function Team({ side }: { side: Side }) {
 }
 
 /** The family match card: one pick, one status, a labelled bar. */
-export function MatchCard({ left, right, centre, status, pick, when, meta, bar, pickPlaceholder = "No pick yet", moment = "kickoff", compact = false, onOpen }: Props) {
+export function MatchCard({ left, right, centre, status, pick, when, meta, bar, pickPlaceholder = "No pick yet", market, moment = "kickoff", compact = false, onOpen }: Props) {
   // A missing pick is always said out loud; the status badge only covers it
   // when the badge itself reads "No pick yet".
-  const pickLine = pick ? `Pick: ${pick.label} · ${pct(pick.prob)}` : status === "nopick" ? undefined : pickPlaceholder;
+  const headline = market && pick ? `Market: ${market.label} · ${pct(market.prob)}` : undefined;
+  const pickLine = headline
+    ? `Model: ${pick!.label} · ${pct(pick!.prob)}`
+    : pick
+      ? `Pick: ${pick.label} · ${pct(pick.prob)}`
+      : status === "nopick" ? undefined : pickPlaceholder;
 
   return (
     <button
@@ -84,7 +92,9 @@ export function MatchCard({ left, right, centre, status, pick, when, meta, bar, 
       {(pickLine || bar || meta) && (
         <span data-testid="pick-section" className="flex w-full flex-col gap-2 border-t border-pr-rule pt-2.5">
           <Sep />
-          {pickLine && <span className={`text-sm font-semibold ${pick ? "text-pr-text" : "text-pr-text-dim"}`}>{pickLine}</span>}
+          {headline && <span data-testid="market-headline" className="font-pr-display text-lg font-semibold text-pr-text">{headline}</span>}
+          {pickLine && <span className={headline ? "text-xs text-pr-text-dim" : `text-sm font-semibold ${pick ? "text-pr-text" : "text-pr-text-dim"}`}>{pickLine}</span>}
+          {market === null && pick && <span className="text-xs text-pr-text-dim">No market line</span>}
           {/* No `onSegmentFocus`, which is what keeps the bar's segment labels as
               text rather than buttons: a button inside this card's own `<button>`
               is invalid HTML, and a browser is entitled not to make the inner one
