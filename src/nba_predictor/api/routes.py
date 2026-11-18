@@ -72,6 +72,7 @@ from nba_predictor.services.hub_service import (
     load_hub_cache,
     player_name_map,
     warm_player_props_cache,
+    warm_track_record_cache,
 )
 from nba_predictor.services.schedule_repository import (
     default_week_start,
@@ -562,8 +563,14 @@ def note_database_changed(db_path: Path, schedule: list[dict]) -> bool:
     invalidation mechanism: a write that lands between two TTL expiries would
     otherwise leave a five-minute-old aggregate on the page for the rest of its
     window. A warm that fails is reported and ignored here -- the TTL still
-    expires and the next request recomputes."""
+    expires and the next request recomputes.
+
+    The track-record summary is re-warmed here too, on the same courtesy
+    terms: its cache IS keyed on the database state, so this warm is what
+    makes the first request after a write already warm instead of the one
+    that pays the settle-everything build."""
     warm_player_props_cache(db_path)
+    warm_track_record_cache(db_path, schedule)
     return warm_mae_cache(db_path, schedule)
 
 
