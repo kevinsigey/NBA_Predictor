@@ -1,4 +1,4 @@
-// Synced from predictor-ui@213533e42ec1. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
+// Synced from predictor-ui@bbb3208c7642. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
 import { RecordBlock } from "./RecordBlock";
 import { CalibrationChart } from "./CalibrationChart";
 import type { CalibrationSeries, MarketTally } from "./types";

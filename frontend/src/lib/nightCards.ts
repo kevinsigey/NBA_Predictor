@@ -1,7 +1,7 @@
 import { contrast, kickoff, parseKickoff, pct, stat, type Segment, type Side, type Status } from "../predictor-ui";
 import type { Game } from "../api/client";
 import { signedLine } from "./lines";
-import { favourite, marginLine, pickWon } from "./pick";
+import { favourite, marginLine, marketFavourite, pickWon } from "./pick";
 import { teamColor, teamName } from "./teams";
 
 export type CardModel = {
@@ -10,6 +10,7 @@ export type CardModel = {
   centre: string;
   status?: Status;
   pick?: { label: string; prob: number };
+  market?: { label: string; prob: number } | null;
   when: string;
   meta?: string;
   bar?: Segment[];
@@ -61,6 +62,8 @@ export function toCardModel(game: Game, isNext: boolean, timeZone?: string, now:
     const fav = favourite(p, game.home_team, game.away_team);
     const [awayColour, homeColour] = barColours(game.away_team, game.home_team);
     model.pick = { label: fav.team, prob: fav.prob };
+    const mk = marketFavourite(p, game.home_team, game.away_team);
+    model.market = mk && { label: mk.team, prob: mk.prob };
     model.bar = [
       { label: game.away_team, prob: 1 - p.home_win_probability, color: awayColour },
       { label: game.home_team, prob: p.home_win_probability, color: homeColour },

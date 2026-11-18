@@ -1,4 +1,4 @@
-// Synced from predictor-ui@213533e42ec1. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
+// Synced from predictor-ui@bbb3208c7642. Do not edit here: change predictor-hub/packages/predictor-ui and re-run scripts/sync-ui.mjs.
 /** SummaryButton — the only network caller in the panel.
  *
  *  One job: turn a press into a summary or an unavailable state, and nothing

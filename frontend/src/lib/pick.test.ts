@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { favourite, marginLine, pickWon } from "./pick";
+import { marketFavourite, favourite, marginLine, pickWon } from "./pick";
 
 const p = (home_win_probability: number, predicted_margin: number) => ({ home_win_probability, predicted_margin, predicted_total: 220 });
 
@@ -16,5 +16,16 @@ describe("pick helpers", () => {
   it("judges the pick against the result", () => {
     expect(pickWon(p(0.62, 3), 110, 100)).toBe(true);
     expect(pickWon(p(0.62, 3), 90, 100)).toBe(false);
+  });
+});
+
+describe("marketFavourite", () => {
+  const p = { home_win_probability: 0.6, predicted_margin: 3, predicted_total: 220 };
+  it("is null without a market line, never a default", () => {
+    expect(marketFavourite(p, "BOS", "MIA")).toBeNull();
+    expect(marketFavourite({ ...p, market_home_win_probability: null }, "BOS", "MIA")).toBeNull();
+  });
+  it("names the market's side, which can differ from the model's", () => {
+    expect(marketFavourite({ ...p, market_home_win_probability: 0.45 }, "BOS", "MIA")).toEqual({ team: "MIA", prob: 0.55 });
   });
 });

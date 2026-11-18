@@ -469,3 +469,18 @@ def test_no_quoted_lines_means_no_cover_or_over_chance(tmp_path):
     store.insert_prediction(db, game_id="g1", created_at="2098-12-31T12:00:00+00:00", model_version="v", home_win_prob=0.62, predicted_margin=5.0, predicted_total=230.0)
     pred, _ = _prediction_out(db, game, {"metrics": {"margin": {"residual_sigma": 13.0}, "total": {"residual_sigma": 18.0}}})
     assert pred.market_point is None and pred.cover_prob_spread is None and pred.cover_prob_total is None
+
+
+def test_market_home_win_is_the_latest_pre_tip_moneyline_and_never_defaulted(tmp_path):
+    from nba_predictor.api.routes import _prediction_out
+    from nba_predictor.tracking import store
+
+    db = tmp_path / "t.db"
+    store.init_db(db)
+    game = {"game_id": "g1", "home_team": "BOS", "away_team": "MIA", "game_date": "2099-01-01", "tip_off": "2099-01-01T23:00Z", "completed": False}
+    store.insert_prediction(db, game_id="g1", created_at="2098-12-31T12:00:00+00:00", model_version="v", home_win_prob=0.62, predicted_margin=5.0, predicted_total=230.0)
+    manifest = {"metrics": {}}
+    assert _prediction_out(db, game, manifest)[0].market_home_win_probability is None
+    for at, p in (("2098-12-31T13:00:00+00:00", 0.55), ("2099-01-01T01:00:00+00:00", 0.58), ("2099-01-02T01:00:00+00:00", 0.99)):
+        store.insert_market_prediction(db, game_id="g1", market="h2h", selection="BOS", model_probability=0.62, market_probability=p, edge=0.0, bookmaker="K", american_odds=None, point=None, created_at=at)
+    assert _prediction_out(db, game, manifest)[0].market_home_win_probability == 0.58  # the post-tip 0.99 is ignored
