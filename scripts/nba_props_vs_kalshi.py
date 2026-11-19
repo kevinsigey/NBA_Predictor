@@ -3,6 +3,9 @@ docs/research/2026-11-18-nba-props-vs-kalshi-prereg.md.
 
     PYTHONPATH=src python scripts/nba_props_vs_kalshi.py            # fetch + score
     PYTHONPATH=src python scripts/nba_props_vs_kalshi.py --selfcheck
+
+Model rows come from the live site's public grading endpoint (the counted, earliest pick per game/player/stat).
+Raw responses are cached under data/cache/prop_grading/ so a rerun scores the same rows.
 """
 from __future__ import annotations
 
