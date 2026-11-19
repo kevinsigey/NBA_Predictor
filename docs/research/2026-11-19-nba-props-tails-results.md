@@ -9,10 +9,10 @@ Reproduce with `PYTHONPATH=src uv run python scripts/nba_props_tails.py`
 
 All three ship-rule conditions hold on the walk-forward sample:
 
-1. Primary pooled delta LL(raw p_yes) - LL(p_C1) = +0.0315, clustered
-   low95 = +0.0245 > 0.
-2. No stat has mean delta with upper95 < 0 (points +0.0395, rebounds +0.0333,
-   assists +0.0488, threes +0.0471). Both arms keep the 0.001 log-loss clip.
+1. Primary pooled delta LL(raw p_yes) - LL(p_C1) = +0.0305, clustered
+   low95 = +0.0235 > 0.
+2. No stat has mean delta with upper95 < 0 (points +0.0388, rebounds +0.0315,
+   assists +0.0492, threes +0.0455). Both arms keep the 0.001 log-loss clip.
 3. Served intervals are not touched by the script.
 
 Per the prereg, NBA_Predictor may compute P(over) with C1 behind a flag
@@ -52,11 +52,11 @@ bootstrap, 4000 draws, seed 20261017. Positive favours C1.
 
 | Cell | Contracts | Delta LL(raw)-LL(C1) [95%] |
 |---|---|---|
-| Pooled | 23,444 | +0.0315 [+0.0245, +0.0392] |
-| Points | 6,150 | +0.0300 [+0.0211, +0.0395] |
-| Rebounds | 6,085 | +0.0244 [+0.0166, +0.0333] |
-| Assists | 4,731 | +0.0372 [+0.0258, +0.0488] |
-| Threes | 6,478 | +0.0356 [+0.0246, +0.0471] |
+| Pooled | 23,444 | +0.0305 [+0.0235, +0.0380] |
+| Points | 6,150 | +0.0290 [+0.0201, +0.0388] |
+| Rebounds | 6,085 | +0.0229 [+0.0155, +0.0315] |
+| Assists | 4,731 | +0.0373 [+0.0257, +0.0492] |
+| Threes | 6,478 | +0.0340 [+0.0228, +0.0455] |
 
 ## Reported, not gating
 
@@ -64,32 +64,32 @@ LL market mid - LL(p_C1), clustered (negative = market still better):
 
 | Cell | Contracts | LL mid - LL(C1) [95%] |
 |---|---|---|
-| Pooled | 23,444 | -0.0765 [-0.0900, -0.0639] |
-| Points | 6,150 | -0.0954 [-0.1187, -0.0746] |
-| Rebounds | 6,085 | -0.0660 [-0.0832, -0.0498] |
-| Assists | 4,731 | -0.0803 [-0.0982, -0.0623] |
-| Threes | 6,478 | -0.0656 [-0.0806, -0.0516] |
+| Pooled | 23,444 | -0.0776 [-0.0912, -0.0648] |
+| Points | 6,150 | -0.0964 [-0.1198, -0.0753] |
+| Rebounds | 6,085 | -0.0675 [-0.0852, -0.0510] |
+| Assists | 4,731 | -0.0802 [-0.0980, -0.0624] |
+| Threes | 6,478 | -0.0673 [-0.0822, -0.0531] |
 
 4c-edge betting rerun with p_C1 (1c haircut):
 
 | Cell | Bets | Net c/contract [95%] |
 |---|---|---|
-| Pooled | 13,164 | -3.8006 [-4.9079, -2.7165] |
-| Points | 3,892 | -2.8609 [-4.7041, -1.0889] |
-| Rebounds | 3,500 | -3.7691 [-5.8070, -1.7279] |
-| Assists | 2,581 | -3.7736 [-5.6638, -1.9409] |
-| Threes | 3,191 | -5.0033 [-6.8245, -3.1784] |
+| Pooled | 13,215 | -3.6827 [-4.7702, -2.5828] |
+| Points | 3,910 | -2.7456 [-4.5406, -0.9644] |
+| Rebounds | 3,518 | -3.5522 [-5.5755, -1.5787] |
+| Assists | 2,579 | -3.7083 [-5.5703, -1.8597] |
+| Threes | 3,208 | -4.9476 [-6.6767, -3.2021] |
 
 Calibration by p_C1 bucket:
 
 | p_C1 bucket | n | mean p_C1 | mean mid | YES rate |
 |---|---|---|---|---|
-| < .1 | 4,310 | 0.056 | 0.125 | 0.132 |
-| .1-.3 | 8,324 | 0.194 | 0.246 | 0.250 |
-| .3-.5 | 4,832 | 0.396 | 0.459 | 0.458 |
-| .5-.7 | 2,960 | 0.599 | 0.637 | 0.628 |
-| .7-.9 | 2,215 | 0.789 | 0.790 | 0.797 |
-| >= .9 | 803 | 0.941 | 0.876 | 0.898 |
+| < .1 | 4,447 | 0.057 | 0.126 | 0.135 |
+| .1-.3 | 8,339 | 0.194 | 0.250 | 0.253 |
+| .3-.5 | 4,788 | 0.394 | 0.465 | 0.461 |
+| .5-.7 | 3,029 | 0.596 | 0.643 | 0.637 |
+| .7-.9 | 2,133 | 0.791 | 0.799 | 0.809 |
+| >= .9 | 708 | 0.943 | 0.880 | 0.898 |
 
 ## Notes
 
