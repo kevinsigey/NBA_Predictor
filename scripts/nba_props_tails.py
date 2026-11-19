@@ -39,8 +39,7 @@ def training_zs(stat: str, before_date: str) -> list:
             continue
         if not is_training_eligible(gd, before_date):
             continue
-        cache_path = Path("data/cache/prop_grading") / f"{g['game_id']}.json"
-        if not cache_path.exists():
+        if gd < "2026-10-15":
             continue
         from nba_props_vs_kalshi import grading
         for m in grading(g["game_id"]):
