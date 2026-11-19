@@ -39,7 +39,10 @@ def training_zs(stat: str, before_date: str) -> list:
             continue
         if not is_training_eligible(gd, before_date):
             continue
-        if gd < "2026-10-15":
+        # Grading data is only available for cached games (recent seasons).
+        # Uncached games have no grading rows and are skipped (no network fetch).
+        cache_path = Path("data/cache/prop_grading") / f"{g['game_id']}.json"
+        if not cache_path.exists():
             continue
         from nba_props_vs_kalshi import grading
         for m in grading(g["game_id"]):
