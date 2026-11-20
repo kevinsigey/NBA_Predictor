@@ -125,11 +125,16 @@ def ts(s: str) -> datetime:
     return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
 
-def run() -> int:
+FIELDS = ["ticker", "game_id", "tip_off", "player", "stat", "line", "predicted", "interval_low",
+          "interval_high", "p_yes", "mid", "yes_ask", "no_ask", "quote_ts", "volume", "side",
+          "edge_c", "outcome_yes", "pnl_c", "split", "ll_model", "ll_market"]
+
+
+def build_eligible() -> tuple:
     schedule = json.load(open("data/public_snapshot.json"))["schedule"]
     by_ticker = load_kalshi()
     counts = {k: 0 for k in ("tickers", "settled", "game_matched", "player_matched", "pre_tip_projection",
-                             "interval", "pre_tip_quote", "eligible", "bets")}
+                              "interval", "pre_tip_quote", "eligible", "bets")}
     rows = []
     for ticker, snaps in by_ticker.items():
         counts["tickers"] += 1
@@ -176,17 +181,24 @@ def run() -> int:
         pnl = 100 * won - 100 * ask - fee_c(100 * ask) if side else None
         counts["bets"] += bool(side)
         rows.append({
-            "ticker": ticker, "game_id": game["game_id"], "tip_off": game["tip_off"], "player": first["player"], "stat": stat,
+            "ticker": ticker, "game_id": game["game_id"], "game_date": game["game_date"], "tip_off": game["tip_off"],
+            "player": first["player"], "stat": stat,
             "line": first["line"], "predicted": m["predicted"], "interval_low": m["interval_low"], "interval_high": m["interval_high"],
             "p_yes": round(p, 6), "mid": round(mid, 4), "yes_ask": q["yes_ask"], "no_ask": q["no_ask"], "quote_ts": q["snapshot_ts"],
             "volume": q.get("volume"), "side": side or "", "edge_c": round(edge, 3), "outcome_yes": y,
             "pnl_c": "" if pnl is None else round(pnl, 3),
             "split": "pre173" if ts(game["tip_off"]) < ts(SPLIT_AT) else "post173",
             "ll_model": round(ll(p, y), 6), "ll_market": round(ll(mid, y), 6),
+            "_p": p, "_mid": mid, "_edge": edge,
         })
+    return rows, counts
+
+
+def run() -> int:
+    rows, counts = build_eligible()
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w", newline="") as fh:
-        w = csv.DictWriter(fh, fieldnames=list(rows[0]))
+        w = csv.DictWriter(fh, fieldnames=FIELDS, extrasaction="ignore")
         w.writeheader()
         w.writerows(rows)
     print(json.dumps(counts))
