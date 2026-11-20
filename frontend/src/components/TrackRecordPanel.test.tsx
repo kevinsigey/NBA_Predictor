@@ -3,7 +3,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TrackRecordPanel from "./TrackRecordPanel";
 import { wilsonInterval } from "../predictor-ui";
-import { api, type PropGrading, type TrackRecord, type TrackRecordPick, type TrackRecordWeek, type VsMarket } from "../api/client";
+import { api, type PropGrading, type PropTercileCoverage, type TrackRecord, type TrackRecordPick, type TrackRecordWeek, type VsMarket } from "../api/client";
 
 vi.mock("../api/client", () => ({
   api: { getTrackRecord: vi.fn(), getVsMarket: vi.fn(), getTrackRecordPicks: vi.fn(), getSnapshotMeta: vi.fn(), getPropGrading: vi.fn() },
@@ -47,6 +47,15 @@ const GRADING = {
     interval_calibration: "80% ranges: scaled conformal, rolling 14 game days (n=1,240 counted lines before Nov 1).",
   },
 } as unknown as PropGrading;
+
+// The same grading payload with a tercile split on the points stat only;
+// rebounds stays without one. The clone keeps the shared fixture untouched
+// so the parity test below still renders exactly what it always did.
+const gradingWithTerciles = (terciles: PropTercileCoverage[] | null): PropGrading => {
+  const grading = structuredClone(GRADING) as PropGrading;
+  grading.aggregates!.per_stat[0].interval_coverage_by_tercile = terciles;
+  return grading;
+};
 
 const wk = (week_start: string, n: number, correct: number, tracked = true): TrackRecordWeek => ({
   week_start, n, correct, hit_rate: n ? correct / n : null, tracked,
@@ -195,6 +204,40 @@ describe("TrackRecordPanel", () => {
     expect(screen.queryByTestId("prop-coverage-rebounds")).toBeNull();
     // The calibration basis is captioned under the tiles, in the backend's words.
     expect(screen.getByTestId("prop-interval-calibration")).toHaveTextContent("scaled conformal, rolling 14 game days");
+  });
+
+  it("splits the live 80% coverage by projected-value tercile beside the pooled figure", async () => {
+    vi.mocked(api.getPropGrading).mockResolvedValue(gradingWithTerciles([
+      { tercile: "low", upper: 6.7, n: 10, coverage: 91.2 },
+      { tercile: "mid", upper: 11.9, n: 10, coverage: 80.1 },
+      { tercile: "high", upper: null, n: 10, coverage: 65.7 },
+    ]));
+    render(<TrackRecordPanel />);
+    const line = await screen.findByTestId("prop-coverage-terciles-points");
+    expect(line).toHaveTextContent("By projection: low 91.2% · mid 80.1% · high 65.7%");
+    expect(line).toHaveAttribute("title", "low ≤ 6.7, mid ≤ 11.9, high above");
+    // The pooled figure is still there, above the split.
+    expect(screen.getByTestId("prop-coverage-points")).toHaveTextContent("78.3%");
+    // A stat with no split says nothing rather than an empty line.
+    expect(screen.queryByTestId("prop-coverage-terciles-rebounds")).toBeNull();
+  });
+
+  it("uses an em dash for a tercile whose coverage is null", async () => {
+    vi.mocked(api.getPropGrading).mockResolvedValue(gradingWithTerciles([
+      { tercile: "low", upper: 6.7, n: 10, coverage: 91.2 },
+      { tercile: "mid", upper: 11.9, n: 0, coverage: null },
+      { tercile: "high", upper: null, n: 10, coverage: 65.7 },
+    ]));
+    render(<TrackRecordPanel />);
+    expect(await screen.findByTestId("prop-coverage-terciles-points"))
+      .toHaveTextContent("low 91.2% · mid — · high 65.7%");
+  });
+
+  it("shows no tercile line when the field is null", async () => {
+    vi.mocked(api.getPropGrading).mockResolvedValue(gradingWithTerciles(null));
+    render(<TrackRecordPanel />);
+    await screen.findByTestId("prop-stat-points");
+    expect(screen.queryByTestId("prop-coverage-terciles-points")).toBeNull();
   });
 
   it("keeps a broken grading read from taking the record down", async () => {

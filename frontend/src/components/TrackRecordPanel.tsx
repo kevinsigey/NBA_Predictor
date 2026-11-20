@@ -382,6 +382,23 @@ function PropStatTile({ aggregate: s, daily }: { aggregate: PropStatAggregate; d
             landed inside their 80% range {"\u00b7"} {n0(s.interval_n)} ranged
           </p>
         )}
+      {s.interval_coverage_by_tercile != null && s.interval_coverage_by_tercile.length > 0 && (
+        // The pooled figure can hide a band the range misses: show the same
+        // 80% coverage split by projection size right beneath it, with the
+        // cut points on hover. A null coverage is an em dash, never 0%.
+        <p
+          className="mt-1 text-xs text-pr-text-faint"
+          data-testid={`prop-coverage-terciles-${s.stat}`}
+          title={s.interval_coverage_by_tercile
+            .map((t) => `${t.tercile} ${t.upper === null ? "above" : `\u2264 ${t.upper.toFixed(1)}`}`)
+            .join(", ")}
+        >
+          {"By projection: "}
+          {s.interval_coverage_by_tercile
+            .map((t) => `${t.tercile} ${t.coverage === null ? "\u2014" : `${t.coverage.toFixed(1)}%`}`)
+            .join(" \u00b7 ")}
+        </p>
+      )}
       {s.bands.length > 0 && (
         <>
           <div

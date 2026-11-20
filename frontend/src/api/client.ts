@@ -333,6 +333,16 @@ export interface PropBandShare {
   pct: number;
 }
 
+/** Live coverage of the shipped 80% ranges for one projected-value tercile. */
+export interface PropTercileCoverage {
+  tercile: string;
+  /** The inclusive upper cut of this tercile (low: q1, mid: q2); null for the top band. */
+  upper: number | null;
+  n: number;
+  /** Percent inside the range; null when the tercile holds no lines. */
+  coverage: number | null;
+}
+
 /** One stat's tracking over the whole counted record, pre-tip rows only:
  *  the average miss, the average signed miss (`bias` -- positive means the
  *  players beat the projections on average), the band shares, and the
@@ -351,6 +361,9 @@ export interface PropStatAggregate {
    *  that carried a range at all. Null when none did. */
   interval_coverage?: number | null;
   interval_n?: number;
+  /** The same coverage split by projection size (low/mid/high), null when
+   *  the stat has too few ranged lines to split honestly. */
+  interval_coverage_by_tercile?: PropTercileCoverage[] | null;
 }
 
 /** The prop model's tracking: aggregates over the full counted record the
