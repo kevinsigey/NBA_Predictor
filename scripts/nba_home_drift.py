@@ -11,7 +11,7 @@ import json
 import math
 import random
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -35,7 +35,10 @@ SITE_URL = "https://nba.40-160-91-131.sslip.io/picks/history?limit=100000"
 
 
 def ts(s):
-    return datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+    parsed = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
 
 
 def ll(p, y):
@@ -308,6 +311,8 @@ def descriptive_2027():
         if not g or not g.get("completed"):
             continue
         if g.get("home_pts") is None or g.get("away_pts") is None:
+            continue
+        if _nba_season_start_year(g["game_date"]) != 2026:
             continue
         served.append((gid, g, last))
     # sort by game_date
