@@ -362,6 +362,18 @@ class PropBandShareOut(BaseModel):
     pct: float
 
 
+class PropTercileCoverageOut(BaseModel):
+    """One projected-value tercile's share of the live 80%-range coverage."""
+
+    tercile: str
+    # The inclusive upper cut of this tercile (low: q1, mid: q2); the top
+    # tercile has no upper bound.
+    upper: float | None
+    n: int
+    # Percent inside the range; None when the tercile holds no lines.
+    coverage: float | None
+
+
 class PropStatAggregateOut(BaseModel):
     """One stat's tracking over the whole counted record, pre-tip rows only.
 
@@ -388,6 +400,11 @@ class PropStatAggregateOut(BaseModel):
     # the larger `n`. None when no line of the stat carried an interval.
     interval_coverage: float | None = None
     interval_n: int = 0
+    # The same live coverage split by projection size (low, mid, high in
+    # order), so a pooled figure that hides a weak band cannot pass as
+    # honest. None when the stat has fewer than 30 ranged lines -- too few
+    # to split into three and still say something true.
+    interval_coverage_by_tercile: list[PropTercileCoverageOut] | None = None
 
 
 class PropDailyStatOut(BaseModel):

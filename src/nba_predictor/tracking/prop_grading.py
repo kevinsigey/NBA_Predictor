@@ -63,6 +63,7 @@ pre-tip population the grades count, so the coverage figure and the
 ranges it judges can never describe two different intervals.
 """
 
+import statistics
 from pathlib import Path
 
 from nba_predictor.tracking import store
@@ -443,6 +444,42 @@ def _graded_rows(
     return rows
 
 
+def _tercile_coverage(interval_rows: list[dict]) -> list[dict] | None:
+    """Live 80%-range coverage split by the size of the projection.
+
+    The cuts are the inclusive tertiles of this stat's ranged lines; the
+    three buckets are read out in projection order (low, mid, high). With
+    fewer than 30 ranged lines a three-way split is too thin to read
+    honestly, so the reader gets nothing rather than a misleading slice.
+    """
+    if len(interval_rows) < 30:
+        return None
+    values = [r["predicted"] for r in interval_rows]
+    q1, q2 = statistics.quantiles(values, n=3, method="inclusive")
+    buckets = (
+        ("low", q1, lambda p: p <= q1),
+        ("mid", q2, lambda p: q1 < p <= q2),
+        ("high", None, lambda p: p > q2),
+    )
+    out: list[dict] = []
+    for tercile, upper, in_bucket in buckets:
+        members = [r for r in interval_rows if in_bucket(r["predicted"])]
+        n = len(members)
+        out.append(
+            {
+                "tercile": tercile,
+                "upper": upper,
+                "n": n,
+                "coverage": (
+                    round(100.0 * sum(1 for r in members if r["inside_interval"]) / n, 1)
+                    if n
+                    else None
+                ),
+            }
+        )
+    return out
+
+
 def _prop_aggregates(rows: list[dict], bands: dict[str, float] | None) -> dict:
     """How the prop model is tracking, over the whole counted record.
 
@@ -502,6 +539,10 @@ def _prop_aggregates(rows: list[dict], bands: dict[str, float] | None) -> dict:
                     else None
                 ),
                 "interval_n": len(interval_rows),
+                # The same live coverage, split by how big the projection
+                # was: does the range hold up for big lines as well as
+                # small? None when the stat has too few ranged lines.
+                "interval_coverage_by_tercile": _tercile_coverage(interval_rows),
             }
         )
 
