@@ -14,33 +14,21 @@ from pathlib import Path
 from nba_props_vs_kalshi import build_eligible, cluster_ci, decide, fee_c, ll, SERIES
 
 CACHE_TRAIN: dict = {}
+CACHE_ROWS: dict = {}
 
 
-def half_of(pred: float, lo: float, hi: float) -> float:
-    h = (hi - lo) / 2.0
-    if lo == 0 and pred < h:
-        h = hi - pred
-    return h
-
-
-def is_training_eligible(game_date: str, before_date: str) -> bool:
-    return game_date < before_date
-
-
-def training_zs(stat: str, before_date: str) -> list:
+def training_rows(stat: str, before_date: str) -> list:
     key = (stat, before_date)
-    if key in CACHE_TRAIN:
-        return CACHE_TRAIN[key]
+    if key in CACHE_ROWS:
+        return CACHE_ROWS[key]
+    rows = []
     schedule = json.load(open("data/public_snapshot.json"))["schedule"]
-    zs = []
     for g in schedule:
         gd = g.get("game_date")
         if not gd or not g.get("tip_off"):
             continue
         if not is_training_eligible(gd, before_date):
             continue
-        # Grading data is only available for cached games (recent seasons).
-        # Uncached games have no grading rows and are skipped (no network fetch).
         cache_path = Path("data/cache/prop_grading") / f"{g['game_id']}.json"
         if not cache_path.exists():
             continue
@@ -60,7 +48,27 @@ def training_zs(stat: str, before_date: str) -> list:
             h = half_of(pred, lo, hi)
             if h == 0:
                 continue
-            zs.append((m["actual"] - pred) / h)
+            rows.append({"predicted": pred, "actual": m["actual"], "half": h})
+    CACHE_ROWS[key] = rows
+    return rows
+
+
+def half_of(pred: float, lo: float, hi: float) -> float:
+    h = (hi - lo) / 2.0
+    if lo == 0 and pred < h:
+        h = hi - pred
+    return h
+
+
+def is_training_eligible(game_date: str, before_date: str) -> bool:
+    return game_date < before_date
+
+
+def training_zs(stat: str, before_date: str) -> list:
+    key = (stat, before_date)
+    if key in CACHE_TRAIN:
+        return CACHE_TRAIN[key]
+    zs = [(r["actual"] - r["predicted"]) / r["half"] for r in training_rows(stat, before_date)]
     CACHE_TRAIN[key] = zs
     return zs
 
