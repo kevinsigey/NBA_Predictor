@@ -1,0 +1,217 @@
+{
+  "task": "NBA-4 rest / streak per team, 7-day rest cap, Utah altitude, visitor b2b interactions",
+  "cache": "games_all.json",
+  "n_games_total": 9994,
+  "walk_forward": {
+    "windows": 4,
+    "min_train_fraction": 0.4,
+    "expanding": true
+  },
+  "bootstrap": {
+    "resamples": 2000,
+    "seed": 20261103,
+    "statistic": "mean per-game difference"
+  },
+  "baseline": {
+    "columns": [
+      "home_efg_pct_roll",
+      "home_tov_rate_roll",
+      "home_orb_pct_roll",
+      "home_ft_rate_roll",
+      "away_efg_pct_roll",
+      "away_tov_rate_roll",
+      "away_orb_pct_roll",
+      "away_ft_rate_roll",
+      "elo_diff_s",
+      "home_adj_off_s",
+      "away_adj_off_s",
+      "home_adj_def_s",
+      "away_adj_def_s",
+      "home_pace_roll_s",
+      "away_pace_roll_s",
+      "home_rest_days",
+      "away_rest_days",
+      "home_back_to_back",
+      "away_back_to_back",
+      "home_streak",
+      "away_streak",
+      "is_high_altitude",
+      "conference_game",
+      "division_game",
+      "home_absent_min_share",
+      "away_absent_min_share",
+      "home_absent_prod_share",
+      "away_absent_prod_share"
+    ],
+    "pooled": {
+      "n_win": 6090,
+      "n_margin": 6090,
+      "win_log_loss": 0.6243040720329418,
+      "win_brier": 0.21740101440679238,
+      "win_auc": 0.7007952647072961,
+      "margin_mae": 11.039800218766336,
+      "margin_rmse": 14.124464964802154
+    },
+    "window_sizes": [
+      1550,
+      1599,
+      1596,
+      1345
+    ]
+  },
+  "arms": {
+    "rest_altitude": {
+      "columns": [
+        "home_efg_pct_roll",
+        "home_tov_rate_roll",
+        "home_orb_pct_roll",
+        "home_ft_rate_roll",
+        "away_efg_pct_roll",
+        "away_tov_rate_roll",
+        "away_orb_pct_roll",
+        "away_ft_rate_roll",
+        "elo_diff_s",
+        "home_adj_off_s",
+        "away_adj_off_s",
+        "home_adj_def_s",
+        "away_adj_def_s",
+        "home_pace_roll_s",
+        "away_pace_roll_s",
+        "home_rest_days",
+        "away_rest_days",
+        "home_back_to_back",
+        "away_back_to_back",
+        "home_streak",
+        "away_streak",
+        "is_high_altitude",
+        "conference_game",
+        "division_game",
+        "home_absent_min_share",
+        "away_absent_min_share",
+        "home_absent_prod_share",
+        "away_absent_prod_share",
+        "home_first_game",
+        "away_first_game"
+      ],
+      "pooled": {
+        "n_win": 6090,
+        "n_margin": 6090,
+        "win_log_loss": 0.6229620707417153,
+        "win_brier": 0.21672394285123645,
+        "win_auc": 0.7032312077117449,
+        "margin_mae": 11.007330750001527,
+        "margin_rmse": 14.091935681089632
+      },
+      "window_sizes": [
+        1550,
+        1599,
+        1596,
+        1345
+      ]
+    },
+    "+interactions": {
+      "columns": [
+        "home_efg_pct_roll",
+        "home_tov_rate_roll",
+        "home_orb_pct_roll",
+        "home_ft_rate_roll",
+        "away_efg_pct_roll",
+        "away_tov_rate_roll",
+        "away_orb_pct_roll",
+        "away_ft_rate_roll",
+        "elo_diff_s",
+        "home_adj_off_s",
+        "away_adj_off_s",
+        "home_adj_def_s",
+        "away_adj_def_s",
+        "home_pace_roll_s",
+        "away_pace_roll_s",
+        "home_rest_days",
+        "away_rest_days",
+        "home_back_to_back",
+        "away_back_to_back",
+        "home_streak",
+        "away_streak",
+        "is_high_altitude",
+        "conference_game",
+        "division_game",
+        "home_absent_min_share",
+        "away_absent_min_share",
+        "home_absent_prod_share",
+        "away_absent_prod_share",
+        "home_first_game",
+        "away_first_game",
+        "home_b2b_travel_miles",
+        "away_b2b_travel_miles",
+        "away_b2b_at_altitude"
+      ],
+      "pooled": {
+        "n_win": 6090,
+        "n_margin": 6090,
+        "win_log_loss": 0.6230280358020627,
+        "win_brier": 0.21676330966007065,
+        "win_auc": 0.7026894995041244,
+        "margin_mae": 11.00666072902925,
+        "margin_rmse": 14.092490602193875
+      },
+      "window_sizes": [
+        1550,
+        1599,
+        1596,
+        1345
+      ]
+    }
+  },
+  "verdicts": {
+    "rest_altitude": {
+      "primary_bootstrap": {
+        "log_loss": {
+          "mean_diff": -0.0013420012912265863,
+          "ci_low": -0.003004358862623201,
+          "ci_high": 0.00038087179355473865,
+          "excludes_zero_improving": false
+        },
+        "abs_error": {
+          "mean_diff": -0.0324694687648109,
+          "ci_low": -0.057493622066909535,
+          "ci_high": -0.007837691243948649,
+          "excludes_zero_improving": true
+        }
+      },
+      "point_delta": {
+        "win_log_loss": -0.0013420012912265245,
+        "win_brier": -0.0006770715555559359,
+        "win_auc": 0.002435943004448715,
+        "margin_mae": -0.03246946876480905,
+        "margin_rmse": -0.03252928371252217
+      },
+      "metrics_worse_at_point": [],
+      "ships": false
+    },
+    "+interactions": {
+      "primary_bootstrap": {
+        "log_loss": {
+          "mean_diff": -0.0012760362308791725,
+          "ci_low": -0.003059750523834038,
+          "ci_high": 0.0005651091148806452,
+          "excludes_zero_improving": false
+        },
+        "abs_error": {
+          "mean_diff": -0.03313948973708756,
+          "ci_low": -0.05910550483703327,
+          "ci_high": -0.006899693237083524,
+          "excludes_zero_improving": true
+        }
+      },
+      "point_delta": {
+        "win_log_loss": -0.0012760362308791295,
+        "win_brier": -0.0006377047467217289,
+        "win_auc": 0.0018942347968282647,
+        "margin_mae": -0.03313948973708669,
+        "margin_rmse": -0.03197436260827935
+      },
+      "metrics_worse_at_point": [],
+      "ships": false
+    }
+  }
+}

@@ -10,6 +10,8 @@ from nba_predictor.features.rest_travel import (
     congestion_flags,
     fatigue_index,
     is_back_to_back,
+    is_high_altitude_home,
+    rest_features,
     rolling_travel_miles,
     timezone_change_count,
 )
@@ -34,6 +36,19 @@ TRAVEL_FATIGUE_COLUMNS = [
     "home_three_in_four", "away_three_in_four",
     "home_four_in_six", "away_four_in_six",
     "home_fatigue_index", "away_fatigue_index",
+]
+
+#: NBA-4 rest / streak / altitude candidate. OFF by default: the committed models were fitted on the role-split
+#: rest, the 99 sentinel and the role-split streak, and switching them silently would move live inputs without a
+#: retrain. `build_feature_frame(..., rest_altitude=True)` opts in; the evaluation is docs/nba-4-rest-altitude.md.
+REST_ALTITUDE_ENABLED = False
+
+#: Columns the flagged path adds. Rest, streak and is_high_altitude keep their names; only their values change.
+REST_ALTITUDE_COLUMNS = ["home_first_game", "away_first_game"]
+#: Visiting-team load interactions (rest_altitude only): back-to-back x 7-day travel miles, and a visitor on a
+#: back-to-back playing at altitude.
+REST_ALTITUDE_INTERACTION_COLUMNS = [
+    "home_b2b_travel_miles", "away_b2b_travel_miles", "away_b2b_at_altitude",
 ]
 
 FEATURE_COLUMNS = [
@@ -80,6 +95,7 @@ def _long_format_box_scores(games: pd.DataFrame) -> pd.DataFrame:
 def build_feature_frame(
     games: pd.DataFrame, carry_over_weight: float | None = None, include_travel_fatigue: bool = False,
     rest_by_team: bool = False, players: pd.DataFrame | None = None,
+    rest_altitude: bool = REST_ALTITUDE_ENABLED, rest_altitude_interactions: bool = False,
 ) -> tuple[pd.DataFrame, list[str]]:
     """Features for `games`.
 
@@ -89,7 +105,14 @@ def build_feature_frame(
 
     `carry_over_weight` is passed to `add_rolling_four_factors`; None (the
     default, and every production caller) is today's behaviour exactly.
+
+    `rest_altitude=True` is the NBA-4 candidate: rest and streak per TEAM (from the team's own previous game,
+    any role), rest capped at REST_CAP_DAYS with an is_first_game flag instead of the 99 sentinel, and the
+    altitude indicator covering Utah as well as Denver. `rest_altitude_interactions=True` adds the visitor
+    back-to-back interactions on top. Both are OFF by default and change nothing else.
     """
+    if rest_altitude_interactions and not rest_altitude:
+        raise ValueError("rest_altitude_interactions requires rest_altitude=True")
     games = games.copy()
 
     # Compute H team features (elo, adjusted ratings, pace) in a single chronological pass
@@ -144,11 +167,27 @@ def build_feature_frame(
     tz_home, tz_away = [], []
     congestion_home, congestion_away = [], []
     fatigue_home, fatigue_away = [], []
+    first_home, first_away = [], []
+    #: ALL of a team's results in date order, whatever the venue. The flagged streak reads this; the default
+    #: streak reads the role-split home_results / away_results above, which is what the committed models saw.
+    team_results: dict[str, list[str]] = {}
 
     for _, row in games.iterrows():
         home, away, game_date = row["home_team"], row["away_team"], row["game_date"]
 
-        if rest_by_team:
+        if rest_altitude:
+            # NBA-4 candidate: the team's own previous game, whatever its role; capped; first game flagged.
+            rh, fh = rest_features(game_date, team_last_game.get(home))
+            ra, fa = rest_features(game_date, team_last_game.get(away))
+            rest_days_home.append(rh)
+            rest_days_away.append(ra)
+            first_home.append(fh)
+            first_away.append(fa)
+            streak_home.append(current_streak(team_results.get(home, [])))
+            streak_away.append(current_streak(team_results.get(away, [])))
+        elif rest_by_team:
+            streak_home.append(current_streak(home_results.get(home, [])))
+            streak_away.append(current_streak(away_results.get(away, [])))
             # Rest from the team's last game whatever its role. OPT-IN: the default below is what every committed
             # model was fitted on, so changing it silently would shift live inputs before it has been evaluated.
             rest_days_home.append(compute_rest_days(game_date, team_last_game.get(home)))
@@ -158,8 +197,8 @@ def build_feature_frame(
             # last AWAY game, so DEN at home on the 3rd and away on the 4th looks rested on the 4th.
             rest_days_home.append(compute_rest_days(game_date, home_last_game.get(home)))
             rest_days_away.append(compute_rest_days(game_date, away_last_game.get(away)))
-        streak_home.append(current_streak(home_results.get(home, [])))
-        streak_away.append(current_streak(away_results.get(away, [])))
+            streak_home.append(current_streak(home_results.get(home, [])))
+            streak_away.append(current_streak(away_results.get(away, [])))
 
         # Travel and congestion are built from each team's OWN games strictly
         # before this one -- the venue list is read before either side is
@@ -200,6 +239,8 @@ def build_feature_frame(
         if pd.notna(row["home_win"]):
             home_results.setdefault(home, []).append("W" if row["home_win"] == 1 else "L")
             away_results.setdefault(away, []).append("L" if row["home_win"] == 1 else "W")
+            team_results.setdefault(home, []).append("W" if row["home_win"] == 1 else "L")
+            team_results.setdefault(away, []).append("L" if row["home_win"] == 1 else "W")
 
         # The venue of a game is the arena it is played in, which is the HOME
         # team's own. Recording the team instead would make every team's location
@@ -227,12 +268,27 @@ def build_feature_frame(
     games["home_four_in_six"] = [f["four_in_six"] for f in congestion_home]
     games["away_four_in_six"] = [f["four_in_six"] for f in congestion_away]
 
-    games["is_high_altitude"] = games["home_team"].apply(is_high_altitude)
+    if rest_altitude:
+        games["home_first_game"] = first_home
+        games["away_first_game"] = first_away
+        games["is_high_altitude"] = games["home_team"].apply(is_high_altitude_home)
+    else:
+        games["is_high_altitude"] = games["home_team"].apply(is_high_altitude)
     flags = games.apply(lambda r: game_flags(r["home_team"], r["away_team"]), axis=1, result_type="expand")
     games["conference_game"] = flags["conference_game"]
     games["division_game"] = flags["division_game"]
 
+    if rest_altitude_interactions:
+        games["home_b2b_travel_miles"] = games["home_back_to_back"].astype(float) * games["home_travel_miles"]
+        games["away_b2b_travel_miles"] = games["away_back_to_back"].astype(float) * games["away_travel_miles"]
+        games["away_b2b_at_altitude"] = (
+            games["away_back_to_back"].astype(float) * games["is_high_altitude"].astype(float))
+
     columns = FEATURE_COLUMNS + (TRAVEL_FATIGUE_COLUMNS if include_travel_fatigue else [])
+    if rest_altitude:
+        columns = columns + REST_ALTITUDE_COLUMNS
+    if rest_altitude_interactions:
+        columns = columns + REST_ALTITUDE_INTERACTION_COLUMNS
     games = games.dropna(subset=columns).reset_index(drop=True)
     return games, columns
 
@@ -240,6 +296,8 @@ def build_feature_frame(
 def build_training_frame(
     games: pd.DataFrame, carry_over_weight: float | None = None, include_travel_fatigue: bool = False,
     rest_by_team: bool = False, players: pd.DataFrame | None = None,
+    rest_altitude: bool = REST_ALTITUDE_ENABLED, rest_altitude_interactions: bool = False,
 ) -> tuple[pd.DataFrame, list[str]]:
     return build_feature_frame(games, carry_over_weight=carry_over_weight, include_travel_fatigue=include_travel_fatigue,
-                               rest_by_team=rest_by_team, players=players)
+                               rest_by_team=rest_by_team, players=players, rest_altitude=rest_altitude,
+                               rest_altitude_interactions=rest_altitude_interactions)
