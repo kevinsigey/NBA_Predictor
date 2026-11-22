@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-22T04:36:23.213713+00:00",
+  "generated_at": "2026-11-22T13:54:38.025829+00:00",
   "schedule": [
     {
       "game_id": "401812480",
@@ -27236,10 +27236,10 @@
   "track_record": [],
   "prop_grading": {
     "bands": {
-      "points": 4.620277780643805,
-      "rebounds": 1.9289304475329523,
-      "assists": 1.3544116249905105,
-      "threes": 0.8984522460493255
+      "points": 4.619620912500599,
+      "rebounds": 1.9296199495822097,
+      "assists": 1.3543658903704896,
+      "threes": 0.8986332493805276
     },
     "counting": "Graded from the recorded predictions in the tracking store: the earliest recorded projection per player and stat, the same pick the track record counts. A row is labelled made before tip-off only where its own timestamp proves it; rows that cannot prove it are graded and labelled, not dropped.",
     "confidence_basis": "Most confident ranks the day's projections by how far the model moved from the player's own rolling average -- the mean of his previous 10 recorded games. It is the model's biggest departures from baseline, not a probability, and it is ranked only over rows whose baseline the stored record can prove.",
@@ -48872,7 +48872,7 @@
           "n": 5836,
           "mae": 5.291,
           "bias": -0.079,
-          "holdout_mae": 4.620277780643805,
+          "holdout_mae": 4.619620912500599,
           "band_n": 5836,
           "bands": [
             {
@@ -48887,12 +48887,12 @@
             },
             {
               "grade": "Off",
-              "n": 1746,
+              "n": 1745,
               "pct": 29.9
             },
             {
               "grade": "Way off",
-              "n": 924,
+              "n": 925,
               "pct": 15.8
             }
           ],
@@ -48903,7 +48903,7 @@
               "tercile": "low",
               "upper": 6.7,
               "n": 1985,
-              "coverage": 84.1
+              "coverage": 84.2
             },
             {
               "tercile": "mid",
@@ -48924,18 +48924,18 @@
           "n": 5836,
           "mae": 2.139,
           "bias": 0.035,
-          "holdout_mae": 1.9289304475329523,
+          "holdout_mae": 1.9296199495822097,
           "band_n": 5836,
           "bands": [
             {
               "grade": "On the number",
-              "n": 1735,
+              "n": 1736,
               "pct": 29.7
             },
             {
               "grade": "Close",
-              "n": 1527,
-              "pct": 26.2
+              "n": 1526,
+              "pct": 26.1
             },
             {
               "grade": "Off",
@@ -48976,17 +48976,17 @@
           "n": 5836,
           "mae": 1.502,
           "bias": 0.025,
-          "holdout_mae": 1.3544116249905105,
+          "holdout_mae": 1.3543658903704896,
           "band_n": 5836,
           "bands": [
             {
               "grade": "On the number",
-              "n": 1813,
-              "pct": 31.1
+              "n": 1812,
+              "pct": 31.0
             },
             {
               "grade": "Close",
-              "n": 1551,
+              "n": 1552,
               "pct": 26.6
             },
             {
@@ -49028,27 +49028,27 @@
           "n": 5836,
           "mae": 0.955,
           "bias": 0.008,
-          "holdout_mae": 0.8984522460493255,
+          "holdout_mae": 0.8986332493805276,
           "band_n": 5836,
           "bands": [
             {
               "grade": "On the number",
-              "n": 2007,
+              "n": 2008,
               "pct": 34.4
             },
             {
               "grade": "Close",
-              "n": 1354,
+              "n": 1353,
               "pct": 23.2
             },
             {
               "grade": "Off",
-              "n": 1675,
+              "n": 1676,
               "pct": 28.7
             },
             {
               "grade": "Way off",
-              "n": 800,
+              "n": 799,
               "pct": 13.7
             }
           ],
