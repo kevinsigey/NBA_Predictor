@@ -1,6 +1,6 @@
 {
-  "model_version": "v20261126205722",
-  "trained_at": "2026-11-26T20:57:22.695069+00:00",
+  "model_version": "v20261127204402",
+  "trained_at": "2026-11-27T20:44:02.280211+00:00",
   "models": [
     "points",
     "rebounds",
