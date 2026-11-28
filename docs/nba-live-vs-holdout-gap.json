@@ -1,0 +1,805 @@
+{
+  "window": {
+    "start": "2026-10-03",
+    "end": "2026-11-02",
+    "season_start": "2026-10-01"
+  },
+  "inputs": {
+    "completed_games_in_window": 173,
+    "games_without_counted_rows_404": 28,
+    "games_skipped_after_3_failed_tries": 0,
+    "skipped_game_ids": [],
+    "live_lines": 13824,
+    "lines_with_box_score_row": 9648,
+    "games_with_no_box_score": 0,
+    "log_rows": 216277
+  },
+  "per_stat": {
+    "points": {
+      "lines": 3456,
+      "matched_to_box": 2412,
+      "common_rows": 2360,
+      "holdout_mae": 4.628637165819442,
+      "holdout_naive_mae": 4.727901515041919,
+      "live_served_mae": 5.774004975124378,
+      "live_served_mae_common": 5.786822033898305,
+      "live_naive_mae_common": 4.98584897094431,
+      "live_pickle_mae_common": 4.674546718496387,
+      "live_api_baseline_mae": 4.882330982994608,
+      "served_minus_naive": {
+        "mean": 0.8009730629539952,
+        "ci95": [
+          0.6457131759483454,
+          0.9623800864272262
+        ]
+      },
+      "served_minus_pickle": {
+        "mean": 1.1122753154019176,
+        "ci95": [
+          0.9613998326704665,
+          1.260890724932743
+        ]
+      },
+      "served_vs_pickle_abs_gap_mean": 3.1648123983003327,
+      "actual_matches_espn_rate": 0.9991708126036484
+    },
+    "rebounds": {
+      "lines": 3456,
+      "matched_to_box": 2412,
+      "common_rows": 2360,
+      "holdout_mae": 1.9314725223717748,
+      "holdout_naive_mae": 1.9639012412860883,
+      "live_served_mae": 2.246102819237148,
+      "live_served_mae_common": 2.246737288135593,
+      "live_naive_mae_common": 1.9609350618778585,
+      "live_pickle_mae_common": 1.8825819069551208,
+      "live_api_baseline_mae": 1.946619659892161,
+      "served_minus_naive": {
+        "mean": 0.2858022262577347,
+        "ci95": [
+          0.2247804849340866,
+          0.35145945571025017
+        ]
+      },
+      "served_minus_pickle": {
+        "mean": 0.36415538118047225,
+        "ci95": [
+          0.30465205772284226,
+          0.4204146337703628
+        ]
+      },
+      "served_vs_pickle_abs_gap_mean": 1.2156210538290315,
+      "actual_matches_espn_rate": 0.9825870646766169
+    },
+    "assists": {
+      "lines": 3456,
+      "matched_to_box": 2412,
+      "common_rows": 2360,
+      "holdout_mae": 1.3548234356129145,
+      "holdout_naive_mae": 1.3764417250623462,
+      "live_served_mae": 1.6211442786069652,
+      "live_served_mae_common": 1.624237288135593,
+      "live_naive_mae_common": 1.3880473163841807,
+      "live_pickle_mae_common": 1.3285415668229936,
+      "live_api_baseline_mae": 1.3843633347158855,
+      "served_minus_naive": {
+        "mean": 0.2361899717514124,
+        "ci95": [
+          0.19324416111783702,
+          0.2808379993946731
+        ]
+      },
+      "served_minus_pickle": {
+        "mean": 0.2956957213125997,
+        "ci95": [
+          0.2553957691632716,
+          0.338180797674267
+        ]
+      },
+      "served_vs_pickle_abs_gap_mean": 0.8413485690218917,
+      "actual_matches_espn_rate": 0.9904643449419569
+    },
+    "threes": {
+      "lines": 3456,
+      "matched_to_box": 2412,
+      "common_rows": 2360,
+      "holdout_mae": 0.8985893216127747,
+      "holdout_naive_mae": 0.9058323623904003,
+      "live_served_mae": 1.0055555555555555,
+      "live_served_mae_common": 1.0092796610169492,
+      "live_naive_mae_common": 0.9249840260963142,
+      "live_pickle_mae_common": 0.8883246287798101,
+      "live_api_baseline_mae": 0.9097055163832436,
+      "served_minus_naive": {
+        "mean": 0.08429563492063494,
+        "ci95": [
+          0.05941114305891849,
+          0.11010510828625233
+        ]
+      },
+      "served_minus_pickle": {
+        "mean": 0.12095503223713899,
+        "ci95": [
+          0.09871174229770975,
+          0.1431673496455682
+        ]
+      },
+      "served_vs_pickle_abs_gap_mean": 0.4588772348024793,
+      "actual_matches_espn_rate": 1.0
+    }
+  },
+  "slices": {
+    "points": {
+      "month": {
+        "total_gap": 1.1453678093049362,
+        "rows": [
+          {
+            "month": "2026-10",
+            "n": 1990,
+            "mae": 5.7104,
+            "share_of_rows": 0.825,
+            "excess_over_holdout": 1.0817,
+            "contribution": 0.8925
+          },
+          {
+            "month": "2026-11",
+            "n": 422,
+            "mae": 6.0742,
+            "share_of_rows": 0.175,
+            "excess_over_holdout": 1.4455,
+            "contribution": 0.2529
+          }
+        ]
+      },
+      "week": {
+        "total_gap": 1.1453678093049362,
+        "rows": [
+          {
+            "week": 3,
+            "n": 643,
+            "mae": 5.5278,
+            "share_of_rows": 0.2666,
+            "excess_over_holdout": 0.8992,
+            "contribution": 0.2397
+          },
+          {
+            "week": 4,
+            "n": 1186,
+            "mae": 5.8167,
+            "share_of_rows": 0.4917,
+            "excess_over_holdout": 1.1881,
+            "contribution": 0.5842
+          },
+          {
+            "week": 5,
+            "n": 583,
+            "mae": 5.9587,
+            "share_of_rows": 0.2417,
+            "excess_over_holdout": 1.33,
+            "contribution": 0.3215
+          }
+        ]
+      },
+      "minutes_bucket": {
+        "total_gap": 1.1453678093049362,
+        "rows": [
+          {
+            "minutes_bucket": "15-24.9 min",
+            "n": 740,
+            "mae": 4.835,
+            "share_of_rows": 0.3068,
+            "excess_over_holdout": 0.2064,
+            "contribution": 0.0633
+          },
+          {
+            "minutes_bucket": "25+ min",
+            "n": 1029,
+            "mae": 6.9754,
+            "share_of_rows": 0.4266,
+            "excess_over_holdout": 2.3468,
+            "contribution": 1.0012
+          },
+          {
+            "minutes_bucket": "<15 min",
+            "n": 643,
+            "mae": 4.932,
+            "share_of_rows": 0.2666,
+            "excess_over_holdout": 0.3034,
+            "contribution": 0.0809
+          }
+        ]
+      },
+      "projection_tercile": {
+        "total_gap": 1.1453678093049362,
+        "rows": [
+          {
+            "projection_tercile": "high",
+            "n": 827,
+            "mae": 7.2002,
+            "share_of_rows": 0.3429,
+            "excess_over_holdout": 2.5716,
+            "contribution": 0.8817
+          },
+          {
+            "projection_tercile": "low",
+            "n": 722,
+            "mae": 4.1614,
+            "share_of_rows": 0.2993,
+            "excess_over_holdout": -0.4673,
+            "contribution": -0.1399
+          },
+          {
+            "projection_tercile": "mid",
+            "n": 863,
+            "mae": 5.7564,
+            "share_of_rows": 0.3578,
+            "excess_over_holdout": 1.1278,
+            "contribution": 0.4035
+          }
+        ]
+      },
+      "games_this_season": {
+        "total_gap": 1.1453678093049362,
+        "rows": [
+          {
+            "games_this_season": "0 (opener)",
+            "n": 446,
+            "mae": 5.5222,
+            "share_of_rows": 0.1849,
+            "excess_over_holdout": 0.8936,
+            "contribution": 0.1652
+          },
+          {
+            "games_this_season": "1-4",
+            "n": 1457,
+            "mae": 5.6651,
+            "share_of_rows": 0.6041,
+            "excess_over_holdout": 1.0364,
+            "contribution": 0.6261
+          },
+          {
+            "games_this_season": "5-9",
+            "n": 509,
+            "mae": 6.3065,
+            "share_of_rows": 0.211,
+            "excess_over_holdout": 1.6778,
+            "contribution": 0.3541
+          }
+        ]
+      },
+      "history": {
+        "total_gap": 1.1453678093049362,
+        "rows": [
+          {
+            "history": "established",
+            "n": 2256,
+            "mae": 5.796,
+            "share_of_rows": 0.9353,
+            "excess_over_holdout": 1.1673,
+            "contribution": 1.0918
+          },
+          {
+            "history": "new team",
+            "n": 104,
+            "mae": 5.5885,
+            "share_of_rows": 0.0431,
+            "excess_over_holdout": 0.9598,
+            "contribution": 0.0414
+          },
+          {
+            "history": "no prior games",
+            "n": 52,
+            "mae": 5.1923,
+            "share_of_rows": 0.0216,
+            "excess_over_holdout": 0.5637,
+            "contribution": 0.0122
+          }
+        ]
+      }
+    },
+    "rebounds": {
+      "month": {
+        "total_gap": 0.31463029686537314,
+        "rows": [
+          {
+            "month": "2026-10",
+            "n": 1990,
+            "mae": 2.2108,
+            "share_of_rows": 0.825,
+            "excess_over_holdout": 0.2793,
+            "contribution": 0.2304
+          },
+          {
+            "month": "2026-11",
+            "n": 422,
+            "mae": 2.4128,
+            "share_of_rows": 0.175,
+            "excess_over_holdout": 0.4813,
+            "contribution": 0.0842
+          }
+        ]
+      },
+      "week": {
+        "total_gap": 0.31463029686537314,
+        "rows": [
+          {
+            "week": 3,
+            "n": 643,
+            "mae": 2.1776,
+            "share_of_rows": 0.2666,
+            "excess_over_holdout": 0.2461,
+            "contribution": 0.0656
+          },
+          {
+            "week": 4,
+            "n": 1186,
+            "mae": 2.2452,
+            "share_of_rows": 0.4917,
+            "excess_over_holdout": 0.3137,
+            "contribution": 0.1543
+          },
+          {
+            "week": 5,
+            "n": 583,
+            "mae": 2.3235,
+            "share_of_rows": 0.2417,
+            "excess_over_holdout": 0.392,
+            "contribution": 0.0948
+          }
+        ]
+      },
+      "minutes_bucket": {
+        "total_gap": 0.31463029686537314,
+        "rows": [
+          {
+            "minutes_bucket": "15-24.9 min",
+            "n": 740,
+            "mae": 1.9297,
+            "share_of_rows": 0.3068,
+            "excess_over_holdout": -0.0017,
+            "contribution": -0.0005
+          },
+          {
+            "minutes_bucket": "25+ min",
+            "n": 1029,
+            "mae": 2.5586,
+            "share_of_rows": 0.4266,
+            "excess_over_holdout": 0.6271,
+            "contribution": 0.2675
+          },
+          {
+            "minutes_bucket": "<15 min",
+            "n": 643,
+            "mae": 2.1101,
+            "share_of_rows": 0.2666,
+            "excess_over_holdout": 0.1786,
+            "contribution": 0.0476
+          }
+        ]
+      },
+      "projection_tercile": {
+        "total_gap": 0.31463029686537314,
+        "rows": [
+          {
+            "projection_tercile": "high",
+            "n": 827,
+            "mae": 2.832,
+            "share_of_rows": 0.3429,
+            "excess_over_holdout": 0.9006,
+            "contribution": 0.3088
+          },
+          {
+            "projection_tercile": "low",
+            "n": 765,
+            "mae": 1.7837,
+            "share_of_rows": 0.3172,
+            "excess_over_holdout": -0.1478,
+            "contribution": -0.0469
+          },
+          {
+            "projection_tercile": "mid",
+            "n": 820,
+            "mae": 2.0866,
+            "share_of_rows": 0.34,
+            "excess_over_holdout": 0.1551,
+            "contribution": 0.0527
+          }
+        ]
+      },
+      "games_this_season": {
+        "total_gap": 0.31463029686537314,
+        "rows": [
+          {
+            "games_this_season": "0 (opener)",
+            "n": 446,
+            "mae": 2.009,
+            "share_of_rows": 0.1849,
+            "excess_over_holdout": 0.0775,
+            "contribution": 0.0143
+          },
+          {
+            "games_this_season": "1-4",
+            "n": 1457,
+            "mae": 2.2648,
+            "share_of_rows": 0.6041,
+            "excess_over_holdout": 0.3333,
+            "contribution": 0.2013
+          },
+          {
+            "games_this_season": "5-9",
+            "n": 509,
+            "mae": 2.4004,
+            "share_of_rows": 0.211,
+            "excess_over_holdout": 0.4689,
+            "contribution": 0.099
+          }
+        ]
+      },
+      "history": {
+        "total_gap": 0.31463029686537314,
+        "rows": [
+          {
+            "history": "established",
+            "n": 2256,
+            "mae": 2.2625,
+            "share_of_rows": 0.9353,
+            "excess_over_holdout": 0.3311,
+            "contribution": 0.3097
+          },
+          {
+            "history": "new team",
+            "n": 104,
+            "mae": 1.9038,
+            "share_of_rows": 0.0431,
+            "excess_over_holdout": -0.0276,
+            "contribution": -0.0012
+          },
+          {
+            "history": "no prior games",
+            "n": 52,
+            "mae": 2.2173,
+            "share_of_rows": 0.0216,
+            "excess_over_holdout": 0.2858,
+            "contribution": 0.0062
+          }
+        ]
+      }
+    },
+    "assists": {
+      "month": {
+        "total_gap": 0.2663208429940507,
+        "rows": [
+          {
+            "month": "2026-10",
+            "n": 1990,
+            "mae": 1.5965,
+            "share_of_rows": 0.825,
+            "excess_over_holdout": 0.2417,
+            "contribution": 0.1994
+          },
+          {
+            "month": "2026-11",
+            "n": 422,
+            "mae": 1.7372,
+            "share_of_rows": 0.175,
+            "excess_over_holdout": 0.3824,
+            "contribution": 0.0669
+          }
+        ]
+      },
+      "week": {
+        "total_gap": 0.2663208429940507,
+        "rows": [
+          {
+            "week": 3,
+            "n": 643,
+            "mae": 1.5509,
+            "share_of_rows": 0.2666,
+            "excess_over_holdout": 0.196,
+            "contribution": 0.0523
+          },
+          {
+            "week": 4,
+            "n": 1186,
+            "mae": 1.623,
+            "share_of_rows": 0.4917,
+            "excess_over_holdout": 0.2682,
+            "contribution": 0.1319
+          },
+          {
+            "week": 5,
+            "n": 583,
+            "mae": 1.6949,
+            "share_of_rows": 0.2417,
+            "excess_over_holdout": 0.34,
+            "contribution": 0.0822
+          }
+        ]
+      },
+      "minutes_bucket": {
+        "total_gap": 0.2663208429940507,
+        "rows": [
+          {
+            "minutes_bucket": "15-24.9 min",
+            "n": 740,
+            "mae": 1.3532,
+            "share_of_rows": 0.3068,
+            "excess_over_holdout": -0.0016,
+            "contribution": -0.0005
+          },
+          {
+            "minutes_bucket": "25+ min",
+            "n": 1029,
+            "mae": 1.9983,
+            "share_of_rows": 0.4266,
+            "excess_over_holdout": 0.6435,
+            "contribution": 0.2745
+          },
+          {
+            "minutes_bucket": "<15 min",
+            "n": 643,
+            "mae": 1.3258,
+            "share_of_rows": 0.2666,
+            "excess_over_holdout": -0.029,
+            "contribution": -0.0077
+          }
+        ]
+      },
+      "projection_tercile": {
+        "total_gap": 0.2663208429940507,
+        "rows": [
+          {
+            "projection_tercile": "high",
+            "n": 849,
+            "mae": 2.2373,
+            "share_of_rows": 0.352,
+            "excess_over_holdout": 0.8825,
+            "contribution": 0.3106
+          },
+          {
+            "projection_tercile": "low",
+            "n": 748,
+            "mae": 0.9861,
+            "share_of_rows": 0.3101,
+            "excess_over_holdout": -0.3687,
+            "contribution": -0.1143
+          },
+          {
+            "projection_tercile": "mid",
+            "n": 815,
+            "mae": 1.5621,
+            "share_of_rows": 0.3379,
+            "excess_over_holdout": 0.2073,
+            "contribution": 0.07
+          }
+        ]
+      },
+      "games_this_season": {
+        "total_gap": 0.2663208429940507,
+        "rows": [
+          {
+            "games_this_season": "0 (opener)",
+            "n": 446,
+            "mae": 1.5289,
+            "share_of_rows": 0.1849,
+            "excess_over_holdout": 0.1741,
+            "contribution": 0.0322
+          },
+          {
+            "games_this_season": "1-4",
+            "n": 1457,
+            "mae": 1.6045,
+            "share_of_rows": 0.6041,
+            "excess_over_holdout": 0.2496,
+            "contribution": 0.1508
+          },
+          {
+            "games_this_season": "5-9",
+            "n": 509,
+            "mae": 1.7497,
+            "share_of_rows": 0.211,
+            "excess_over_holdout": 0.3949,
+            "contribution": 0.0833
+          }
+        ]
+      },
+      "history": {
+        "total_gap": 0.2663208429940507,
+        "rows": [
+          {
+            "history": "established",
+            "n": 2256,
+            "mae": 1.6303,
+            "share_of_rows": 0.9353,
+            "excess_over_holdout": 0.2755,
+            "contribution": 0.2577
+          },
+          {
+            "history": "new team",
+            "n": 104,
+            "mae": 1.4923,
+            "share_of_rows": 0.0431,
+            "excess_over_holdout": 0.1375,
+            "contribution": 0.0059
+          },
+          {
+            "history": "no prior games",
+            "n": 52,
+            "mae": 1.4808,
+            "share_of_rows": 0.0216,
+            "excess_over_holdout": 0.1259,
+            "contribution": 0.0027
+          }
+        ]
+      }
+    },
+    "threes": {
+      "month": {
+        "total_gap": 0.10696623394278082,
+        "rows": [
+          {
+            "month": "2026-10",
+            "n": 1990,
+            "mae": 0.9782,
+            "share_of_rows": 0.825,
+            "excess_over_holdout": 0.0796,
+            "contribution": 0.0657
+          },
+          {
+            "month": "2026-11",
+            "n": 422,
+            "mae": 1.1346,
+            "share_of_rows": 0.175,
+            "excess_over_holdout": 0.236,
+            "contribution": 0.0413
+          }
+        ]
+      },
+      "week": {
+        "total_gap": 0.10696623394278082,
+        "rows": [
+          {
+            "week": 3,
+            "n": 643,
+            "mae": 0.9198,
+            "share_of_rows": 0.2666,
+            "excess_over_holdout": 0.0212,
+            "contribution": 0.0056
+          },
+          {
+            "week": 4,
+            "n": 1186,
+            "mae": 1.0005,
+            "share_of_rows": 0.4917,
+            "excess_over_holdout": 0.1019,
+            "contribution": 0.0501
+          },
+          {
+            "week": 5,
+            "n": 583,
+            "mae": 1.1105,
+            "share_of_rows": 0.2417,
+            "excess_over_holdout": 0.2119,
+            "contribution": 0.0512
+          }
+        ]
+      },
+      "minutes_bucket": {
+        "total_gap": 0.10696623394278082,
+        "rows": [
+          {
+            "minutes_bucket": "15-24.9 min",
+            "n": 740,
+            "mae": 0.9011,
+            "share_of_rows": 0.3068,
+            "excess_over_holdout": 0.0025,
+            "contribution": 0.0008
+          },
+          {
+            "minutes_bucket": "25+ min",
+            "n": 1029,
+            "mae": 1.2668,
+            "share_of_rows": 0.4266,
+            "excess_over_holdout": 0.3682,
+            "contribution": 0.1571
+          },
+          {
+            "minutes_bucket": "<15 min",
+            "n": 643,
+            "mae": 0.7078,
+            "share_of_rows": 0.2666,
+            "excess_over_holdout": -0.1908,
+            "contribution": -0.0509
+          }
+        ]
+      },
+      "projection_tercile": {
+        "total_gap": 0.10696623394278082,
+        "rows": [
+          {
+            "projection_tercile": "high",
+            "n": 830,
+            "mae": 1.3277,
+            "share_of_rows": 0.3441,
+            "excess_over_holdout": 0.4291,
+            "contribution": 0.1477
+          },
+          {
+            "projection_tercile": "low",
+            "n": 736,
+            "mae": 0.6432,
+            "share_of_rows": 0.3051,
+            "excess_over_holdout": -0.2554,
+            "contribution": -0.0779
+          },
+          {
+            "projection_tercile": "mid",
+            "n": 846,
+            "mae": 1.0047,
+            "share_of_rows": 0.3507,
+            "excess_over_holdout": 0.1061,
+            "contribution": 0.0372
+          }
+        ]
+      },
+      "games_this_season": {
+        "total_gap": 0.10696623394278082,
+        "rows": [
+          {
+            "games_this_season": "0 (opener)",
+            "n": 446,
+            "mae": 0.9235,
+            "share_of_rows": 0.1849,
+            "excess_over_holdout": 0.025,
+            "contribution": 0.0046
+          },
+          {
+            "games_this_season": "1-4",
+            "n": 1457,
+            "mae": 0.9663,
+            "share_of_rows": 0.6041,
+            "excess_over_holdout": 0.0677,
+            "contribution": 0.0409
+          },
+          {
+            "games_this_season": "5-9",
+            "n": 509,
+            "mae": 1.1898,
+            "share_of_rows": 0.211,
+            "excess_over_holdout": 0.2912,
+            "contribution": 0.0615
+          }
+        ]
+      },
+      "history": {
+        "total_gap": 0.10696623394278082,
+        "rows": [
+          {
+            "history": "established",
+            "n": 2256,
+            "mae": 1.012,
+            "share_of_rows": 0.9353,
+            "excess_over_holdout": 0.1134,
+            "contribution": 0.1061
+          },
+          {
+            "history": "new team",
+            "n": 104,
+            "mae": 0.95,
+            "share_of_rows": 0.0431,
+            "excess_over_holdout": 0.0514,
+            "contribution": 0.0022
+          },
+          {
+            "history": "no prior games",
+            "n": 52,
+            "mae": 0.8365,
+            "share_of_rows": 0.0216,
+            "excess_over_holdout": -0.0621,
+            "contribution": -0.0013
+          }
+        ]
+      }
+    }
+  }
+}
